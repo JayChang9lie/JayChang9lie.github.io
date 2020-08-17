@@ -1,0 +1,994 @@
+<html>
+  <head>
+    <meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Python CookBook （个人笔记） | Gridea</title>
+<link rel="shortcut icon" href="https://jaychang9lie.github.io/favicon.ico?v=1597650124071">
+<link href="https://cdn.jsdelivr.net/npm/remixicon@2.3.0/fonts/remixicon.css" rel="stylesheet">
+<link rel="stylesheet" href="https://jaychang9lie.github.io/styles/main.css">
+<link rel="alternate" type="application/atom+xml" title="Python CookBook （个人笔记） | Gridea - Atom Feed" href="https://jaychang9lie.github.io/atom.xml">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Droid+Serif:400,700">
+
+
+
+    <meta name="description" content="[TOC]
+Chap 1 数据结构与算法
+1.1 解压序列赋值给多个变量
+​		对任何序列 or 可迭代对象，将其 解压并赋值 给多个变量（要求：变量数 = 序列元素数）
+p = (3, 6, 9)
+x, y, z = p
+
+data = ..." />
+    <meta name="keywords" content="" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
+    <script src="https://cdn.bootcss.com/highlight.js/9.12.0/highlight.min.js"></script>
+  </head>
+  <body>
+    <div class="main">
+      <div class="main-content">
+        <div class="site-header">
+  <a href="https://jaychang9lie.github.io">
+  <img class="avatar" src="https://jaychang9lie.github.io/images/avatar.png?v=1597650124071" alt="">
+  </a>
+  <h1 class="site-title">
+    Gridea
+  </h1>
+  <p class="site-description">
+    温故而知新
+  </p>
+  <div class="menu-container">
+    
+      
+        <a href="/" class="menu">
+          首页
+        </a>
+      
+    
+      
+        <a href="/archives" class="menu">
+          归档
+        </a>
+      
+    
+      
+        <a href="/tags" class="menu">
+          标签
+        </a>
+      
+    
+      
+        <a href="/post/about" class="menu">
+          关于
+        </a>
+      
+    
+  </div>
+  <div class="social-container">
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  </div>
+</div>
+
+        <div class="post-detail">
+          <article class="post">
+            <h2 class="post-title">
+              Python CookBook （个人笔记）
+            </h2>
+            <div class="post-info">
+              <span>
+                2020-08-17
+              </span>
+              <span>
+                34 min read
+              </span>
+              
+            </div>
+            
+            <div class="post-content-wrapper">
+              <div class="post-content">
+                <p>[TOC]</p>
+<h1 id="chap-1-数据结构与算法">Chap 1 数据结构与算法</h1>
+<h2 id="11-解压序列赋值给多个变量">1.1 解压序列赋值给多个变量</h2>
+<p>​		对任何序列 or 可迭代对象，将其 <strong>解压并赋值</strong> 给多个变量（要求：变量数 = 序列元素数）</p>
+<pre><code class="language-python">p = (3, 6, 9)
+x, y, z = p
+</code></pre>
+<pre><code class="language-python">data = ['sheldon', 180, (2020, 5, 1)]
+name, height, date = data    # 这里 date 将是一个 tuple
+name, height, (year, month, date) = data
+</code></pre>
+<pre><code class="language-python">data = ['sheldon', 180, (2020, 5, 1)]
+name, _, (year, _, _) = data    # 只想获取 name 和 year 时，用任意变量名占位即可
+</code></pre>
+<h2 id="12-解压可迭代对象赋值给多个变量">1.2 解压可迭代对象赋值给多个变量</h2>
+<p>​		使用 <strong>星号表达式</strong> 实现 <span style='color:Coral;background:None;font-size:None;font-family:None;'>不确定个数 or 任意个</span> 元素的解压 &amp; 赋值</p>
+<pre><code class="language-python">scores = [75, 80, 95, 67, 98, 92, 55, 73, 84]
+first, *middle, last = socres    # 此处 middle 是除去首尾两个分数的分数列表
+print(avg(middle))
+</code></pre>
+<pre><code class="language-python">record = ('Einstein', 'Princeton', 233, 17, 273, 6)
+name, university, *lucky_numbers = record    # 此处变量 lucky_numbers 必为列表类型，不论幸运数字是多少个
+</code></pre>
+<pre><code class="language-python">scores = [95, 94, 93, 99, 60, 2]    # 语，数，外，物理，化学，政治成绩
+*other_scores, politics = scores    # 用在列表开头的【星号表达式】
+print(avg(other_scores))    # 政治除外的平均成绩
+</code></pre>
+<pre><code>line = 'nobody:*:-2:-2:Unprivileged User:/var/empty:/usr/bin/false' 
+user_name, *fields, homedir, sh = line.split(':')    # 
+</code></pre>
+<pre><code class="language-python">data = ['sheldon', 180, 'Cal Tech', (2020, 5, 1)]
+name, *_, (year, *_) = data    # 星号表达式 + 占位符 丢弃若干元素
+</code></pre>
+<h2 id="13-保留最后-n-个元素-collectionsdeque">1.3 保留最后 N 个元素 --- collections.deque</h2>
+<p>​		使用 deque(maxlen=N) 来实例化一个固定大小的 <strong>队列</strong>。<span style='color:Coral;background:None;font-size:None;font-family:None;'>当新元素加入且该队列已满时, 最老的元素会被移除。</span></p>
+<pre><code class="language-python">from collections import deque
+# 1. 创建一个长度为 3 的队列
+q = deque(maxlen=3)
+# 2. 往队列中依次添加元素 1, 2, 3
+for i in range(1, 4):
+    q.append(i)
+# 3. 此时队列为: deque([1, 2, 3], maxlen=3)
+print(q)
+# 4. 往已满的队列中继续添加新元素
+q.append('New Element')
+# 5. 此时队列为: deque([2, 3, 'New Element'], maxlen=3)
+print(q)
+</code></pre>
+<p>​		虽然使用列表可以实现同样操作，但队列的方案更加优雅且高效。另外在不指定队列的 maxlen 时，将得到一个无限长度的队列；可以在队列两端执行 <span style='color:Coral;background:None;font-size:None;font-family:None;'>添加 &amp; 弹出元素</span> 的操作。</p>
+<pre><code class="language-python"># 1. 创建一个无限长度的队列
+q = deque()
+# 2. 添加元素 0, 1, 2
+for i in range(0, 3):
+    q.append(i)
+# 3. 此时为: deque([0, 1, 2])
+print(q)
+# 4. 从末尾添加元素
+q.append(3)
+# 5. 从开头添加元素
+q.appendleft(-1)
+# 6. 此时为: deque([-1, 0, 1, 2, 3])
+print(q)
+# 7. 从末尾弹出元素
+q.pop()
+# 8. 从开头弹出元素
+q.popleft()
+# 9. 此时为: deque([0, 1, 2])
+print(q)
+</code></pre>
+<p>​		<strong>Remark：</strong> 在队列两端插入 or 删除元素の时间复杂度都是 O(1)，而在列表的开头插入 or 删除元素の时间复杂度为 O(N)。</p>
+<p>​		<mark>开头含生成器的例子可在 4.3 节后再看。</mark></p>
+<h2 id="14-查找最大或最小的-n-个元素-heapqnlargestnsmallest">1.4 查找最大或最小的 N 个元素 --- heapq.nlargest/nsmallest</h2>
+<p>​		从一个集合中获得最大 or 最小的 N 个元素列表可以通过 <strong>heapq</strong> 模块中的 <strong>nlargest 和 nsmallest</strong> 函数解决。</p>
+<pre><code class="language-python">import heapq
+
+nums = [1, 8, 2, 23, 7, -4, 18, 23, 42, 37, 2]
+# 1. 通过 nlargest 与 nsmallest 函数从 nums 列表中分别找出最大与最小的三个元素
+print(heapq.nlargest(3, nums))    # [42, 37, 23]
+print(heapq.nsmallest(3, nums))    # [-4, 1, 2]
+
+
+portfolio = [
+    {'name': 'IBM', 'shares': 100, 'price': 91.1},
+    {'name': 'AAPL', 'shares': 50, 'price': 543.22},
+    {'name': 'FB', 'shares': 200, 'price': 21.09},
+    {'name': 'HPQ', 'shares': 35, 'price': 31.75},
+    {'name': 'YHOO', 'shares': 45, 'price': 16.35},
+    {'name': 'ACME', 'shares': 75, 'price': 115.65}
+            ]
+# 2. 对于更复杂的数据结构, 通过添加关键字参数可按指定字段获取最大 or 最小的 N 个元素
+cheap = heapq.nsmallest(3, portfolio, key=lambda s: s['price'])
+expensive = heapq.nlargest(3, portfolio, key=lambda s: s['price'])
+print(cheap, expensive, sep=&quot;\n&quot;)
+</code></pre>
+<p>​		堆数据结构最重要的特征是：<span style='color:Coral;background:None;font-size:None;font-family:None;'>heap[0] 永远是最小的元素</span>；剩余元素可通过调用 <strong>heapq.heappop</strong> 方法得到，该方法会先将首个元素弹出，然后用下一个最小的元素来取代被弹出元素，而且这种操作的时间复杂度仅是 O(log N)，其中 N 是堆大小 。</p>
+<pre><code class="language-python">nums = [1, 8, 2, 23, 7, -4, 18, 23, 42, 37, 2]
+heap = list(nums)
+heapq.heapify(heap)    # 这里将 list 原地转化为堆
+print(heap)    # 此时 heap[0] 成为最小元素
+
+# 不断调用 heappop 方法可逐个弹出当前最小元素
+print(heapq.heappop(heap))
+print(heapq.heappop(heap))
+print(heapq.heappop(heap))
+</code></pre>
+<p>​		需要在正确场合使用函数 nlargest 和 nsmallest 才能发挥它们的优势：</p>
+<table>
+<thead>
+<tr>
+<th>情况</th>
+<th>选择</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>当要查找的元素个数相对较小时</td>
+<td>函数 nlargest 和 nsmallest 性能更好</td>
+</tr>
+<tr>
+<td>仅想查找最小 or 最大元素时</td>
+<td>min 和 max 函数会更快</td>
+</tr>
+<tr>
+<td>当 N 的大小与集合大小接近时</td>
+<td>先排序此集合，再使用切片操作会更快</td>
+</tr>
+</tbody>
+</table>
+<h2 id="15-实现一个优先级队列-heapqheappushheappop">1.5 实现一个优先级队列 --- heapq.heappush/heappop</h2>
+<p>​		下面的类利用 heapq 模块实现了<strong>一个简单的优先级队列</strong>：</p>
+<pre><code class="language-python">import heapq
+
+
+class PriorityQueue:
+    def __init__(self):
+        self._queue = []
+        self._index = 0
+
+    def push(self, item, priority):
+        # heappush 函数将三元组 (-priority, self._index, item) 推入 self._queue 中
+        # 注意 heap[0](即这里的self._queue) 总是最小元素
+        heapq.heappush(self._queue, (-priority, self._index, item))
+        self._index += 1
+
+    def pop(self):
+        # heappop 函数从 heap 中弹出首个元素 heap[0]
+        return heapq.heappop(self._queue)[-1]
+</code></pre>
+<p>​		接下来展示它的使用：</p>
+<pre><code class="language-python">class Item:
+    def __init__(self, name):
+        self.name = name
+
+    def __repr__(self):
+        &quot;&quot;&quot; 重写 __repr__(self) 方法可指定 print 实例时返回的内容。 &quot;&quot;&quot;
+        return 'Item({!r})'.format(self.name)
+
+
+# 1. 实例化一个 PriorityQueue 对象, 并向其中添加元素(指定优先级)  
+q = PriorityQueue()
+q.push(Item('Leo'), 1)
+q.push(Item('Raph'), 5)
+q.push(Item('Mikey'), 4)
+q.push(Item('Dony'), 1)
+
+# 2. pop() 将按照优先级高低依次返回元素(当优先级相同时, 先返回优先插入的元素)
+print(q.pop())    # Item('Raph')
+print(q.pop())    # Item('Mikey')
+print(q.pop())    # Item('Leo')
+print(q.pop())    # Item('Dony')
+</code></pre>
+<h2 id="16-字典中的键映射多个值-collectionsdefaultdict">1.6 字典中的键映射多个值 --- collections.defaultdict</h2>
+<p>​		使用 collections 模块中的 <strong>defaultdict</strong> 来构造多值字典。</p>
+<pre><code class="language-python">from collections import defaultdict
+
+# 1. 需要保持顺序就选用 list
+d = defaultdict(list)
+d['a'].append(1)
+d['a'].append(2)
+d['b'].append(6)
+d['b'].append(6)
+print(d)
+print(d['c'])
+
+# 2. 需要去重就选用 set (不关心顺序的情况下)
+b = defaultdict(set)
+b['a'].add(1)
+b['a'].add(2)
+b['b'].add(6)
+b['b'].add(6)
+print(b)
+print(b['c'])
+</code></pre>
+<p>​		从上面可见，<span style='color:Coral;background:None;font-size:None;font-family:None;'>defaultdict 会自动为将要访问的键(就算目前字典中并不存在这样的键)创建映射实体。</span></p>
+<h2 id="17-字典排序-collectionsordereddict">1.7 字典排序 --- collections.OrderedDict</h2>
+<p>​		使用 collections 模块中的 <strong>OrderedDict</strong> 类可在迭代操作时保持元素被插入时的顺序。</p>
+<pre><code class="language-python">from collections import OrderedDict
+
+# 1. 实例化一个有序字典对象, 并插入一系列键值对
+d = OrderedDict()
+d['Leo'] = 1
+d['Raph'] = 2
+d['Mikey'] = 3
+d['Dony'] = 4
+d['Splinter'] = -1
+
+# 2. 从打印结果可看出字典键值对的插入顺序在遍历时被保持
+for key, value in d.items():
+    print(f&quot;{key} --- {value}&quot;)
+</code></pre>
+<p>​		OrderedDict 内部维护着一个根据键插入顺序排序的<strong>双向链表</strong>。每当一个新元素插入进来的时候，它会被放到链表的尾部。对于一个已经存在的键的重复赋值不会改变键的顺序。</p>
+<p>​		Remark：<span style='color:Coral;background:None;font-size:None;font-family:None;'>一个 OrderedDict 的大小是一个普通字典的两倍</span>，因为它内部维护着另外一个链表，所以当构建一个需要大量 OrderedDict 实例的数据结构的时候，应该仔细权衡一下是否使用 OrderedDict 带来的好处要大过额外内存消耗的影响。</p>
+<h2 id="18-对字典求最值和排序-zip">1.8 对字典求最值和排序 --- zip()</h2>
+<p>​		 按字典的 value 作为比较依据，求字典的最值：</p>
+<pre><code class="language-python">prices = {'ACME': 45.23,
+          'AAPL': 612.78,
+          'IBM': 205.55,
+          'HPQ': 37.20,
+          'FB': 10.75,}
+
+# 1. 使用 zip() 函数将字典 “反转” 为 (值, 键) 元组序列, 从而比较字典中元素的大小, 进而可以求其最值
+min_price = min(zip(prices.values(), prices.keys()))
+max_price = max(zip(prices.values(), prices.keys()))
+print(max_price, min_price, sep=&quot;\n&quot;)
+
+
+# 2. 类似地, 可以使用 zip() 和 sorted() 函数对字典数据排序
+prices_sorted = sorted(zip(prices.values(), prices.keys()), reverse=True)
+print(prices_sorted)
+</code></pre>
+<p>​		Remark：需要注意的是，<span style='color:Coral;background:None;font-size:None;font-family:None;'>zip() 函数创建的是一个只能访问一次的迭代器</span>，也就是说 zip 一次就只能 print 一次， 再 print 之前必须重新 zip。</p>
+<p>​		另外，上述方法<span style='color:Coral;background:None;font-size:None;font-family:None;'>当字典中的 value 有相同的值时，key 将决定返回结果</span>：</p>
+<pre><code class="language-python">ATK = {'Leonardo': 86,
+       'Raphael': 86}
+# 攻击力相同, 但求最大/最小攻击力时结果却不同~
+print(min(zip(ATK.values(), ATK.keys())))
+print(max(zip(ATK.values(), ATK.keys())))
+</code></pre>
+<p>​		若尝试在字典上直接求最值，会发现结果只是按照 key 比较得到的最值；而使用了字典的 values() 方法，却又无法得到对应的 key：</p>
+<pre><code class="language-python">print(min(prices))    # AAPL
+print(max(prices))    # IBM
+
+print(min(prices.values()))    # 10.75
+print(max(prices.values()))    # 612.78
+</code></pre>
+<p>​		可以在 min() 和 max() 函数中提供关键字参数来获取最小值或最大值对应的键的信息如下：</p>
+<pre><code class="language-python">key_for_min_price = min(prices, key=lambda s: prices[s])
+key_for_max_price = max(prices, key=lambda s: prices[s])
+print(key_for_min_price)    # FB
+print(key_for_max_price)    # AAPL
+# Remark: 这里的原理可能是, max(prices) 实际上是作用于 prices 的键值上, 关键字参数 key 通过匿名函数的方式构建了一个映射, 该映射将 max 的作用对象(也即 prices 的键值) 映射至 prices[键值] (这也就是字典中的值), 也即是说关键字参数 key 相当于指定 max() 函数按照 prices 的值做比较来求出最大值。
+</code></pre>
+<p>​		但是上面的方法仍然无法得到相应的最值，只能通过将上面的结果嵌套于 prices 中来获取相应的最值了：</p>
+<pre><code class="language-python">print(prices[key_for_min_price])    # 10.75
+print(prices[key_for_max_price])    # 612.78
+</code></pre>
+<h2 id="19-查找两字典的相同点-key-items-set-operation">1.9 查找两字典的相同点 --- key() &amp; items() &amp; Set Operation</h2>
+<p>​		为寻找两字典的相同点，可直接在字典的 keys() or items() 方法の返回结果上<span style='color:Coral;'>【执行集合操作】</span>。</p>
+<pre><code class="language-python">a = {'x': 1, 'y': 2, 'z': 3}
+b = {'x': 7, 'y': 2, 'w': 10}
+
+# 1. 获取相同的键, 键的差集以及相同的键值对
+print(f&quot;Keys in common: {a.keys() &amp; b.keys()}&quot;)
+print(f&quot;Keys in a and not in b: {a.keys() - b.keys()}&quot;)
+print(f&quot;(key, value) pairs in common: {a.items() &amp; b.items()}&quot;)
+
+# 2. 这些操作也可用于修改 or 过滤字典元素 (通过现有字典 a 构造新字典, 但排除键 z 和 w)
+c = {key: a[key] for key in a.keys() - {'z', 'w'}}    # 字典推导の写法
+print(c)
+</code></pre>
+<p>​		Remark: 一个字典就是一个键集合与值集合的映射关系。</p>
+<p>​		<span style='color:Coral;'>字典的 keys() &amp; items() 的返回结果都支持集合运算，但 values() 的返回结果并不支持集合运算。</span></p>
+<h2 id="110-删除序列相同元素并保持顺序-set-yield">1.10 删除序列相同元素并保持顺序 --- set() &amp; yield</h2>
+<p>​		要在一个序列上保持元素顺序的同时消除重复值，可利用集合 or 生成器来实现，前提是：<span style='color:Coral;'>序列中的元素必须是 hashable 类型的</span>。</p>
+<pre><code class="language-python">def de_duplicate(items):
+    seen = set()
+    for item in items:
+        if item not in seen:
+            yield item
+            seen.add(item)    # 这里确保只有不在 seen 集合中的元素才被 yield
+            
+
+a = [1, 5, 2, 1, 9, 1, 5, 10]
+print(list(de_duplicate(a)))
+</code></pre>
+<p>​		当元素不可哈希时（如字典类型），要实现去重，可参考下面的做法：</p>
+<pre><code class="language-python">def de_duplicate_2(items, key=None):
+    seen = set()
+    for item in items:
+        val = item if key is None else key(item)    # key 参数指定一个函数将序列元素转换成 hashable 类型
+        if val not in seen:
+            yield item
+            seen.add(val)
+
+
+a = [{'x': 1, 'y': 2},
+     {'x': 1, 'y': 3},
+     {'x': 1, 'y': 2},
+     {'x': 2, 'y': 4}]
+
+# 这里的匿名函数将字典 d 映射到一个 tuple which is hashable
+print(list(de_duplicate_2(a, key=lambda d: (d['x'], d['y']))))
+# 这里的匿名函数将字典 d 映射到其值 value 上 which is hashable
+print(list(de_duplicate_2(a, key=lambda d: d['x'])))
+</code></pre>
+<p>​		当只想单纯地去重而不在乎顺序的话，使用集合实现即可：</p>
+<pre><code class="language-python">a = [1, 5, 2, 1, 9, 1, 5, 10]
+print(set(a))
+</code></pre>
+<h2 id="111-命名切片-slice">1.11 命名切片 --- slice()</h2>
+<p>​		普通的切片可读性差 &amp; 可维护性低，通过<strong>命名切片</strong>可使代码更加清晰易读：</p>
+<pre><code class="language-python">Info = &quot;Name:Sheldon; College:CalTech; Salary:$8,000 per month&quot;
+# 1. 内置的 slice() 函数创建了一个切片对象, 可用于任何允许使用切片的地方
+name = slice(5, 12)
+college = slice(22, 29)
+print(f&quot;name = {Info[name]}&quot;)
+print(f&quot;college = {Info[college]}&quot;)
+</code></pre>
+<p>​		下面是更多命名切片的例子：</p>
+<pre><code class="language-python">items = [0, 1, 2, 3, 4, 5, 6]
+a = slice(2, 4)
+print(items[a])    # [2, 3]
+items[a] = [18, 19]
+print(items)    # [0, 1, 18, 19, 4, 5, 6]
+del items[a]
+print(items)    # [0, 1, 4, 5, 6]
+
+# 2. 对切片对象调用其 start, stop, step 属性以获取更多信息
+new = slice(5, 50, 4)
+print(f&quot;起点 = {new.start}&quot;)
+print(f&quot;终点 = {new.stop}&quot;)
+print(f&quot;步长 = {new.step}&quot;)
+
+# 3. 调用切片的 indices(size) 方法, 可使切片对象自动适应一个序列, 以避免出现 IndexError 异常
+s = &quot;Hello World! I Love Python！&quot;
+# 将 new 应用于字符串 s 上时, 返回合适的 (start, stop, step)
+print(new.indices(len(s)))
+
+for i in range(*new.indices(len(s))):
+    print(s[i])
+</code></pre>
+<p>​</p>
+<h2 id="112-序列中出现次数最多的元素-collectionscounter">1.12 序列中出现次数最多的元素 --- collections.Counter</h2>
+<p>​		需要找出一个序列中出现次数最多的元素时，Counter 类是一个极佳的选择：</p>
+<pre><code class="language-python">from collections import Counter
+
+words = ['look', 'into', 'my', 'eyes', 'look', 'into', 'my', 'eyes', 'the', 'eyes', 'the', 'eyes',
+         'the', 'eyes', 'not', 'around', 'the', 'eyes', &quot;don't&quot;, 'look', 'around', 'the', 'eyes',
+         'look', 'into', 'my', 'eyes', &quot;you're&quot;, 'under']
+
+# 1. 使用列表实例化一个 Counter 类
+word_counters = Counter(words)
+# 2. 调用实例的 most_common(N) 方法获得频数
+print(word_counters.most_common(3))    # [('eyes', 8), ('the', 5), ('look', 4)]  ---  (单词,频数)
+
+
+</code></pre>
+<p>​		Remark：作为输入，Counter 对象可接受任意序列对象，只要其元素是 hashable 的。</p>
+<p>​						在底层实现上，一个 Counter 对象就是一个字典，它将元素映射到其频数上。</p>
+<pre><code class="language-python"># 【增加计数】有两种方法:
+print(word_counters['eyes'])
+morewords = ['eyes', 'eyes', &quot;bull's eye&quot;]
+
+# 1. 手动增加计数
+for word in morewords:
+    word_counters[word] += 1
+
+print(word_counters['eyes'])    # 10
+
+# 2. 通过 update() 方法增加计数
+word_counters.update(morewords)
+print(word_counters['eyes'])    # 12
+</code></pre>
+<p>​		Counter 实例还有一个【鲜为人知の特性】，它们支持简单的数学运算：</p>
+<pre><code class="language-python">a = Counter(words)
+b = Counter(morewords)
+print(a, b, sep=&quot;\n&quot;)
+
+# 1. Combine counts (先对 key 做并集, 再对相应的 value 做加法)
+c = a + b
+print(f&quot;c = {c}&quot;)
+
+# 2. Subtract counts (先对 key 做交集, 再对相应的 value 做减法)
+# (因此只在 b 中的键值对经过减法后也不会出现负的计数)
+d = a - b
+print(f&quot;d = {d}&quot;)
+</code></pre>
+<h2 id="113-通过关键字排序字典列表-operatoritemgetter-for-sortedmaxmin">1.13 通过关键字排序字典列表 --- operator.itemgetter  for  sorted/max/min</h2>
+<p>​		通过使用 operator 模块的 <strong>itemgetter</strong> 函数，可以按照指定字段来排序一个字典列表：</p>
+<pre><code class="language-python">from operator import itemgetter
+
+rows = [
+    {'fname': 'Brian', 'lname': 'Jones', 'uid': 1003},
+    {'fname': 'David', 'lname': 'Beazley', 'uid': 1002},
+    {'fname': 'John', 'lname': 'Cleese', 'uid': 1001},
+    {'fname': 'Big', 'lname': 'Jones', 'uid': 1004}
+        ]
+
+# 1. 根据单个字段排序
+rows_by_uid = sorted(rows, key=itemgetter('uid'))
+rows_by_fname = sorted(rows, key=itemgetter('fname'))
+
+print(rows_by_uid)
+print(rows_by_fname)
+
+# 2. 根据多个字段排序 (itemgetter 中位置越靠前的字段, 排序的优先级越高)
+rows_by_lfname = sorted(rows, key=itemgetter('lname', 'fname'))
+print(rows_by_lfname)
+
+# 3. itemgetter() 有时候也可用 lambda 表达式代替:
+rows_by_fname2 = sorted(rows, key=lambda r: r['fname'])    # 匿名函数将字典映射到 fname 对应的 value
+rows_by_lfname2 = sorted(rows, key=lambda r: (r['lname'], r['fname']))    # 匿名函数将字典映射到元组
+
+print(rows_by_fname2)
+print(rows_by_lfname2)
+&quot;&quot;&quot;	Remark: 虽然这种方法的效果和 itemgetter() 方法一致, 但性能上还是 itemgetter() 更优。&quot;&quot;&quot;
+
+# 4. itemgetter() 不光适用于在 sorted() 函数中的 key 关键字, 在 max(), min() 函数中也能使用:
+min_by_uid = min(rows, key=itemgetter('uid'))
+max_by_lfname = max(rows, key=itemgetter('lname', 'fname'))
+
+print(min_by_uid)
+print(max_by_lfname)
+</code></pre>
+<h2 id="114-排序不支持原生比较的对象-sorteda-key-operatorattrgetter">1.14 排序不支持原生比较的对象 --- sorted(a, key=)  &amp;  operator.attrgetter()</h2>
+<p>​		想排序类型相同的对象，但它们不支持原生的比较操作时：<span style='color:Coral;'>内置的 sorted 函数有一个关键字参数 key ，可传入一个 callable 对象，该 callable 对象对每个传入的对象返回一个值，这个值会被 sorted 函数用来排序这些对象。</span></p>
+<pre><code class="language-python">from operator import attrgetter
+
+
+class User:
+    def __init__(self, user_id):
+        self.user_id = user_id
+
+    def __repr__(self):
+        return f&quot;User({self.user_id})&quot;
+
+
+def sort_users():
+    users = [User(192), User(770), User(631), User(233)]
+    print(users)
+    print(sorted(users, key=lambda u: u.user_id))
+    # 此处的【lambda 表达式】作为 callable 对象, 对每个 User 实例返回该实例的 user_id,
+    # 于是 sorted() 函数按照这个 user_id 对 User 实例进行排序。
+
+
+def sort_users_2():
+    users = [User(192), User(770), User(631), User(233)]
+    print(users)
+    print(sorted(users, key=attrgetter('user_id')))    # 通过 operator.attrgetter() 实现
+
+
+sort_users()
+sort_users_2()
+</code></pre>
+<p>​		<span style='color:Coral;'>使用【lambda 表达式】与 attrgetter 函数效果一致，但 attrgetter 性能更优</span>，同时比较多个字段也很方便，这与 operator.itemgetter 函数作用于字典类型很类似（见1.13）另外，attrgetter 函数同样适用于 max，min 函数中。</p>
+<h2 id="115-通过某个字段将记录分组-itertoolsgroupby">1.15 通过某个字段将记录分组 --- itertools.groupby()</h2>
+<p>​		根据某个特定字段 or 属性来 <strong>分组迭代访问</strong> 一个字典 or 实例序列：</p>
+<pre><code class="language-python">from itertools import groupby
+from operator import itemgetter
+
+
+rows = [
+    {'address': '5412 N CLARK', 'date': '07/01/2012'},
+    {'address': '5148 N CLARK', 'date': '07/04/2012'},
+    {'address': '5800 E 58TH', 'date': '07/02/2012'},
+    {'address': '2122 N CLARK', 'date': '07/03/2012'},
+    {'address': '5645 N RAVENSWOOD', 'date': '07/02/2012'},
+    {'address': '1060 W ADDISON', 'date': '07/02/2012'},
+    {'address': '4801 N BROADWAY', 'date': '07/01/2012'},
+    {'address': '1039 W GRANVILLE', 'date': '07/04/2012'},
+        ]
+
+# &gt;&gt;&gt;&gt;&gt;&gt; 1. 想要在按 date 字段分组后的数据块上进行迭代:
+# 1.1 首先需要按指定字段(此处为 date )排序
+rows_sorted = sorted(rows, key=itemgetter('date'))
+
+# 1.2 然后调用 groupby() 函数, 这里位置参数指定分组迭代对象, key 参数通过 itemgetter() 指定要分组的字段
+for date, items in groupby(rows_sorted, key=itemgetter('date')):
+    print(date)    # 分组后的日期
+    for item in items:    # 此处 items 是个迭代器对象
+        print(f&quot;\t{item}&quot;)    # 每个日期组下的字典元素
+
+
+# &gt;&gt;&gt;&gt;&gt;&gt; 2. 若只想根据 date 字段将数据分组到一个更大的数据结构中去, 并且允许随机访问:
+from collections import defaultdict
+
+# 2.1 实例化一个 value 为 list 类型的 defaultdict
+rows_by_date = defaultdict(list)
+for row in rows:
+    # 将 rows 中特定 date 的字典统统映射到其自身的 date
+    rows_by_date[row['date']].append(row)
+
+# 2.2 defaultdict 中指定特定 date 后即可遍历得到所有该 date 下的字典
+for each in rows_by_date['07/01/2012']:
+    print(each)
+&quot;&quot;&quot;
+第二个例子中, 没有必要先将记录排序。因此, 若对内存占用不很关心, 这种方式会比先排序后再通过 groupby() 函数迭代的方式运行得快一些。
+&quot;&quot;&quot;
+</code></pre>
+<h2 id="116-过滤序列元素-列表解析-genexpr-filter-itertoolscompress">1.16 过滤序列元素 --- 列表解析, genExpr, filter(), itertools.compress()</h2>
+<p>​		对一个序列，想利用一些规则从中提取出需要的值 or 缩短序列：</p>
+<pre><code class="language-python"># 1. 最简单的过滤序列元素的方法就是使用列表解析
+my_list = [1, 4, -5, 10, -7, 2, 3, -1]
+
+your_list = [x for x in my_list if x &gt; 0]
+print(your_list)
+
+his_list = [y for y in my_list if y &lt; 0]
+print(his_list)
+</code></pre>
+<p>​		使用<span style='color:Coral;'>列表解析的一个潜在缺陷</span>就是当输入数据非常大的时候会产生一个非常大的结果集，占用大量内存。若对内存比较敏感，那么可以使用【生成器表达式】迭代产生过滤的元素。</p>
+<pre><code class="language-python"># 2. 使用【生成器表达式】
+positive = (x for x in my_list if x &gt; 0)    # This is a genExpr
+print(positive)    # It's a generator
+for x in positive:
+    print(f&quot;x = {x}&quot;)
+</code></pre>
+<pre><code class="language-python"># 3. 当过滤规则较复杂时, 可将过滤代码放到函数中, 然后使用内建的 filter() 函数进行过滤:
+values = ['1', '2', '-3', '-', '4', 'N/A', '5']
+
+def is_int(val):
+    try:
+        int(val)    # 尝试将 val 转化为整数
+        return True
+    except ValueError:
+        return False
+
+# filter(过滤规则, 待过滤对象) 函数创建了一个迭代器
+int_vals = list(filter(is_int, values))
+print(int_vals)
+</code></pre>
+<pre><code class="language-python"># 4. 列表解析 &amp; 生成器表达式通常情况下是过滤数据最简单的方式, 其实它们还能在过滤的同时转换数据:
+import math
+
+nums = [x for x in range(1, 10)]
+for num in (math.sqrt(y) for y in nums):    # 在 genExpr 中对数字开方
+    print(num)
+
+# 5. 过滤操作的一个变种就是将不符合条件的值用新值代替(也是一种转换数据), 而不是丢弃它们:
+ints = [x for x in range(-5, 4)]
+
+clip_pos = [x if x &lt; 0 else 0 for x in ints]
+clip_neg = [x if x &gt; 0 else 0 for x in ints]
+print(clip_pos, clip_neg, sep=&quot;\n&quot;)
+</code></pre>
+<p>​		<span style='color:Coral;'>另一个值得关注的过滤工具就是 itertools.compress 函数</span>，它以一个 iterable 对象和一个相对应的 Boolean 选择器序列作为输入参数。然后输出 iterable 对象中对应选择器为 True 的元素。当需要用另外一个相关联的序列来过滤某个序列的时候，这个函数非常有用：</p>
+<pre><code class="language-python"># 6. 要将对应 count 值大于 5 的地址全部输出:
+from itertools import compress
+
+addresses = ['5412 N CLARK',
+             '5148 N CLARK',
+             '5800 E 58TH',
+             '2122 N CLARK',
+             '5645 N RAVENSWOOD',
+             '1060 W ADDISON',
+             '4801 N BROADWAY',
+             '1039 W GRANVILLE', ]
+
+counts = [0, 3, 10, 4, 1, 7, 6, 1]
+
+# 6.1 关键在于先创建一个 Boolean 序列, 指示哪些元素符合条件
+greater_than_5 = [(x &gt; 5) for x in counts]    # 这里面都是 True &amp; False
+
+# 6.2 然后 compress(待过滤对象, Boolean 选择器) 根据该 Boolean 序列去选择输出对应位置为 True 的元素
+chosen = list(compress(addresses, greater_than_5))    # filter() &amp; compress() 都返回一个迭代器
+print(chosen)
+</code></pre>
+<h2 id="117-从字典中提取子集-dict-字典解析">1.17 从字典中提取子集 --- dict() &amp; 字典解析</h2>
+<p>​		通过 <strong>字典解析</strong> 可以方便地从现有字典获取子字典：</p>
+<pre><code class="language-python">prices = {'ACME': 45.23,
+          'AAPL': 612.78,
+          'IBM': 205.55,
+          'HPQ': 37.20,
+          'FB': 10.75, }
+
+# 1. price &gt; 200 的键值对所成的字典
+p1 = {key: value for key, value in prices.items() if value &gt; 200}
+
+# 2. key 在某个集合中的键值对所成的字典(2 ways)
+tech_names = {'AAPL', 'IBM', 'HPQ', 'MSFT'}
+p2 = {key: value for key, value in prices.items() if key in tech_names}
+p2_ = {key: prices[key] for key in prices.keys() &amp; tech_names}    # 这里用到了交集
+
+print(p1, p2, p2_, sep=&quot;\n&quot;)
+
+# 3. 通过创建一个元组序列然后将其传给 dict() 函数也能实现上述要求
+p3_ = [(key, value) for key, value in prices.items() if value &gt; 300]
+p3 = dict(p3_)
+print(p3)
+</code></pre>
+<p>​		相比最后一种方法，<span style='color:Coral;'>字典解析的方式更清晰易懂，并且实际上也会运行的更快些。</span></p>
+<h2 id="118-通过名称访问序列元素-collectionsnamedtuple">1.18 通过名称访问序列元素 --- collections.namedtuple()</h2>
+<p>​		你有一段【通过下标访问列表 or 元组中元素】的代码，但这样有时会使你的代码难以阅读，于是你想通过名称来访问元素：</p>
+<pre><code class="language-python">from collections import namedtuple
+
+# &gt;&gt;&gt;&gt;&gt;&gt; 1. 通过名称来访问 list or tuple 的元素
+# 1.1 传递 类型名, 字段列表 以创建命名元组类 Subscriber
+Subscriber = namedtuple('Subscriber', ['addr', 'joined'])
+
+# 1.2 传递字段值 以实例化命名元组类
+sub = Subscriber('GS@example.com', '2020-08-18')
+
+# 1.3 通过字段名访问元素
+print(sub, sub.addr, sub.joined, sep=&quot;\n&quot;)
+
+
+
+# 2. &gt;&gt;&gt;&gt;&gt;&gt; 命名元组与元组类型是【可交换的】, 它支持所有普通元组操作, 如索引和解压
+# 2.1 命名元组の长度
+print(f&quot;命名元组 sub 的长度为: {len(sub)}&quot;)
+# 2.2 解压一个命名元组
+addr, joined = sub
+print(f&quot;addr = {addr}; joined = {joined}&quot;)
+</code></pre>
+<p>​		命名元组的一个主要用途是<span style='color:Coral;'>将代码从下标操作中解脱出来。</span> 如果你从数据库调用中返回了一个很大的元组列表，通过下标去操作其中的元素，当你在表中添加了新的列时你的代码可能就会出错了。但如果你使用了命名元组，那么就不会有这样的顾虑：</p>
+<pre><code class="language-python"># 1. 使用普通元组的代码:
+def compute_cost(records):
+    &quot;&quot;&quot; 下标操作通常会让代码表意不清晰, 并且非常依赖记录的结构 &quot;&quot;&quot;
+    total = 0.0
+    for record in records:
+        # 通过下标访问元素, 代码正确性依赖于 record 的结构
+        total += record[1] * record[2]
+    return total
+    
+
+# 创建命名元组类 Stock
+Stock = namedtuple('Stock', ['name', 'shares', 'price'])
+
+
+# 2. 使用命名元组的代码:
+def compute_cost_2(records):
+    total = 0.0
+    for record in records:
+        # 将 record 中元素解压赋值给 Stock 的位置参数, 得到一个命名元组实例 s
+        s = Stock(*record)
+        # 通过字段名访问元素, 不依赖于 record 的结构
+        total += s.shares * s.price
+    return total
+</code></pre>
+<p>​		<span style='color:Coral;'>命名元组另一个用途就是作为字典的替代</span>，因为字典存储需要更多的内存空间。如果要构建一个非常大的包含字典的数据结构，那么使用命名元组会更高效。但需注意的是，与字典不同，命名元组是不可更改的。</p>
+<pre><code class="language-python"># 1. 创建命名元组类 Stock
+Stock = namedtuple('Stock', ['name', 'shares', 'price'])
+
+# 2. 实例化该命名元组类
+s = Stock('ACME', 100, 123.45)
+print(s)
+
+# 3. 创建命名元组实例后, 像 s.shares = 75 这样尝试更改其字段值会报错！如果一定要改变属性的值, 那么可使用命名元组实例的 _replace() 方法, 它将【创建一个全新的命名元组】并【将对应的字段用新的值取代】。
+s = s._replace(shares=75)
+print(s)
+</code></pre>
+<p>​		<span style='color:Coral;'>_replace() 方法还有一个很有用的特性：当命名元组有可选 or 缺省字段时，它是一个非常方便的填充数据的方法</span>。可以先创建一个包含缺省值的<span style='color:Coral;'>原型元组</span>，然后使用 _replace() 方法创建新的【值被更新过的】实例。</p>
+<pre><code class="language-python"># 1. 创建命名元组类
+Stock = namedtuple('Stock', ['name', 'shares', 'price', 'date', 'time'])
+# 2. 创建 prototype 实例
+stock_prototype = Stock('', 0, 0.0, None, None)
+
+
+# 3. 通过 _replace() 方法, 定义一个将字典转化为命名元组实例的函数
+def dict_to_stock(s):
+    return stock_prototype._replace(**s)    # 将字典作为关键字参数传递？
+
+
+# 4. 将字典转化为命名元组实例, prototype 中的缺省值被新值取代了
+a = {'name': 'ACME', 'shares': 100, 'price': 123.45}
+b = {'name': 'ACME', 'shares': 100, 'price': 123.45, 'date': '12/17/2012'}
+a_ = dict_to_stock(a)
+b_ = dict_to_stock(b)
+print(a_, b_, sep=&quot;\n&quot;)
+</code></pre>
+<p>​		最后要说的是，如果你的目标是定义一个需要更新很多实例属性的高效数据结构，那么命名元组并非最佳选择。这时你应该考虑定义一个包含 _ _ slots _ _ 方法的类（参考 8.4 小节）。</p>
+<h2 id="119-转换并同时计算数据-genexpr-as-parameters">1.19 转换并同时计算数据 --- genExpr as parameters</h2>
+<p>​		你需要在数据序列上执行<span style='color:Coral;'>聚集函数</span>（如 sum，min，max 等），但首先你需要转换 or 过滤数据，此时<span style='color:Coral;'>使用【生成器表达式参数】将是一个非常优雅的【结合数据计算 &amp; 转换】的方式</span>，下面是一些例子：</p>
+<pre><code class="language-python">import os
+
+# &gt;&gt;&gt;&gt;&gt;&gt; 1. 求平方和
+nums = [1, 2, 3, 4, 5]
+
+# 1.1 将一个【生成器表达式】当作参数传递给 sum (这里 genExpr 的括号其实可以省略, 那样的代码更优雅)
+s = sum((x**2 for x in nums))
+print(s)
+
+
+# &gt;&gt;&gt;&gt;&gt;&gt; 2. Determine if any .py files exist in a directory
+# 2.1 os.listdir() 方法返回 “指定路径下” 【所有文件 &amp; 文件夹 の 名字】所成的列表
+files = os.listdir('dirname')
+
+# 2.2 any() 中使用了 genExpr 参数
+if any((name.endswith('.py') for name in files)):
+    print('There be python!')
+else:
+    print('Sorry, no python.')
+
+
+# &gt;&gt;&gt;&gt;&gt;&gt; 3. Output a tuple as CSV
+s = ('ACME', 50, 123.45)
+# 3.1 将 tuple 中每个元素转化为字符串, 然后以逗号分隔地拼接成一个字符串
+print(','.join((str(x) for x in s)))
+
+
+# &gt;&gt;&gt;&gt;&gt;&gt; 4. Data reduction across fields of a data structure
+portfolio = [
+    {'name': 'GOOG', 'shares': 50},
+    {'name': 'YHOO', 'shares': 75},
+    {'name': 'AOL', 'shares': 20},
+    {'name': 'SCOX', 'shares': 65}
+            ]
+
+# 4.1 将 genExpr 作为参数传递给 min 函数
+min_shares = min(s['shares'] for s in portfolio)    # 这里舍弃了 genExpr 的括号
+print(min_shares)
+</code></pre>
+<p>​		<span style='color:Coral;'>使用一个生成器表达式作为参数会比先创建一个临时列表更加高效和优雅</span>。比如，如果不使用生成器表达式的话，你可能会考虑使用下面的实现方式求平方和：</p>
+<pre><code class="language-python">nums = [1, 2, 3, 4, 5]
+sum([x * x for x in nums])    # 通过列表解析先创建了一个列表, 再传递给 sum 函数
+</code></pre>
+<p>​		上述做法同样可以达到想要的效果，但它会多一个步骤 —— 先创建一个额外的列表。对于小型列表可能没什么关系，但如果元素数量非常大的时候，<span style='color:Coral;'>它会创建一个巨大的仅仅被使用一次就被丢弃的临时数据结构</span>。而生成器方案会<strong>以迭代的方式转换数据</strong>，因此更省内存。</p>
+<h2 id="120-合并多个字典-or-映射-collectionschainmap">1.20 合并多个字典 or 映射 --- collections.ChainMap</h2>
+<p>​		现在有多个字典 or 映射，想将它们在逻辑上合并为一个单一の映射后执行某些操作，如查找值 or 检查某些键是否存在。一个非常简单的解决方案就是使用 collections 模块中的 <strong>ChainMap</strong> 类：</p>
+<pre><code class="language-python"># 1. 通过两字典 a, b 实例化一个 ChainMap 对象
+c = ChainMap(a, b)
+print(f&quot;c = {c}&quot;)
+
+# 2. 注意这里返回的 c['z'] 是 a 中的值 (因为查找会返回在 ChainMap 对象中优先出现的映射)
+print(f&quot;c['x'] = {c['x']}; c['y'] = {c['y']}; c['z'] = {c['z']}&quot;)
+</code></pre>
+<p>​		一个 ChainMap 接受多个字典并将它们<span style='color:Coral;'>在逻辑上变为一个字典。然而这些字典并非真的合并在一起了</span>，ChainMap 类只是在内部创建了一个容纳这些字典的列表并重新定义了一些常见的字典操作来遍历这个列表。<span style='color:Coral;'>大部分字典操作都可以正常使用</span>：</p>
+<pre><code class="language-python">print(len(c))               # 长度
+print(list(c.keys()))       # keys
+print(list(c.values()))     # values
+print(list(c.items()))      # (key, value)s
+
+c['z'] = 10    # 更新键值对
+c['w'] = 40    # 新增键值对
+del c['x']     # 删除键值对
+
+# 3. 对字典の【更新 or 删除】操作总是影响第一个字典 (即实例化 ChainMap 时的第一个字典 a)
+print(f&quot;传递给 ChainMap 的首个字典 a 变成了: {a}&quot;)
+
+# 4. del c['y'] 这条语句会报错, 因为原本 a 中没有 y 这个键
+</code></pre>
+<p>​		关于【ChainMap 对于编程语言中的作用范围变量（如 globals，locals 等）是非常有用的。】这部分我还没看懂，因此这里先跳过。—— Page 45</p>
+<p>​		另外，作为 ChainMap 的替代，你可能会考虑<span style='color:Coral;'>使用 update() 方法将两个字典合并</span>：</p>
+<pre><code class="language-python">a = {'x': 1, 'z': 3}
+b = {'y': 2, 'z': 4}
+
+# 1. 创建一个新的字典对象
+merged = dict(b)
+print(f&quot;update 前, merged = {merged}&quot;)
+
+# 2. 在 merged 的基础上, 更新加入 a 中的键值对
+merged.update(a)
+print(f&quot;update 后, merged = {merged}&quot;)    # 注意这里 z 的值由 4 变成了 3
+
+# 3. 同时, 若更新了原字典, 这种改变不会反应到通过 update() 合并的字典中去:
+a['x'] = 233
+print(merged['x'])    # 结果是 1 而不是 233
+</code></pre>
+<p>​		但是<span style='color:Coral;'>通过 ChainMap 在逻辑上合并的字典，能够反映在原字典上做的更新</span>：</p>
+<pre><code class="language-python">a = {'x': 1, 'z': 3}
+b = {'y': 2, 'z': 4}
+
+merged = ChainMap(a, b)
+print(merged['x'])    # 1
+
+# 这里更新原字典, 发现 ChainMap 中的键值对也相应更新了
+a['x'] = 233
+print(merged['x'])    # 233
+</code></pre>
+<hr>
+<h1 id="chap-2-字符串和文本">Chap 2 字符串和文本</h1>
+<hr>
+<h1 id="chap-3-数字日期和时间">Chap 3 数字日期和时间</h1>
+<hr>
+<h1 id="chap-4-迭代器与生成器">Chap 4 迭代器与生成器</h1>
+<hr>
+<h1 id="chap-5-文件与-io">Chap 5 文件与 IO</h1>
+<hr>
+<h1 id="chap-6-数据编码和处理">Chap 6 数据编码和处理</h1>
+<hr>
+<h1 id="chap-7-函数">Chap 7 函数</h1>
+<hr>
+<h1 id="chap-8-类与对象">Chap 8 类与对象</h1>
+<hr>
+<h1 id="chap-9-元编程">Chap 9 元编程</h1>
+<hr>
+<h1 id="chap-10-模块与包">Chap 10 模块与包</h1>
+<hr>
+
+              </div>
+              <div class="toc-container">
+                <ul class="markdownIt-TOC">
+<li><a href="#chap-1-%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95">Chap 1 数据结构与算法</a>
+<ul>
+<li><a href="#11-%E8%A7%A3%E5%8E%8B%E5%BA%8F%E5%88%97%E8%B5%8B%E5%80%BC%E7%BB%99%E5%A4%9A%E4%B8%AA%E5%8F%98%E9%87%8F">1.1 解压序列赋值给多个变量</a></li>
+<li><a href="#12-%E8%A7%A3%E5%8E%8B%E5%8F%AF%E8%BF%AD%E4%BB%A3%E5%AF%B9%E8%B1%A1%E8%B5%8B%E5%80%BC%E7%BB%99%E5%A4%9A%E4%B8%AA%E5%8F%98%E9%87%8F">1.2 解压可迭代对象赋值给多个变量</a></li>
+<li><a href="#13-%E4%BF%9D%E7%95%99%E6%9C%80%E5%90%8E-n-%E4%B8%AA%E5%85%83%E7%B4%A0-collectionsdeque">1.3 保留最后 N 个元素 --- collections.deque</a></li>
+<li><a href="#14-%E6%9F%A5%E6%89%BE%E6%9C%80%E5%A4%A7%E6%88%96%E6%9C%80%E5%B0%8F%E7%9A%84-n-%E4%B8%AA%E5%85%83%E7%B4%A0-heapqnlargestnsmallest">1.4 查找最大或最小的 N 个元素 --- heapq.nlargest/nsmallest</a></li>
+<li><a href="#15-%E5%AE%9E%E7%8E%B0%E4%B8%80%E4%B8%AA%E4%BC%98%E5%85%88%E7%BA%A7%E9%98%9F%E5%88%97-heapqheappushheappop">1.5 实现一个优先级队列 --- heapq.heappush/heappop</a></li>
+<li><a href="#16-%E5%AD%97%E5%85%B8%E4%B8%AD%E7%9A%84%E9%94%AE%E6%98%A0%E5%B0%84%E5%A4%9A%E4%B8%AA%E5%80%BC-collectionsdefaultdict">1.6 字典中的键映射多个值 --- collections.defaultdict</a></li>
+<li><a href="#17-%E5%AD%97%E5%85%B8%E6%8E%92%E5%BA%8F-collectionsordereddict">1.7 字典排序 --- collections.OrderedDict</a></li>
+<li><a href="#18-%E5%AF%B9%E5%AD%97%E5%85%B8%E6%B1%82%E6%9C%80%E5%80%BC%E5%92%8C%E6%8E%92%E5%BA%8F-zip">1.8 对字典求最值和排序 --- zip()</a></li>
+<li><a href="#19-%E6%9F%A5%E6%89%BE%E4%B8%A4%E5%AD%97%E5%85%B8%E7%9A%84%E7%9B%B8%E5%90%8C%E7%82%B9-key-items-set-operation">1.9 查找两字典的相同点 --- key() &amp; items() &amp; Set Operation</a></li>
+<li><a href="#110-%E5%88%A0%E9%99%A4%E5%BA%8F%E5%88%97%E7%9B%B8%E5%90%8C%E5%85%83%E7%B4%A0%E5%B9%B6%E4%BF%9D%E6%8C%81%E9%A1%BA%E5%BA%8F-set-yield">1.10 删除序列相同元素并保持顺序 --- set() &amp; yield</a></li>
+<li><a href="#111-%E5%91%BD%E5%90%8D%E5%88%87%E7%89%87-slice">1.11 命名切片 --- slice()</a></li>
+<li><a href="#112-%E5%BA%8F%E5%88%97%E4%B8%AD%E5%87%BA%E7%8E%B0%E6%AC%A1%E6%95%B0%E6%9C%80%E5%A4%9A%E7%9A%84%E5%85%83%E7%B4%A0-collectionscounter">1.12 序列中出现次数最多的元素 --- collections.Counter</a></li>
+<li><a href="#113-%E9%80%9A%E8%BF%87%E5%85%B3%E9%94%AE%E5%AD%97%E6%8E%92%E5%BA%8F%E5%AD%97%E5%85%B8%E5%88%97%E8%A1%A8-operatoritemgetter-for-sortedmaxmin">1.13 通过关键字排序字典列表 --- operator.itemgetter  for  sorted/max/min</a></li>
+<li><a href="#114-%E6%8E%92%E5%BA%8F%E4%B8%8D%E6%94%AF%E6%8C%81%E5%8E%9F%E7%94%9F%E6%AF%94%E8%BE%83%E7%9A%84%E5%AF%B9%E8%B1%A1-sorteda-key-operatorattrgetter">1.14 排序不支持原生比较的对象 --- sorted(a, key=)  &amp;  operator.attrgetter()</a></li>
+<li><a href="#115-%E9%80%9A%E8%BF%87%E6%9F%90%E4%B8%AA%E5%AD%97%E6%AE%B5%E5%B0%86%E8%AE%B0%E5%BD%95%E5%88%86%E7%BB%84-itertoolsgroupby">1.15 通过某个字段将记录分组 --- itertools.groupby()</a></li>
+<li><a href="#116-%E8%BF%87%E6%BB%A4%E5%BA%8F%E5%88%97%E5%85%83%E7%B4%A0-%E5%88%97%E8%A1%A8%E8%A7%A3%E6%9E%90-genexpr-filter-itertoolscompress">1.16 过滤序列元素 --- 列表解析, genExpr, filter(), itertools.compress()</a></li>
+<li><a href="#117-%E4%BB%8E%E5%AD%97%E5%85%B8%E4%B8%AD%E6%8F%90%E5%8F%96%E5%AD%90%E9%9B%86-dict-%E5%AD%97%E5%85%B8%E8%A7%A3%E6%9E%90">1.17 从字典中提取子集 --- dict() &amp; 字典解析</a></li>
+<li><a href="#118-%E9%80%9A%E8%BF%87%E5%90%8D%E7%A7%B0%E8%AE%BF%E9%97%AE%E5%BA%8F%E5%88%97%E5%85%83%E7%B4%A0-collectionsnamedtuple">1.18 通过名称访问序列元素 --- collections.namedtuple()</a></li>
+<li><a href="#119-%E8%BD%AC%E6%8D%A2%E5%B9%B6%E5%90%8C%E6%97%B6%E8%AE%A1%E7%AE%97%E6%95%B0%E6%8D%AE-genexpr-as-parameters">1.19 转换并同时计算数据 --- genExpr as parameters</a></li>
+<li><a href="#120-%E5%90%88%E5%B9%B6%E5%A4%9A%E4%B8%AA%E5%AD%97%E5%85%B8-or-%E6%98%A0%E5%B0%84-collectionschainmap">1.20 合并多个字典 or 映射 --- collections.ChainMap</a></li>
+</ul>
+</li>
+<li><a href="#chap-2-%E5%AD%97%E7%AC%A6%E4%B8%B2%E5%92%8C%E6%96%87%E6%9C%AC">Chap 2 字符串和文本</a></li>
+<li><a href="#chap-3-%E6%95%B0%E5%AD%97%E6%97%A5%E6%9C%9F%E5%92%8C%E6%97%B6%E9%97%B4">Chap 3 数字日期和时间</a></li>
+<li><a href="#chap-4-%E8%BF%AD%E4%BB%A3%E5%99%A8%E4%B8%8E%E7%94%9F%E6%88%90%E5%99%A8">Chap 4 迭代器与生成器</a></li>
+<li><a href="#chap-5-%E6%96%87%E4%BB%B6%E4%B8%8E-io">Chap 5 文件与 IO</a></li>
+<li><a href="#chap-6-%E6%95%B0%E6%8D%AE%E7%BC%96%E7%A0%81%E5%92%8C%E5%A4%84%E7%90%86">Chap 6 数据编码和处理</a></li>
+<li><a href="#chap-7-%E5%87%BD%E6%95%B0">Chap 7 函数</a></li>
+<li><a href="#chap-8-%E7%B1%BB%E4%B8%8E%E5%AF%B9%E8%B1%A1">Chap 8 类与对象</a></li>
+<li><a href="#chap-9-%E5%85%83%E7%BC%96%E7%A8%8B">Chap 9 元编程</a></li>
+<li><a href="#chap-10-%E6%A8%A1%E5%9D%97%E4%B8%8E%E5%8C%85">Chap 10 模块与包</a></li>
+</ul>
+
+              </div>
+            </div>
+          </article>
+        </div>
+
+        
+          <div class="next-post">
+            <div class="next">下一篇</div>
+            <a href="https://jaychang9lie.github.io/post/python3-wang-luo-pa-chong-bi-ji-wei-wan-dai-xu/">
+              <h3 class="post-title">
+                Python3 网络爬虫笔记（未完待续）
+              </h3>
+            </a>
+          </div>
+        
+
+        
+
+        <div class="site-footer">
+  Powered by <a href="https://github.com/getgridea/gridea" target="_blank">Gridea</a>
+  <a class="rss" href="https://jaychang9lie.github.io/atom.xml" target="_blank">
+    <i class="ri-rss-line"></i> RSS
+  </a>
+</div>
+
+      </div>
+    </div>
+
+    <script>
+      hljs.initHighlightingOnLoad()
+
+      let mainNavLinks = document.querySelectorAll(".markdownIt-TOC a");
+
+      // This should probably be throttled.
+      // Especially because it triggers during smooth scrolling.
+      // https://lodash.com/docs/4.17.10#throttle
+      // You could do like...
+      // window.addEventListener("scroll", () => {
+      //    _.throttle(doThatStuff, 100);
+      // });
+      // Only not doing it here to keep this Pen dependency-free.
+
+      window.addEventListener("scroll", event => {
+        let fromTop = window.scrollY;
+
+        mainNavLinks.forEach((link, index) => {
+          let section = document.getElementById(decodeURI(link.hash).substring(1));
+          let nextSection = null
+          if (mainNavLinks[index + 1]) {
+            nextSection = document.getElementById(decodeURI(mainNavLinks[index + 1].hash).substring(1));
+          }
+          if (section.offsetTop <= fromTop) {
+            if (nextSection) {
+              if (nextSection.offsetTop > fromTop) {
+                link.classList.add("current");
+              } else {
+                link.classList.remove("current");    
+              }
+            } else {
+              link.classList.add("current");
+            }
+          } else {
+            link.classList.remove("current");
+          }
+        });
+      });
+
+    </script>
+  </body>
+</html>
