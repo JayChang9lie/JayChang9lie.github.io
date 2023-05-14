@@ -1,0 +1,1085 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.0.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.4/css/all.min.css" integrity="sha256-mUZM63G8m73Mcidfrv5E+Y61y7a12O5mW4ezU3bxqW4=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.9.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":true,"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+<meta name="description" content="❓ 如何在各种正则化方法中做出选择?  EarlyStopping    l1 &amp; l2 正则化    Dropout (AlphaDropout)  Batch Normalization (有一定正则化效果)">
+<meta property="og:type" content="article">
+<meta property="og:title" content="各种正则化方法之间的对比">
+<meta property="og:url" content="http://example.com/2022/01/19/%E5%90%84%E7%A7%8D%E6%AD%A3%E5%88%99%E5%8C%96%E6%96%B9%E6%B3%95%E4%B9%8B%E9%97%B4%E7%9A%84%E5%AF%B9%E6%AF%94/index.html">
+<meta property="og:site_name" content="Jay&#39;s Blog">
+<meta property="og:description" content="❓ 如何在各种正则化方法中做出选择?  EarlyStopping    l1 &amp; l2 正则化    Dropout (AlphaDropout)  Batch Normalization (有一定正则化效果)">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://example.com/2022/01/19/%E5%90%84%E7%A7%8D%E6%AD%A3%E5%88%99%E5%8C%96%E6%96%B9%E6%B3%95%E4%B9%8B%E9%97%B4%E7%9A%84%E5%AF%B9%E6%AF%94/output_6_0.png">
+<meta property="og:image" content="http://example.com/2022/01/19/%E5%90%84%E7%A7%8D%E6%AD%A3%E5%88%99%E5%8C%96%E6%96%B9%E6%B3%95%E4%B9%8B%E9%97%B4%E7%9A%84%E5%AF%B9%E6%AF%94/output_11_0.png">
+<meta property="og:image" content="http://example.com/2022/01/19/%E5%90%84%E7%A7%8D%E6%AD%A3%E5%88%99%E5%8C%96%E6%96%B9%E6%B3%95%E4%B9%8B%E9%97%B4%E7%9A%84%E5%AF%B9%E6%AF%94/output_16_0.png">
+<meta property="og:image" content="http://example.com/2022/01/19/%E5%90%84%E7%A7%8D%E6%AD%A3%E5%88%99%E5%8C%96%E6%96%B9%E6%B3%95%E4%B9%8B%E9%97%B4%E7%9A%84%E5%AF%B9%E6%AF%94/output_20_0.png">
+<meta property="og:image" content="http://example.com/2022/01/19/%E5%90%84%E7%A7%8D%E6%AD%A3%E5%88%99%E5%8C%96%E6%96%B9%E6%B3%95%E4%B9%8B%E9%97%B4%E7%9A%84%E5%AF%B9%E6%AF%94/output_25_0.png">
+<meta property="og:image" content="http://example.com/2022/01/19/%E5%90%84%E7%A7%8D%E6%AD%A3%E5%88%99%E5%8C%96%E6%96%B9%E6%B3%95%E4%B9%8B%E9%97%B4%E7%9A%84%E5%AF%B9%E6%AF%94/output_29_0.png">
+<meta property="og:image" content="http://example.com/2022/01/19/%E5%90%84%E7%A7%8D%E6%AD%A3%E5%88%99%E5%8C%96%E6%96%B9%E6%B3%95%E4%B9%8B%E9%97%B4%E7%9A%84%E5%AF%B9%E6%AF%94/output_33_0.png">
+<meta property="og:image" content="http://example.com/2022/01/19/%E5%90%84%E7%A7%8D%E6%AD%A3%E5%88%99%E5%8C%96%E6%96%B9%E6%B3%95%E4%B9%8B%E9%97%B4%E7%9A%84%E5%AF%B9%E6%AF%94/output_38_0.png">
+<meta property="og:image" content="http://example.com/2022/01/19/%E5%90%84%E7%A7%8D%E6%AD%A3%E5%88%99%E5%8C%96%E6%96%B9%E6%B3%95%E4%B9%8B%E9%97%B4%E7%9A%84%E5%AF%B9%E6%AF%94/output_43_0.png">
+<meta property="og:image" content="http://example.com/2022/01/19/%E5%90%84%E7%A7%8D%E6%AD%A3%E5%88%99%E5%8C%96%E6%96%B9%E6%B3%95%E4%B9%8B%E9%97%B4%E7%9A%84%E5%AF%B9%E6%AF%94/output_52_0.png">
+<meta property="og:image" content="http://example.com/2022/01/19/%E5%90%84%E7%A7%8D%E6%AD%A3%E5%88%99%E5%8C%96%E6%96%B9%E6%B3%95%E4%B9%8B%E9%97%B4%E7%9A%84%E5%AF%B9%E6%AF%94/output_58_0.png">
+<meta property="article:published_time" content="2022-01-19T08:30:50.000Z">
+<meta property="article:modified_time" content="2022-01-19T08:47:03.704Z">
+<meta property="article:author" content="Gozen Sanji">
+<meta property="article:tag" content="Machine Learning">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/2022/01/19/%E5%90%84%E7%A7%8D%E6%AD%A3%E5%88%99%E5%8C%96%E6%96%B9%E6%B3%95%E4%B9%8B%E9%97%B4%E7%9A%84%E5%AF%B9%E6%AF%94/output_6_0.png">
+
+
+<link rel="canonical" href="http://example.com/2022/01/19/%E5%90%84%E7%A7%8D%E6%AD%A3%E5%88%99%E5%8C%96%E6%96%B9%E6%B3%95%E4%B9%8B%E9%97%B4%E7%9A%84%E5%AF%B9%E6%AF%94/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"en","comments":true,"permalink":"http://example.com/2022/01/19/%E5%90%84%E7%A7%8D%E6%AD%A3%E5%88%99%E5%8C%96%E6%96%B9%E6%B3%95%E4%B9%8B%E9%97%B4%E7%9A%84%E5%AF%B9%E6%AF%94/","path":"2022/01/19/各种正则化方法之间的对比/","title":"各种正则化方法之间的对比"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>各种正则化方法之间的对比 | Jay's Blog</title>
+  
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Jay's Blog</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">🐬</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="user fa-fw"></i>About</a></li>
+        <li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="tags fa-fw"></i>Tags</a></li>
+        <li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="th fa-fw"></i>Categories</a></li>
+        <li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="archive fa-fw"></i>Archives</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>Search
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="Searching..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#No-Regularization"><span class="nav-number">1.</span> <span class="nav-text">No Regularization</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Batch-Normalization"><span class="nav-number">2.</span> <span class="nav-text">Batch Normalization</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#EarlyStopping"><span class="nav-number">3.</span> <span class="nav-text">EarlyStopping</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#l1-amp-l2-Regularization"><span class="nav-number">4.</span> <span class="nav-text">l1 &amp; l2 Regularization</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#l1"><span class="nav-number">4.1.</span> <span class="nav-text">l1()</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#l2"><span class="nav-number">4.2.</span> <span class="nav-text">l2()</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#l1-l2"><span class="nav-number">4.3.</span> <span class="nav-text">l1_l2()</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Dropout"><span class="nav-number">5.</span> <span class="nav-text">Dropout</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Regular-Dropout"><span class="nav-number">5.1.</span> <span class="nav-text">Regular Dropout</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#AlphaDropout-%E8%87%AA%E5%BD%92%E4%B8%80%E5%8C%96%E7%BD%91%E7%BB%9C"><span class="nav-number">5.2.</span> <span class="nav-text">AlphaDropout (自归一化网络)</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%BB%93%E8%AE%BA-1"><span class="nav-number">6.</span> <span class="nav-text">结论 1</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%BB%93%E5%90%88%E5%A4%9A%E7%A7%8D%E6%AD%A3%E5%88%99%E5%8C%96%E6%8A%80%E6%9C%AF"><span class="nav-number">7.</span> <span class="nav-text">结合多种正则化技术</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Regular-DNN"><span class="nav-number">7.1.</span> <span class="nav-text">Regular DNN</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Self-Normalize-DNN"><span class="nav-number">7.2.</span> <span class="nav-text">Self-Normalize DNN</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%BB%93%E8%AE%BA-2"><span class="nav-number">8.</span> <span class="nav-text">结论 2</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Gozen Sanji"
+      src="/images/my_avatar.jpg">
+  <p class="site-author-name" itemprop="name">Gozen Sanji</p>
+  <div class="site-description" itemprop="description">目が覚めた抵抗 型落ちの衝動</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">14</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="Back to top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2022/01/19/%E5%90%84%E7%A7%8D%E6%AD%A3%E5%88%99%E5%8C%96%E6%96%B9%E6%B3%95%E4%B9%8B%E9%97%B4%E7%9A%84%E5%AF%B9%E6%AF%94/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/my_avatar.jpg">
+      <meta itemprop="name" content="Gozen Sanji">
+      <meta itemprop="description" content="目が覚めた抵抗 型落ちの衝動">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Jay's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          各种正则化方法之间的对比
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+      
+
+      <time title="Created: 2022-01-19 16:30:50 / Modified: 16:47:03" itemprop="dateCreated datePublished" datetime="2022-01-19T16:30:50+08:00">2022-01-19</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Machine-Learning/" itemprop="url" rel="index"><span itemprop="name">Machine Learning</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>❓ 如何在各种正则化方法中做出选择?</p>
+<ol>
+<li><p>EarlyStopping  </p>
+</li>
+<li><p>l1 &amp; l2 正则化  </p>
+</li>
+<li><p>Dropout (AlphaDropout)</p>
+</li>
+<li><p>Batch Normalization (有一定正则化效果)</p>
+<span id="more"></span>
+</li>
+</ol>
+<p>※ 下面针对(基本)相同的 &lt;网络架构 &amp; 优化器 &amp; 学习率调度&gt;, 对比不同正则化方法带给模型的影响.</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># common imports </span></span><br><span class="line"><span class="keyword">import</span> os</span><br><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"><span class="keyword">import</span> pandas <span class="keyword">as</span> pd</span><br><span class="line"><span class="keyword">import</span> matplotlib.pyplot <span class="keyword">as</span> plt</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> tensorflow <span class="keyword">as</span> tf</span><br><span class="line"><span class="keyword">from</span> tensorflow <span class="keyword">import</span> keras</span><br></pre></td></tr></table></figure>
+<p>🔺 针对 Fashion MNIST 数据集, 开展下面的测试.</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 准备数据集 (train, valid, test)</span></span><br><span class="line">(x_train_full, y_train_full), (x_test, y_test) = keras.datasets.fashion_mnist.load_data()</span><br><span class="line"></span><br><span class="line">x_train_full = x_train_full / <span class="number">255.</span></span><br><span class="line">x_test = x_test / <span class="number">255.</span></span><br><span class="line"></span><br><span class="line">x_valid, x_train = x_train_full[:<span class="number">5000</span>], x_train_full[<span class="number">5000</span>:]</span><br><span class="line">y_valid, y_train = y_train_full[:<span class="number">5000</span>], y_train_full[<span class="number">5000</span>:]</span><br><span class="line"></span><br><span class="line"><span class="built_in">print</span>(x_train.shape, y_train.shape, sep=<span class="string">&quot;\t&quot;</span>)</span><br><span class="line"><span class="built_in">print</span>(x_valid.shape, y_valid.shape, sep=<span class="string">&quot;\t&quot;</span>)</span><br><span class="line"><span class="built_in">print</span>(x_test.shape, y_test.shape, sep=<span class="string">&quot;\t&quot;</span>)</span><br></pre></td></tr></table></figure>
+<pre><code>(55000, 28, 28)    (55000,)
+(5000, 28, 28)    (5000,)
+(10000, 28, 28)    (10000,)
+</code></pre><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># fashion_mnist 中数字标签对应的类别名称</span></span><br><span class="line">class_names = [<span class="string">&quot;T-shirt/top&quot;</span>, <span class="string">&quot;Trouser&quot;</span>, <span class="string">&quot;Pullover&quot;</span>, <span class="string">&quot;Dress&quot;</span>, <span class="string">&quot;Coat&quot;</span>, </span><br><span class="line">               <span class="string">&quot;Sandal&quot;</span>, <span class="string">&quot;Shirt&quot;</span>, <span class="string">&quot;Sneaker&quot;</span>, <span class="string">&quot;Bag&quot;</span>, <span class="string">&quot;Ankleboot&quot;</span>]</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 展示部分训练集实例</span></span><br><span class="line">m, n = <span class="number">2</span>, <span class="number">5</span>    <span class="comment"># m 行 n 列</span></span><br><span class="line">rnd_indices = np.random.randint(low=<span class="number">0</span>, high=x_train.shape[<span class="number">0</span>], size=(m * n, ))</span><br><span class="line">x_sample, y_sample = x_train[rnd_indices], y_train[rnd_indices]</span><br><span class="line"></span><br><span class="line">plt.figure(figsize=(n * <span class="number">1.5</span>, m * <span class="number">1.8</span>))</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">1</span>, m + <span class="number">1</span>):</span><br><span class="line">    <span class="keyword">for</span> j <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">1</span>, n + <span class="number">1</span>):</span><br><span class="line">        idx = (i - <span class="number">1</span>) * n + j</span><br><span class="line">        plt.subplot(m, n, idx)</span><br><span class="line">        plt.imshow(x_sample[idx - <span class="number">1</span>], cmap=<span class="string">&quot;binary&quot;</span>)</span><br><span class="line">        plt.title(class_names[y_sample[idx - <span class="number">1</span>]])</span><br><span class="line">        plt.axis(<span class="string">&#x27;off&#x27;</span>)</span><br><span class="line"></span><br><span class="line">plt.show()</span><br></pre></td></tr></table></figure>
+<p><img src="/2022/01/19/%E5%90%84%E7%A7%8D%E6%AD%A3%E5%88%99%E5%8C%96%E6%96%B9%E6%B3%95%E4%B9%8B%E9%97%B4%E7%9A%84%E5%AF%B9%E6%AF%94/output_6_0.png" alt="png"></p>
+<p>Remark: 基于训练速度考虑, 下面选用了 batch_size=128 以加速训练, 但使用更小的 batch_size (如 32) 可能获得更好的模型.</p>
+<h1 id="No-Regularization"><a href="#No-Regularization" class="headerlink" title="No Regularization"></a>No Regularization</h1><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">keras.backend.clear_session()</span><br><span class="line">tf.random.set_seed(<span class="number">42</span>)</span><br><span class="line">np.random.seed(<span class="number">42</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 1.构建模型</span></span><br><span class="line">model = keras.models.Sequential([</span><br><span class="line">    keras.layers.Flatten(input_shape=x_train.shape[<span class="number">1</span>:]),</span><br><span class="line">    keras.layers.Dense(<span class="number">400</span>, activation=<span class="string">&quot;elu&quot;</span>, kernel_initializer=<span class="string">&quot;he_normal&quot;</span>),</span><br><span class="line">    keras.layers.Dense(<span class="number">200</span>, activation=<span class="string">&quot;elu&quot;</span>, kernel_initializer=<span class="string">&quot;he_normal&quot;</span>)</span><br><span class="line">])</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> _ <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">8</span>):</span><br><span class="line">    model.add(keras.layers.Dense(<span class="number">80</span>, activation=<span class="string">&quot;elu&quot;</span>, kernel_initializer=<span class="string">&quot;he_normal&quot;</span>))</span><br><span class="line"></span><br><span class="line">model.add(keras.layers.Dense(<span class="number">10</span>, activation=<span class="string">&quot;softmax&quot;</span>))</span><br><span class="line"></span><br><span class="line"><span class="comment"># 2.编译模型</span></span><br><span class="line">optimizer = keras.optimizers.Nadam(learning_rate=<span class="number">0.003</span>)</span><br><span class="line">model.<span class="built_in">compile</span>(loss=<span class="string">&quot;sparse_categorical_crossentropy&quot;</span>, </span><br><span class="line">              optimizer=optimizer, </span><br><span class="line">              metrics=[<span class="string">&quot;accuracy&quot;</span>])</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 3.训练模型</span></span><br><span class="line">lr_scheduler = keras.callbacks.ReduceLROnPlateau(factor=<span class="number">1</span>/<span class="number">3</span>, patience=<span class="number">4</span>)</span><br><span class="line"></span><br><span class="line">history = model.fit(x_train, y_train, epochs=<span class="number">25</span>, batch_size=<span class="number">128</span>,</span><br><span class="line">                    validation_data=(x_valid, y_valid),</span><br><span class="line">                    callbacks=[lr_scheduler])</span><br></pre></td></tr></table></figure>
+<pre><code>Epoch 1/25
+430/430 [==============================] - 8s 16ms/step - loss: 0.8197 - accuracy: 0.7210 - val_loss: 0.5812 - val_accuracy: 0.7936 - lr: 0.0030
+Epoch 2/25
+430/430 [==============================] - 6s 15ms/step - loss: 0.4344 - accuracy: 0.8399 - val_loss: 0.4085 - val_accuracy: 0.8498 - lr: 0.0030
+Epoch 3/25
+430/430 [==============================] - 7s 15ms/step - loss: 0.4009 - accuracy: 0.8525 - val_loss: 0.4098 - val_accuracy: 0.8544 - lr: 0.0030
+Epoch 4/25
+430/430 [==============================] - 6s 15ms/step - loss: 0.3585 - accuracy: 0.8691 - val_loss: 0.3402 - val_accuracy: 0.8764 - lr: 0.0030
+Epoch 5/25
+430/430 [==============================] - 7s 15ms/step - loss: 0.3367 - accuracy: 0.8767 - val_loss: 0.3698 - val_accuracy: 0.8662 - lr: 0.0030
+Epoch 6/25
+430/430 [==============================] - 7s 15ms/step - loss: 0.3209 - accuracy: 0.8835 - val_loss: 0.4160 - val_accuracy: 0.8668 - lr: 0.0030
+Epoch 7/25
+430/430 [==============================] - 7s 15ms/step - loss: 0.3122 - accuracy: 0.8874 - val_loss: 0.3409 - val_accuracy: 0.8800 - lr: 0.0030
+Epoch 8/25
+430/430 [==============================] - 7s 15ms/step - loss: 0.3012 - accuracy: 0.8907 - val_loss: 0.3483 - val_accuracy: 0.8762 - lr: 0.0030
+Epoch 9/25
+430/430 [==============================] - 7s 15ms/step - loss: 0.2365 - accuracy: 0.9120 - val_loss: 0.2883 - val_accuracy: 0.8986 - lr: 0.0010
+Epoch 10/25
+430/430 [==============================] - 7s 16ms/step - loss: 0.2210 - accuracy: 0.9175 - val_loss: 0.2918 - val_accuracy: 0.8984 - lr: 0.0010
+Epoch 11/25
+430/430 [==============================] - 7s 16ms/step - loss: 0.2133 - accuracy: 0.9199 - val_loss: 0.3090 - val_accuracy: 0.8972 - lr: 0.0010
+Epoch 12/25
+430/430 [==============================] - 7s 16ms/step - loss: 0.2070 - accuracy: 0.9219 - val_loss: 0.3103 - val_accuracy: 0.8938 - lr: 0.0010
+Epoch 13/25
+430/430 [==============================] - 7s 16ms/step - loss: 0.2002 - accuracy: 0.9249 - val_loss: 0.2996 - val_accuracy: 0.9030 - lr: 0.0010
+Epoch 14/25
+430/430 [==============================] - 7s 16ms/step - loss: 0.1657 - accuracy: 0.9371 - val_loss: 0.2945 - val_accuracy: 0.9042 - lr: 3.3333e-04
+Epoch 15/25
+430/430 [==============================] - 7s 16ms/step - loss: 0.1547 - accuracy: 0.9411 - val_loss: 0.3044 - val_accuracy: 0.9060 - lr: 3.3333e-04
+Epoch 16/25
+430/430 [==============================] - 7s 16ms/step - loss: 0.1481 - accuracy: 0.9445 - val_loss: 0.3096 - val_accuracy: 0.9036 - lr: 3.3333e-04
+Epoch 17/25
+430/430 [==============================] - 7s 16ms/step - loss: 0.1420 - accuracy: 0.9459 - val_loss: 0.3186 - val_accuracy: 0.9050 - lr: 3.3333e-04
+Epoch 18/25
+430/430 [==============================] - 7s 16ms/step - loss: 0.1235 - accuracy: 0.9539 - val_loss: 0.3218 - val_accuracy: 0.9092 - lr: 1.1111e-04
+Epoch 19/25
+430/430 [==============================] - 7s 16ms/step - loss: 0.1184 - accuracy: 0.9554 - val_loss: 0.3327 - val_accuracy: 0.9084 - lr: 1.1111e-04
+Epoch 20/25
+430/430 [==============================] - ETA: 0s - loss: 0.1143 - accuracy: 0.95 - 7s 16ms/step - loss: 0.1143 - accuracy: 0.9576 - val_loss: 0.3411 - val_accuracy: 0.9074 - lr: 1.1111e-04
+Epoch 21/25
+430/430 [==============================] - 7s 16ms/step - loss: 0.1107 - accuracy: 0.9591 - val_loss: 0.3515 - val_accuracy: 0.9052 - lr: 1.1111e-04
+Epoch 22/25
+430/430 [==============================] - 7s 16ms/step - loss: 0.1022 - accuracy: 0.9624 - val_loss: 0.3601 - val_accuracy: 0.9072 - lr: 3.7037e-05
+Epoch 23/25
+430/430 [==============================] - 7s 16ms/step - loss: 0.0999 - accuracy: 0.9629 - val_loss: 0.3624 - val_accuracy: 0.9042 - lr: 3.7037e-05
+Epoch 24/25
+430/430 [==============================] - 7s 16ms/step - loss: 0.0984 - accuracy: 0.9639 - val_loss: 0.3709 - val_accuracy: 0.9060 - lr: 3.7037e-05
+Epoch 25/25
+430/430 [==============================] - 7s 16ms/step - loss: 0.0968 - accuracy: 0.9644 - val_loss: 0.3713 - val_accuracy: 0.9066 - lr: 3.7037e-05
+</code></pre><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 绘制学习曲线</span></span><br><span class="line">pd.DataFrame(history.history).plot()</span><br><span class="line">plt.grid(<span class="literal">True</span>)</span><br><span class="line">plt.show()</span><br><span class="line"></span><br><span class="line"><span class="comment"># 在训练/测试集上评估模型</span></span><br><span class="line">display(model.evaluate(x_train, y_train))</span><br><span class="line">display(model.evaluate(x_test, y_test))</span><br></pre></td></tr></table></figure>
+<p><img src="/2022/01/19/%E5%90%84%E7%A7%8D%E6%AD%A3%E5%88%99%E5%8C%96%E6%96%B9%E6%B3%95%E4%B9%8B%E9%97%B4%E7%9A%84%E5%AF%B9%E6%AF%94/output_11_0.png" alt="png"></p>
+<pre><code>1719/1719 [==============================] - 5s 3ms/step - loss: 0.0929 - accuracy: 0.9661
+
+[0.09290006756782532, 0.9660909175872803]
+
+
+313/313 [==============================] - 1s 3ms/step - loss: 0.4360 - accuracy: 0.8949
+
+[0.4359566271305084, 0.8949000239372253]
+</code></pre><p>Remark: 从上述学习曲线可以看出, 不带任何正则化的模型确实过拟合了训练集.</p>
+<h1 id="Batch-Normalization"><a href="#Batch-Normalization" class="headerlink" title="Batch Normalization"></a>Batch Normalization</h1><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">keras.backend.clear_session()</span><br><span class="line">tf.random.set_seed(<span class="number">42</span>)</span><br><span class="line">np.random.seed(<span class="number">42</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 1.构建模型</span></span><br><span class="line">model_with_BN = keras.models.Sequential([</span><br><span class="line">    keras.layers.Flatten(input_shape=x_train.shape[<span class="number">1</span>:]),</span><br><span class="line">    keras.layers.BatchNormalization(),</span><br><span class="line">    </span><br><span class="line">    keras.layers.Dense(<span class="number">400</span>, activation=<span class="string">&quot;elu&quot;</span>, kernel_initializer=<span class="string">&quot;he_normal&quot;</span>),</span><br><span class="line">    keras.layers.BatchNormalization(),</span><br><span class="line">    </span><br><span class="line">    keras.layers.Dense(<span class="number">200</span>, activation=<span class="string">&quot;elu&quot;</span>, kernel_initializer=<span class="string">&quot;he_normal&quot;</span>),</span><br><span class="line">    keras.layers.BatchNormalization()</span><br><span class="line">])</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> _ <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">8</span>):</span><br><span class="line">    model_with_BN.add(keras.layers.Dense(<span class="number">80</span>, activation=<span class="string">&quot;elu&quot;</span>, kernel_initializer=<span class="string">&quot;he_normal&quot;</span>))</span><br><span class="line">    model_with_BN.add(keras.layers.BatchNormalization())</span><br><span class="line"></span><br><span class="line">model_with_BN.add(keras.layers.Dense(<span class="number">10</span>, activation=<span class="string">&quot;softmax&quot;</span>))</span><br><span class="line"></span><br><span class="line"><span class="comment"># 2.编译模型</span></span><br><span class="line">optimizer = keras.optimizers.Nadam(learning_rate=<span class="number">0.003</span>)</span><br><span class="line">model_with_BN.<span class="built_in">compile</span>(loss=<span class="string">&quot;sparse_categorical_crossentropy&quot;</span>, </span><br><span class="line">                      optimizer=optimizer, </span><br><span class="line">                      metrics=[<span class="string">&quot;accuracy&quot;</span>])</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 3.训练模型</span></span><br><span class="line">lr_scheduler = keras.callbacks.ReduceLROnPlateau(factor=<span class="number">1</span>/<span class="number">3</span>, patience=<span class="number">4</span>)</span><br><span class="line"></span><br><span class="line">history_with_BN = model_with_BN.fit(x_train, y_train, epochs=<span class="number">25</span>, batch_size=<span class="number">128</span>,</span><br><span class="line">                                    validation_data=(x_valid, y_valid),</span><br><span class="line">                                    callbacks=[lr_scheduler])</span><br></pre></td></tr></table></figure>
+<pre><code>Epoch 1/25
+430/430 [==============================] - 19s 37ms/step - loss: 0.4899 - accuracy: 0.8245 - val_loss: 0.3639 - val_accuracy: 0.8784 - lr: 0.0030
+Epoch 2/25
+430/430 [==============================] - 16s 37ms/step - loss: 0.3666 - accuracy: 0.8671 - val_loss: 0.3484 - val_accuracy: 0.8772 - lr: 0.0030
+Epoch 3/25
+430/430 [==============================] - 15s 36ms/step - loss: 0.3322 - accuracy: 0.8778 - val_loss: 0.4017 - val_accuracy: 0.8600 - lr: 0.0030
+Epoch 4/25
+430/430 [==============================] - 16s 37ms/step - loss: 0.3066 - accuracy: 0.8888 - val_loss: 0.3411 - val_accuracy: 0.8762 - lr: 0.0030
+Epoch 5/25
+430/430 [==============================] - 16s 37ms/step - loss: 0.2821 - accuracy: 0.8945 - val_loss: 0.2950 - val_accuracy: 0.8922 - lr: 0.0030
+Epoch 6/25
+430/430 [==============================] - 16s 37ms/step - loss: 0.2656 - accuracy: 0.9027 - val_loss: 0.3312 - val_accuracy: 0.8888 - lr: 0.0030
+Epoch 7/25
+430/430 [==============================] - 16s 38ms/step - loss: 0.2543 - accuracy: 0.9072 - val_loss: 0.3196 - val_accuracy: 0.8902 - lr: 0.0030
+Epoch 8/25
+430/430 [==============================] - 16s 37ms/step - loss: 0.2390 - accuracy: 0.9133 - val_loss: 0.3031 - val_accuracy: 0.8898 - lr: 0.0030
+Epoch 9/25
+430/430 [==============================] - 16s 37ms/step - loss: 0.2224 - accuracy: 0.9181 - val_loss: 0.3247 - val_accuracy: 0.8894 - lr: 0.0030
+Epoch 10/25
+430/430 [==============================] - 16s 38ms/step - loss: 0.1692 - accuracy: 0.9375 - val_loss: 0.2805 - val_accuracy: 0.9052 - lr: 0.0010
+Epoch 11/25
+430/430 [==============================] - 16s 38ms/step - loss: 0.1499 - accuracy: 0.9450 - val_loss: 0.2957 - val_accuracy: 0.9022 - lr: 0.0010
+Epoch 12/25
+430/430 [==============================] - 16s 38ms/step - loss: 0.1399 - accuracy: 0.9487 - val_loss: 0.3072 - val_accuracy: 0.8954 - lr: 0.0010
+Epoch 13/25
+430/430 [==============================] - 16s 38ms/step - loss: 0.1311 - accuracy: 0.9515 - val_loss: 0.2964 - val_accuracy: 0.9006 - lr: 0.0010
+Epoch 14/25
+430/430 [==============================] - 17s 40ms/step - loss: 0.1218 - accuracy: 0.9551 - val_loss: 0.3106 - val_accuracy: 0.9034 - lr: 0.0010
+Epoch 15/25
+430/430 [==============================] - 17s 39ms/step - loss: 0.0939 - accuracy: 0.9671 - val_loss: 0.3114 - val_accuracy: 0.9078 - lr: 3.3333e-04
+Epoch 16/25
+430/430 [==============================] - 17s 39ms/step - loss: 0.0830 - accuracy: 0.9705 - val_loss: 0.3309 - val_accuracy: 0.9030 - lr: 3.3333e-04
+Epoch 17/25
+430/430 [==============================] - 17s 39ms/step - loss: 0.0764 - accuracy: 0.9726 - val_loss: 0.3344 - val_accuracy: 0.9040 - lr: 3.3333e-04
+Epoch 18/25
+430/430 [==============================] - 16s 38ms/step - loss: 0.0726 - accuracy: 0.9738 - val_loss: 0.3462 - val_accuracy: 0.9032 - lr: 3.3333e-04
+Epoch 19/25
+430/430 [==============================] - 17s 38ms/step - loss: 0.0603 - accuracy: 0.9789 - val_loss: 0.3595 - val_accuracy: 0.9058 - lr: 1.1111e-04
+Epoch 20/25
+430/430 [==============================] - 16s 38ms/step - loss: 0.0578 - accuracy: 0.9797 - val_loss: 0.3658 - val_accuracy: 0.9062 - lr: 1.1111e-04
+Epoch 21/25
+430/430 [==============================] - 16s 37ms/step - loss: 0.0544 - accuracy: 0.9810 - val_loss: 0.3720 - val_accuracy: 0.9056 - lr: 1.1111e-04
+Epoch 22/25
+430/430 [==============================] - 16s 38ms/step - loss: 0.0535 - accuracy: 0.9815 - val_loss: 0.3803 - val_accuracy: 0.9052 - lr: 1.1111e-04
+Epoch 23/25
+430/430 [==============================] - 16s 38ms/step - loss: 0.0510 - accuracy: 0.9825 - val_loss: 0.3804 - val_accuracy: 0.9052 - lr: 3.7037e-05
+Epoch 24/25
+430/430 [==============================] - 16s 38ms/step - loss: 0.0485 - accuracy: 0.9833 - val_loss: 0.3842 - val_accuracy: 0.9070 - lr: 3.7037e-05
+Epoch 25/25
+430/430 [==============================] - 16s 38ms/step - loss: 0.0480 - accuracy: 0.9832 - val_loss: 0.3861 - val_accuracy: 0.9048 - lr: 3.7037e-05ss: 0.0481 -  - ETA: 0s - loss: 0.0480 - accuracy: 0.
+</code></pre><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 绘制学习曲线</span></span><br><span class="line">pd.DataFrame(history_with_BN.history).plot()</span><br><span class="line">plt.grid(<span class="literal">True</span>)</span><br><span class="line">plt.show()</span><br><span class="line"></span><br><span class="line"><span class="comment"># 在训练/测试集上评估模型</span></span><br><span class="line">display(model_with_BN.evaluate(x_train, y_train))</span><br><span class="line">display(model_with_BN.evaluate(x_test, y_test))</span><br></pre></td></tr></table></figure>
+<p><img src="/2022/01/19/%E5%90%84%E7%A7%8D%E6%AD%A3%E5%88%99%E5%8C%96%E6%96%B9%E6%B3%95%E4%B9%8B%E9%97%B4%E7%9A%84%E5%AF%B9%E6%AF%94/output_16_0.png" alt="png"></p>
+<pre><code>1719/1719 [==============================] - 10s 6ms/step - loss: 0.0295 - accuracy: 0.9914
+
+[0.029543157666921616, 0.9914363622665405]
+
+
+313/313 [==============================] - 2s 6ms/step - loss: 0.4273 - accuracy: 0.9016
+
+[0.4273393452167511, 0.9016000032424927]
+</code></pre><h1 id="EarlyStopping"><a href="#EarlyStopping" class="headerlink" title="EarlyStopping"></a>EarlyStopping</h1><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">keras.backend.clear_session()</span><br><span class="line">tf.random.set_seed(<span class="number">42</span>)</span><br><span class="line">np.random.seed(<span class="number">42</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 1.构建模型</span></span><br><span class="line">model_with_ES = keras.models.Sequential([</span><br><span class="line">    keras.layers.Flatten(input_shape=x_train.shape[<span class="number">1</span>:]),</span><br><span class="line">    keras.layers.Dense(<span class="number">400</span>, activation=<span class="string">&quot;elu&quot;</span>, kernel_initializer=<span class="string">&quot;he_normal&quot;</span>),</span><br><span class="line">    keras.layers.Dense(<span class="number">200</span>, activation=<span class="string">&quot;elu&quot;</span>, kernel_initializer=<span class="string">&quot;he_normal&quot;</span>)</span><br><span class="line">])</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> _ <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">8</span>):</span><br><span class="line">    model_with_ES.add(keras.layers.Dense(<span class="number">80</span>, activation=<span class="string">&quot;elu&quot;</span>, kernel_initializer=<span class="string">&quot;he_normal&quot;</span>))</span><br><span class="line"></span><br><span class="line">model_with_ES.add(keras.layers.Dense(<span class="number">10</span>, activation=<span class="string">&quot;softmax&quot;</span>))</span><br><span class="line"></span><br><span class="line"><span class="comment"># 2.编译模型</span></span><br><span class="line">optimizer = keras.optimizers.Nadam(learning_rate=<span class="number">0.003</span>)</span><br><span class="line">model_with_ES.<span class="built_in">compile</span>(loss=<span class="string">&quot;sparse_categorical_crossentropy&quot;</span>, </span><br><span class="line">                      optimizer=optimizer, </span><br><span class="line">                      metrics=[<span class="string">&quot;accuracy&quot;</span>])</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 3.训练模型</span></span><br><span class="line">lr_scheduler = keras.callbacks.ReduceLROnPlateau(factor=<span class="number">1</span>/<span class="number">3</span>, patience=<span class="number">4</span>)</span><br><span class="line">early_stopping_cb = keras.callbacks.EarlyStopping(patience=<span class="number">8</span>, restore_best_weights=<span class="literal">True</span>)</span><br><span class="line"></span><br><span class="line">history_with_ES = model_with_ES.fit(x_train, y_train, epochs=<span class="number">25</span>*<span class="number">2</span>, batch_size=<span class="number">128</span>,</span><br><span class="line">                                    validation_data=(x_valid, y_valid),</span><br><span class="line">                                    callbacks=[lr_scheduler, early_stopping_cb])</span><br></pre></td></tr></table></figure>
+<pre><code>Epoch 1/50
+430/430 [==============================] - 9s 17ms/step - loss: 0.8095 - accuracy: 0.7205 - val_loss: 0.5028 - val_accuracy: 0.8152 - lr: 0.0030
+Epoch 2/50
+430/430 [==============================] - 7s 17ms/step - loss: 0.4347 - accuracy: 0.8411 - val_loss: 0.4048 - val_accuracy: 0.8596 - lr: 0.0030
+Epoch 3/50
+430/430 [==============================] - 7s 17ms/step - loss: 0.3897 - accuracy: 0.8570 - val_loss: 0.3748 - val_accuracy: 0.8630 - lr: 0.0030
+Epoch 4/50
+430/430 [==============================] - 7s 16ms/step - loss: 0.3533 - accuracy: 0.8711 - val_loss: 0.3313 - val_accuracy: 0.8804 - lr: 0.0030
+Epoch 5/50
+430/430 [==============================] - 7s 16ms/step - loss: 0.3341 - accuracy: 0.8781 - val_loss: 0.3669 - val_accuracy: 0.8662 - lr: 0.0030
+Epoch 6/50
+430/430 [==============================] - 7s 16ms/step - loss: 0.3198 - accuracy: 0.8835 - val_loss: 0.3579 - val_accuracy: 0.8746 - lr: 0.0030
+Epoch 7/50
+430/430 [==============================] - 7s 16ms/step - loss: 0.3080 - accuracy: 0.8889 - val_loss: 0.3232 - val_accuracy: 0.8852 - lr: 0.0030
+Epoch 8/50
+430/430 [==============================] - 7s 17ms/step - loss: 0.2951 - accuracy: 0.8922 - val_loss: 0.3478 - val_accuracy: 0.8726 - lr: 0.0030
+Epoch 9/50
+430/430 [==============================] - 7s 16ms/step - loss: 0.2905 - accuracy: 0.8959 - val_loss: 0.3328 - val_accuracy: 0.8818 - lr: 0.0030
+Epoch 10/50
+430/430 [==============================] - 7s 17ms/step - loss: 0.2822 - accuracy: 0.8963 - val_loss: 0.3141 - val_accuracy: 0.8928 - lr: 0.0030
+Epoch 11/50
+430/430 [==============================] - 7s 17ms/step - loss: 0.2712 - accuracy: 0.9028 - val_loss: 0.3353 - val_accuracy: 0.8810 - lr: 0.0030
+Epoch 12/50
+430/430 [==============================] - 7s 17ms/step - loss: 0.2678 - accuracy: 0.9029 - val_loss: 0.3128 - val_accuracy: 0.8864 - lr: 0.0030
+Epoch 13/50
+430/430 [==============================] - 7s 17ms/step - loss: 0.2572 - accuracy: 0.9064 - val_loss: 0.3247 - val_accuracy: 0.8894 - lr: 0.0030
+Epoch 14/50
+430/430 [==============================] - 7s 17ms/step - loss: 0.2548 - accuracy: 0.9078 - val_loss: 0.3044 - val_accuracy: 0.8902 - lr: 0.0030
+Epoch 15/50
+430/430 [==============================] - 7s 17ms/step - loss: 0.2513 - accuracy: 0.9106 - val_loss: 0.3109 - val_accuracy: 0.8954 - lr: 0.0030
+Epoch 16/50
+430/430 [==============================] - 7s 17ms/step - loss: 0.2415 - accuracy: 0.9137 - val_loss: 0.3293 - val_accuracy: 0.8880 - lr: 0.0030
+Epoch 17/50
+430/430 [==============================] - 7s 17ms/step - loss: 0.2472 - accuracy: 0.9120 - val_loss: 0.3558 - val_accuracy: 0.8794 - lr: 0.0030
+Epoch 18/50
+430/430 [==============================] - 7s 17ms/step - loss: 0.2340 - accuracy: 0.9164 - val_loss: 0.3173 - val_accuracy: 0.8950 - lr: 0.0030
+Epoch 19/50
+430/430 [==============================] - 7s 17ms/step - loss: 0.1830 - accuracy: 0.9321 - val_loss: 0.2955 - val_accuracy: 0.9052 - lr: 0.0010
+Epoch 20/50
+430/430 [==============================] - 7s 17ms/step - loss: 0.1649 - accuracy: 0.9390 - val_loss: 0.3008 - val_accuracy: 0.9050 - lr: 0.0010
+Epoch 21/50
+430/430 [==============================] - 7s 16ms/step - loss: 0.1560 - accuracy: 0.9419 - val_loss: 0.3085 - val_accuracy: 0.9062 - lr: 0.0010
+Epoch 22/50
+430/430 [==============================] - 7s 16ms/step - loss: 0.1493 - accuracy: 0.9436 - val_loss: 0.3473 - val_accuracy: 0.9038 - lr: 0.0010
+Epoch 23/50
+430/430 [==============================] - 7s 17ms/step - loss: 0.1445 - accuracy: 0.9462 - val_loss: 0.3221 - val_accuracy: 0.9048 - lr: 0.0010
+Epoch 24/50
+430/430 [==============================] - 7s 17ms/step - loss: 0.1197 - accuracy: 0.9547 - val_loss: 0.3485 - val_accuracy: 0.9106 - lr: 3.3333e-04
+Epoch 25/50
+430/430 [==============================] - 7s 17ms/step - loss: 0.1117 - accuracy: 0.9577 - val_loss: 0.3573 - val_accuracy: 0.9098 - lr: 3.3333e-04
+Epoch 26/50
+430/430 [==============================] - 7s 17ms/step - loss: 0.1064 - accuracy: 0.9594 - val_loss: 0.3843 - val_accuracy: 0.9062 - lr: 3.3333e-04
+Epoch 27/50
+430/430 [==============================] - 7s 17ms/step - loss: 0.1010 - accuracy: 0.9622 - val_loss: 0.3881 - val_accuracy: 0.9080 - lr: 3.3333e-04
+</code></pre><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 绘制学习曲线</span></span><br><span class="line">pd.DataFrame(history_with_ES.history).plot()</span><br><span class="line">plt.grid(<span class="literal">True</span>)</span><br><span class="line">plt.show()</span><br><span class="line"></span><br><span class="line"><span class="comment"># 在训练/测试集上评估模型</span></span><br><span class="line">display(model_with_ES.evaluate(x_train, y_train))</span><br><span class="line">display(model_with_ES.evaluate(x_test, y_test))</span><br></pre></td></tr></table></figure>
+<p><img src="/2022/01/19/%E5%90%84%E7%A7%8D%E6%AD%A3%E5%88%99%E5%8C%96%E6%96%B9%E6%B3%95%E4%B9%8B%E9%97%B4%E7%9A%84%E5%AF%B9%E6%AF%94/output_20_0.png" alt="png"></p>
+<pre><code>1719/1719 [==============================] - 6s 3ms/step - loss: 0.1625 - accuracy: 0.9382
+
+[0.16253036260604858, 0.9381999969482422]
+
+
+313/313 [==============================] - 1s 4ms/step - loss: 0.3310 - accuracy: 0.8977
+
+[0.3310108780860901, 0.8977000117301941]
+</code></pre><h1 id="l1-amp-l2-Regularization"><a href="#l1-amp-l2-Regularization" class="headerlink" title="l1 &amp; l2 Regularization"></a>l1 &amp; l2 Regularization</h1><h2 id="l1"><a href="#l1" class="headerlink" title="l1()"></a>l1()</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">keras.backend.clear_session()</span><br><span class="line">tf.random.set_seed(<span class="number">42</span>)</span><br><span class="line">np.random.seed(<span class="number">42</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 1.构建模型</span></span><br><span class="line">model_with_l1_reg = keras.models.Sequential([</span><br><span class="line">    keras.layers.Flatten(input_shape=x_train.shape[<span class="number">1</span>:]),</span><br><span class="line">    keras.layers.Dense(<span class="number">400</span>, activation=<span class="string">&quot;elu&quot;</span>, kernel_initializer=<span class="string">&quot;he_normal&quot;</span>),</span><br><span class="line">    keras.layers.Dense(<span class="number">200</span>, activation=<span class="string">&quot;elu&quot;</span>, kernel_initializer=<span class="string">&quot;he_normal&quot;</span>)</span><br><span class="line">])</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> _ <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">8</span>):</span><br><span class="line">    model_with_l1_reg.add(keras.layers.Dense(<span class="number">80</span>, activation=<span class="string">&quot;elu&quot;</span>, kernel_initializer=<span class="string">&quot;he_normal&quot;</span>, </span><br><span class="line">                                             kernel_regularizer=keras.regularizers.l1(l1=<span class="number">3e-6</span>)))</span><br><span class="line"></span><br><span class="line">model_with_l1_reg.add(keras.layers.Dense(<span class="number">10</span>, activation=<span class="string">&quot;softmax&quot;</span>))</span><br><span class="line"></span><br><span class="line"><span class="comment"># 2.编译模型</span></span><br><span class="line">optimizer = keras.optimizers.Nadam(learning_rate=<span class="number">0.003</span>)</span><br><span class="line">model_with_l1_reg.<span class="built_in">compile</span>(loss=<span class="string">&quot;sparse_categorical_crossentropy&quot;</span>, </span><br><span class="line">                          optimizer=optimizer, </span><br><span class="line">                          metrics=[<span class="string">&quot;accuracy&quot;</span>])</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 3.训练模型</span></span><br><span class="line">lr_scheduler = keras.callbacks.ReduceLROnPlateau(factor=<span class="number">1</span>/<span class="number">3</span>, patience=<span class="number">4</span>)</span><br><span class="line"></span><br><span class="line">history_with_l1_reg = model_with_l1_reg.fit(x_train, y_train, epochs=<span class="number">25</span>, batch_size=<span class="number">128</span>,</span><br><span class="line">                                            validation_data=(x_valid, y_valid),</span><br><span class="line">                                            callbacks=[lr_scheduler])</span><br></pre></td></tr></table></figure>
+<pre><code>Epoch 1/25
+430/430 [==============================] - 9s 18ms/step - loss: 0.7871 - accuracy: 0.7362 - val_loss: 0.4988 - val_accuracy: 0.8262 - lr: 0.0030
+Epoch 2/25
+430/430 [==============================] - 8s 18ms/step - loss: 0.4610 - accuracy: 0.8381 - val_loss: 0.3974 - val_accuracy: 0.8626 - lr: 0.0030
+Epoch 3/25
+430/430 [==============================] - 8s 18ms/step - loss: 0.4129 - accuracy: 0.8566 - val_loss: 0.4618 - val_accuracy: 0.8364 - lr: 0.0030
+Epoch 4/25
+430/430 [==============================] - 8s 18ms/step - loss: 0.3745 - accuracy: 0.8711 - val_loss: 0.4005 - val_accuracy: 0.8650 - lr: 0.0030
+Epoch 5/25
+430/430 [==============================] - 8s 18ms/step - loss: 0.3581 - accuracy: 0.8765 - val_loss: 0.3781 - val_accuracy: 0.8750 - lr: 0.0030
+Epoch 6/25
+430/430 [==============================] - 8s 18ms/step - loss: 0.3447 - accuracy: 0.8819 - val_loss: 0.3859 - val_accuracy: 0.8792 - lr: 0.0030
+Epoch 7/25
+430/430 [==============================] - 8s 18ms/step - loss: 0.3369 - accuracy: 0.8861 - val_loss: 0.3767 - val_accuracy: 0.8768 - lr: 0.0030
+Epoch 8/25
+430/430 [==============================] - 8s 18ms/step - loss: 0.3350 - accuracy: 0.8866 - val_loss: 0.4536 - val_accuracy: 0.8540 - lr: 0.0030
+Epoch 9/25
+430/430 [==============================] - 8s 18ms/step - loss: 0.3297 - accuracy: 0.8891 - val_loss: 0.3566 - val_accuracy: 0.8804 - lr: 0.0030
+Epoch 10/25
+430/430 [==============================] - 8s 18ms/step - loss: 0.3097 - accuracy: 0.8958 - val_loss: 0.3362 - val_accuracy: 0.8928 - lr: 0.0030
+Epoch 11/25
+430/430 [==============================] - 8s 18ms/step - loss: 0.2984 - accuracy: 0.8985 - val_loss: 0.3772 - val_accuracy: 0.8768 - lr: 0.0030
+Epoch 12/25
+430/430 [==============================] - 8s 18ms/step - loss: 0.2943 - accuracy: 0.9015 - val_loss: 0.3510 - val_accuracy: 0.8840 - lr: 0.0030
+Epoch 13/25
+430/430 [==============================] - 8s 18ms/step - loss: 0.2871 - accuracy: 0.9032 - val_loss: 0.3567 - val_accuracy: 0.8878 - lr: 0.0030
+Epoch 14/25
+430/430 [==============================] - 8s 18ms/step - loss: 0.2776 - accuracy: 0.9068 - val_loss: 0.3540 - val_accuracy: 0.8824 - lr: 0.0030
+Epoch 15/25
+430/430 [==============================] - 8s 18ms/step - loss: 0.2213 - accuracy: 0.9257 - val_loss: 0.3112 - val_accuracy: 0.8996 - lr: 0.0010
+Epoch 16/25
+430/430 [==============================] - 8s 18ms/step - loss: 0.2056 - accuracy: 0.9315 - val_loss: 0.3219 - val_accuracy: 0.9006 - lr: 0.0010
+Epoch 17/25
+430/430 [==============================] - 8s 18ms/step - loss: 0.1982 - accuracy: 0.9326 - val_loss: 0.3345 - val_accuracy: 0.8972 - lr: 0.0010
+Epoch 18/25
+430/430 [==============================] - 8s 18ms/step - loss: 0.1934 - accuracy: 0.9350 - val_loss: 0.3232 - val_accuracy: 0.8968 - lr: 0.0010
+Epoch 19/25
+430/430 [==============================] - 8s 18ms/step - loss: 0.1875 - accuracy: 0.9375 - val_loss: 0.3313 - val_accuracy: 0.9028 - lr: 0.0010
+Epoch 20/25
+430/430 [==============================] - 8s 18ms/step - loss: 0.1584 - accuracy: 0.9486 - val_loss: 0.3293 - val_accuracy: 0.9068 - lr: 3.3333e-04
+Epoch 21/25
+430/430 [==============================] - 8s 18ms/step - loss: 0.1479 - accuracy: 0.9521 - val_loss: 0.3383 - val_accuracy: 0.9060 - lr: 3.3333e-04
+Epoch 22/25
+430/430 [==============================] - 8s 17ms/step - loss: 0.1422 - accuracy: 0.9536 - val_loss: 0.3450 - val_accuracy: 0.9058 - lr: 3.3333e-04
+Epoch 23/25
+430/430 [==============================] - 8s 18ms/step - loss: 0.1371 - accuracy: 0.9558 - val_loss: 0.3588 - val_accuracy: 0.9070 - lr: 3.3333e-04
+Epoch 24/25
+430/430 [==============================] - 9s 21ms/step - loss: 0.1218 - accuracy: 0.9617 - val_loss: 0.3806 - val_accuracy: 0.9074 - lr: 1.1111e-04
+Epoch 25/25
+430/430 [==============================] - 8s 19ms/step - loss: 0.1173 - accuracy: 0.9640 - val_loss: 0.3880 - val_accuracy: 0.9064 - lr: 1.1111e-04
+</code></pre><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 绘制学习曲线</span></span><br><span class="line">pd.DataFrame(history_with_l1_reg.history).plot()</span><br><span class="line">plt.grid(<span class="literal">True</span>)</span><br><span class="line">plt.show()</span><br><span class="line"></span><br><span class="line"><span class="comment"># 在训练/测试集上评估模型</span></span><br><span class="line">display(model_with_l1_reg.evaluate(x_train, y_train))</span><br><span class="line">display(model_with_l1_reg.evaluate(x_test, y_test))</span><br></pre></td></tr></table></figure>
+<p><img src="/2022/01/19/%E5%90%84%E7%A7%8D%E6%AD%A3%E5%88%99%E5%8C%96%E6%96%B9%E6%B3%95%E4%B9%8B%E9%97%B4%E7%9A%84%E5%AF%B9%E6%AF%94/output_25_0.png" alt="png"></p>
+<pre><code>1719/1719 [==============================] - 7s 4ms/step - loss: 0.1113 - accuracy: 0.9666
+
+[0.11131621152162552, 0.9665636420249939]
+
+
+313/313 [==============================] - 1s 4ms/step - loss: 0.4361 - accuracy: 0.8969
+
+[0.4360505938529968, 0.8968999981880188]
+</code></pre><h2 id="l2"><a href="#l2" class="headerlink" title="l2()"></a>l2()</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">keras.backend.clear_session()</span><br><span class="line">tf.random.set_seed(<span class="number">42</span>)</span><br><span class="line">np.random.seed(<span class="number">42</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 1.构建模型</span></span><br><span class="line">model_with_l2_reg = keras.models.Sequential([</span><br><span class="line">    keras.layers.Flatten(input_shape=x_train.shape[<span class="number">1</span>:]),</span><br><span class="line">    keras.layers.Dense(<span class="number">400</span>, activation=<span class="string">&quot;elu&quot;</span>, kernel_initializer=<span class="string">&quot;he_normal&quot;</span>),</span><br><span class="line">    keras.layers.Dense(<span class="number">200</span>, activation=<span class="string">&quot;elu&quot;</span>, kernel_initializer=<span class="string">&quot;he_normal&quot;</span>)</span><br><span class="line">])</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> _ <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">8</span>):</span><br><span class="line">    model_with_l2_reg.add(keras.layers.Dense(<span class="number">80</span>, activation=<span class="string">&quot;elu&quot;</span>, kernel_initializer=<span class="string">&quot;he_normal&quot;</span>, </span><br><span class="line">                                             kernel_regularizer=keras.regularizers.l2(l2=<span class="number">3e-6</span>)))</span><br><span class="line"></span><br><span class="line">model_with_l2_reg.add(keras.layers.Dense(<span class="number">10</span>, activation=<span class="string">&quot;softmax&quot;</span>))</span><br><span class="line"></span><br><span class="line"><span class="comment"># 2.编译模型</span></span><br><span class="line">optimizer = keras.optimizers.Nadam(learning_rate=<span class="number">0.003</span>)</span><br><span class="line">model_with_l2_reg.<span class="built_in">compile</span>(loss=<span class="string">&quot;sparse_categorical_crossentropy&quot;</span>, </span><br><span class="line">                          optimizer=optimizer, </span><br><span class="line">                          metrics=[<span class="string">&quot;accuracy&quot;</span>])</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 3.训练模型</span></span><br><span class="line">lr_scheduler = keras.callbacks.ReduceLROnPlateau(factor=<span class="number">1</span>/<span class="number">3</span>, patience=<span class="number">4</span>)</span><br><span class="line"></span><br><span class="line">history_with_l2_reg = model_with_l2_reg.fit(x_train, y_train, epochs=<span class="number">25</span>, batch_size=<span class="number">128</span>,</span><br><span class="line">                                            validation_data=(x_valid, y_valid),</span><br><span class="line">                                            callbacks=[lr_scheduler])</span><br></pre></td></tr></table></figure>
+<pre><code>Epoch 1/25
+430/430 [==============================] - 9s 18ms/step - loss: 0.7842 - accuracy: 0.7315 - val_loss: 0.5412 - val_accuracy: 0.8034 - lr: 0.0030
+Epoch 2/25
+430/430 [==============================] - 7s 17ms/step - loss: 0.4384 - accuracy: 0.8405 - val_loss: 0.3967 - val_accuracy: 0.8544 - lr: 0.0030
+Epoch 3/25
+430/430 [==============================] - 7s 17ms/step - loss: 0.3980 - accuracy: 0.8554 - val_loss: 0.4102 - val_accuracy: 0.8536 - lr: 0.0030
+Epoch 4/25
+430/430 [==============================] - 7s 17ms/step - loss: 0.3568 - accuracy: 0.8709 - val_loss: 0.3396 - val_accuracy: 0.8790 - lr: 0.0030
+Epoch 5/25
+430/430 [==============================] - 7s 17ms/step - loss: 0.3413 - accuracy: 0.8748 - val_loss: 0.3545 - val_accuracy: 0.8774 - lr: 0.0030
+Epoch 6/25
+430/430 [==============================] - 7s 17ms/step - loss: 0.3269 - accuracy: 0.8816 - val_loss: 0.3683 - val_accuracy: 0.8756 - lr: 0.0030
+Epoch 7/25
+430/430 [==============================] - 7s 17ms/step - loss: 0.3185 - accuracy: 0.8860 - val_loss: 0.3836 - val_accuracy: 0.8744 - lr: 0.0030
+Epoch 8/25
+430/430 [==============================] - 7s 17ms/step - loss: 0.3023 - accuracy: 0.8915 - val_loss: 0.3632 - val_accuracy: 0.8698 - lr: 0.0030.3022 - accuracy
+Epoch 9/25
+430/430 [==============================] - 8s 17ms/step - loss: 0.2381 - accuracy: 0.9125 - val_loss: 0.2946 - val_accuracy: 0.8972 - lr: 0.0010
+Epoch 10/25
+430/430 [==============================] - 8s 18ms/step - loss: 0.2228 - accuracy: 0.9172 - val_loss: 0.3077 - val_accuracy: 0.9002 - lr: 0.0010
+Epoch 11/25
+430/430 [==============================] - 7s 17ms/step - loss: 0.2150 - accuracy: 0.9195 - val_loss: 0.3079 - val_accuracy: 0.8986 - lr: 0.0010
+Epoch 12/25
+430/430 [==============================] - 7s 17ms/step - loss: 0.2092 - accuracy: 0.9221 - val_loss: 0.3226 - val_accuracy: 0.8910 - lr: 0.0010
+Epoch 13/25
+430/430 [==============================] - 7s 17ms/step - loss: 0.2049 - accuracy: 0.9240 - val_loss: 0.3332 - val_accuracy: 0.8926 - lr: 0.0010
+Epoch 14/25
+430/430 [==============================] - 8s 17ms/step - loss: 0.1692 - accuracy: 0.9374 - val_loss: 0.3160 - val_accuracy: 0.9040 - lr: 3.3333e-04
+Epoch 15/25
+430/430 [==============================] - 7s 17ms/step - loss: 0.1574 - accuracy: 0.9415 - val_loss: 0.3203 - val_accuracy: 0.9002 - lr: 3.3333e-04
+Epoch 16/25
+430/430 [==============================] - 7s 17ms/step - loss: 0.1520 - accuracy: 0.9444 - val_loss: 0.3274 - val_accuracy: 0.9008 - lr: 3.3333e-04
+Epoch 17/25
+430/430 [==============================] - 8s 17ms/step - loss: 0.1448 - accuracy: 0.9466 - val_loss: 0.3430 - val_accuracy: 0.8996 - lr: 3.3333e-04
+Epoch 18/25
+430/430 [==============================] - 7s 17ms/step - loss: 0.1267 - accuracy: 0.9539 - val_loss: 0.3502 - val_accuracy: 0.9046 - lr: 1.1111e-04
+Epoch 19/25
+430/430 [==============================] - 7s 17ms/step - loss: 0.1215 - accuracy: 0.9550 - val_loss: 0.3652 - val_accuracy: 0.9016 - lr: 1.1111e-04
+Epoch 20/25
+430/430 [==============================] - 8s 17ms/step - loss: 0.1176 - accuracy: 0.9575 - val_loss: 0.3744 - val_accuracy: 0.9002 - lr: 1.1111e-04
+Epoch 21/25
+430/430 [==============================] - 7s 17ms/step - loss: 0.1138 - accuracy: 0.9583 - val_loss: 0.3721 - val_accuracy: 0.9020 - lr: 1.1111e-04
+Epoch 22/25
+430/430 [==============================] - 8s 18ms/step - loss: 0.1055 - accuracy: 0.9619 - val_loss: 0.3887 - val_accuracy: 0.9000 - lr: 3.7037e-05
+Epoch 23/25
+430/430 [==============================] - 8s 18ms/step - loss: 0.1035 - accuracy: 0.9632 - val_loss: 0.3942 - val_accuracy: 0.9012 - lr: 3.7037e-05
+Epoch 24/25
+430/430 [==============================] - 8s 18ms/step - loss: 0.1019 - accuracy: 0.9634 - val_loss: 0.4113 - val_accuracy: 0.9028 - lr: 3.7037e-05
+Epoch 25/25
+430/430 [==============================] - 8s 18ms/step - loss: 0.1003 - accuracy: 0.9637 - val_loss: 0.4053 - val_accuracy: 0.8996 - lr: 3.7037e-05
+</code></pre><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 绘制学习曲线</span></span><br><span class="line">pd.DataFrame(history_with_l2_reg.history).plot()</span><br><span class="line">plt.grid(<span class="literal">True</span>)</span><br><span class="line">plt.show()</span><br><span class="line"></span><br><span class="line"><span class="comment"># 在训练/测试集上评估模型</span></span><br><span class="line">display(model_with_l2_reg.evaluate(x_train, y_train))</span><br><span class="line">display(model_with_l2_reg.evaluate(x_test, y_test))</span><br></pre></td></tr></table></figure>
+<p><img src="/2022/01/19/%E5%90%84%E7%A7%8D%E6%AD%A3%E5%88%99%E5%8C%96%E6%96%B9%E6%B3%95%E4%B9%8B%E9%97%B4%E7%9A%84%E5%AF%B9%E6%AF%94/output_29_0.png" alt="png"></p>
+<pre><code>1719/1719 [==============================] - 7s 4ms/step - loss: 0.0970 - accuracy: 0.9660
+
+[0.09695354849100113, 0.9660181999206543]
+
+
+313/313 [==============================] - 1s 4ms/step - loss: 0.4260 - accuracy: 0.8957
+
+[0.42597758769989014, 0.8956999778747559]
+</code></pre><h2 id="l1-l2"><a href="#l1-l2" class="headerlink" title="l1_l2()"></a>l1_l2()</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">keras.backend.clear_session()</span><br><span class="line">tf.random.set_seed(<span class="number">42</span>)</span><br><span class="line">np.random.seed(<span class="number">42</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 1.构建模型</span></span><br><span class="line">model_with_l1l2_reg = keras.models.Sequential([</span><br><span class="line">    keras.layers.Flatten(input_shape=x_train.shape[<span class="number">1</span>:]),</span><br><span class="line">    keras.layers.Dense(<span class="number">400</span>, activation=<span class="string">&quot;elu&quot;</span>, kernel_initializer=<span class="string">&quot;he_normal&quot;</span>),</span><br><span class="line">    keras.layers.Dense(<span class="number">200</span>, activation=<span class="string">&quot;elu&quot;</span>, kernel_initializer=<span class="string">&quot;he_normal&quot;</span>)</span><br><span class="line">])</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> _ <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">8</span>):</span><br><span class="line">    model_with_l1l2_reg.add(keras.layers.Dense(<span class="number">80</span>, activation=<span class="string">&quot;elu&quot;</span>, kernel_initializer=<span class="string">&quot;he_normal&quot;</span>, </span><br><span class="line">                                               kernel_regularizer=keras.regularizers.l1_l2(l1=<span class="number">3e-6</span>, l2=<span class="number">3e-6</span>)))</span><br><span class="line"></span><br><span class="line">model_with_l1l2_reg.add(keras.layers.Dense(<span class="number">10</span>, activation=<span class="string">&quot;softmax&quot;</span>))</span><br><span class="line"></span><br><span class="line"><span class="comment"># 2.编译模型</span></span><br><span class="line">optimizer = keras.optimizers.Nadam(learning_rate=<span class="number">0.003</span>)</span><br><span class="line">model_with_l1l2_reg.<span class="built_in">compile</span>(loss=<span class="string">&quot;sparse_categorical_crossentropy&quot;</span>, </span><br><span class="line">                            optimizer=optimizer, </span><br><span class="line">                            metrics=[<span class="string">&quot;accuracy&quot;</span>])</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 3.训练模型</span></span><br><span class="line">lr_scheduler = keras.callbacks.ReduceLROnPlateau(factor=<span class="number">1</span>/<span class="number">3</span>, patience=<span class="number">4</span>)</span><br><span class="line"></span><br><span class="line">history_with_l1l2_reg = model_with_l1l2_reg.fit(x_train, y_train, epochs=<span class="number">25</span>, batch_size=<span class="number">128</span>,</span><br><span class="line">                                                validation_data=(x_valid, y_valid),</span><br><span class="line">                                                callbacks=[lr_scheduler])</span><br></pre></td></tr></table></figure>
+<pre><code>Epoch 1/25
+430/430 [==============================] - 10s 19ms/step - loss: 0.8085 - accuracy: 0.7345 - val_loss: 0.5617 - val_accuracy: 0.8048 - lr: 0.0030
+Epoch 2/25
+430/430 [==============================] - 8s 18ms/step - loss: 0.4591 - accuracy: 0.8401 - val_loss: 0.3946 - val_accuracy: 0.8642 - lr: 0.0030
+Epoch 3/25
+430/430 [==============================] - 8s 18ms/step - loss: 0.4229 - accuracy: 0.8565 - val_loss: 0.4137 - val_accuracy: 0.8612 - lr: 0.0030
+Epoch 4/25
+430/430 [==============================] - 8s 18ms/step - loss: 0.3774 - accuracy: 0.8725 - val_loss: 0.3887 - val_accuracy: 0.8712 - lr: 0.0030
+Epoch 5/25
+430/430 [==============================] - 8s 18ms/step - loss: 0.3602 - accuracy: 0.8767 - val_loss: 0.3529 - val_accuracy: 0.8808 - lr: 0.0030
+Epoch 6/25
+430/430 [==============================] - 8s 18ms/step - loss: 0.3462 - accuracy: 0.8836 - val_loss: 0.3782 - val_accuracy: 0.8790 - lr: 0.0030
+Epoch 7/25
+430/430 [==============================] - 8s 18ms/step - loss: 0.3335 - accuracy: 0.8872 - val_loss: 0.3859 - val_accuracy: 0.8710 - lr: 0.0030
+Epoch 8/25
+430/430 [==============================] - 8s 18ms/step - loss: 0.3223 - accuracy: 0.8920 - val_loss: 0.3978 - val_accuracy: 0.8630 - lr: 0.0030
+Epoch 9/25
+430/430 [==============================] - 8s 18ms/step - loss: 0.3145 - accuracy: 0.8946 - val_loss: 0.4028 - val_accuracy: 0.8780 - lr: 0.0030
+Epoch 10/25
+430/430 [==============================] - 8s 18ms/step - loss: 0.2519 - accuracy: 0.9149 - val_loss: 0.3222 - val_accuracy: 0.8966 - lr: 0.0010
+Epoch 11/25
+430/430 [==============================] - 8s 18ms/step - loss: 0.2350 - accuracy: 0.9201 - val_loss: 0.3229 - val_accuracy: 0.8952 - lr: 0.0010
+Epoch 12/25
+430/430 [==============================] - 8s 18ms/step - loss: 0.2277 - accuracy: 0.9229 - val_loss: 0.3259 - val_accuracy: 0.8952 - lr: 0.0010
+Epoch 13/25
+430/430 [==============================] - 8s 18ms/step - loss: 0.2204 - accuracy: 0.9254 - val_loss: 0.3195 - val_accuracy: 0.8978 - lr: 0.0010
+Epoch 14/25
+430/430 [==============================] - 8s 18ms/step - loss: 0.2134 - accuracy: 0.9278 - val_loss: 0.3226 - val_accuracy: 0.8994 - lr: 0.0010
+Epoch 15/25
+430/430 [==============================] - 8s 18ms/step - loss: 0.2083 - accuracy: 0.9297 - val_loss: 0.3433 - val_accuracy: 0.8950 - lr: 0.0010
+Epoch 16/25
+430/430 [==============================] - 8s 18ms/step - loss: 0.2026 - accuracy: 0.9326 - val_loss: 0.3542 - val_accuracy: 0.8972 - lr: 0.0010
+Epoch 17/25
+430/430 [==============================] - 8s 18ms/step - loss: 0.1940 - accuracy: 0.9351 - val_loss: 0.3455 - val_accuracy: 0.8970 - lr: 0.0010
+Epoch 18/25
+430/430 [==============================] - 8s 18ms/step - loss: 0.1590 - accuracy: 0.9479 - val_loss: 0.3532 - val_accuracy: 0.9030 - lr: 3.3333e-04
+Epoch 19/25
+430/430 [==============================] - 8s 18ms/step - loss: 0.1476 - accuracy: 0.9527 - val_loss: 0.3635 - val_accuracy: 0.9056 - lr: 3.3333e-04
+Epoch 20/25
+430/430 [==============================] - 8s 18ms/step - loss: 0.1410 - accuracy: 0.9547 - val_loss: 0.3677 - val_accuracy: 0.9030 - lr: 3.3333e-04
+Epoch 21/25
+430/430 [==============================] - 8s 18ms/step - loss: 0.1349 - accuracy: 0.9567 - val_loss: 0.3878 - val_accuracy: 0.9004 - lr: 3.3333e-04
+Epoch 22/25
+430/430 [==============================] - 8s 18ms/step - loss: 0.1174 - accuracy: 0.9647 - val_loss: 0.4038 - val_accuracy: 0.8996 - lr: 1.1111e-04
+Epoch 23/25
+430/430 [==============================] - 8s 18ms/step - loss: 0.1119 - accuracy: 0.9663 - val_loss: 0.4112 - val_accuracy: 0.9028 - lr: 1.1111e-04
+Epoch 24/25
+430/430 [==============================] - 8s 18ms/step - loss: 0.1082 - accuracy: 0.9682 - val_loss: 0.4321 - val_accuracy: 0.9012 - lr: 1.1111e-04
+Epoch 25/25
+430/430 [==============================] - 8s 18ms/step - loss: 0.1048 - accuracy: 0.9696 - val_loss: 0.4387 - val_accuracy: 0.8994 - lr: 1.1111e-04
+</code></pre><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 绘制学习曲线</span></span><br><span class="line">pd.DataFrame(history_with_l1l2_reg.history).plot()</span><br><span class="line">plt.grid(<span class="literal">True</span>)</span><br><span class="line">plt.show()</span><br><span class="line"></span><br><span class="line"><span class="comment"># 在训练/测试集上评估模型</span></span><br><span class="line">display(model_with_l1l2_reg.evaluate(x_train, y_train))</span><br><span class="line">display(model_with_l1l2_reg.evaluate(x_test, y_test))</span><br></pre></td></tr></table></figure>
+<p><img src="/2022/01/19/%E5%90%84%E7%A7%8D%E6%AD%A3%E5%88%99%E5%8C%96%E6%96%B9%E6%B3%95%E4%B9%8B%E9%97%B4%E7%9A%84%E5%AF%B9%E6%AF%94/output_33_0.png" alt="png"></p>
+<pre><code>1719/1719 [==============================] - 8s 5ms/step - loss: 0.0980 - accuracy: 0.9726
+
+[0.09802676737308502, 0.9726181626319885]
+
+
+313/313 [==============================] - 1s 5ms/step - loss: 0.4885 - accuracy: 0.8947
+
+[0.48848921060562134, 0.8946999907493591]
+</code></pre><h1 id="Dropout"><a href="#Dropout" class="headerlink" title="Dropout"></a>Dropout</h1><h2 id="Regular-Dropout"><a href="#Regular-Dropout" class="headerlink" title="Regular Dropout"></a>Regular Dropout</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">keras.backend.clear_session()</span><br><span class="line">tf.random.set_seed(<span class="number">42</span>)</span><br><span class="line">np.random.seed(<span class="number">42</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 1.构建模型</span></span><br><span class="line">model_with_dropout = keras.models.Sequential([</span><br><span class="line">    keras.layers.Flatten(input_shape=x_train.shape[<span class="number">1</span>:]),</span><br><span class="line">    keras.layers.Dense(<span class="number">400</span>, activation=<span class="string">&quot;elu&quot;</span>, kernel_initializer=<span class="string">&quot;he_normal&quot;</span>),</span><br><span class="line">    keras.layers.Dense(<span class="number">200</span>, activation=<span class="string">&quot;elu&quot;</span>, kernel_initializer=<span class="string">&quot;he_normal&quot;</span>)</span><br><span class="line">])</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> _ <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">6</span>):</span><br><span class="line">    model_with_dropout.add(keras.layers.Dense(<span class="number">80</span>, activation=<span class="string">&quot;elu&quot;</span>, kernel_initializer=<span class="string">&quot;he_normal&quot;</span>))</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> _ <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">2</span>):</span><br><span class="line">    model_with_dropout.add(keras.layers.Dense(<span class="number">80</span>, activation=<span class="string">&quot;elu&quot;</span>, kernel_initializer=<span class="string">&quot;he_normal&quot;</span>))</span><br><span class="line">    model_with_dropout.add(keras.layers.Dropout(<span class="number">0.25</span>))</span><br><span class="line"></span><br><span class="line">model_with_dropout.add(keras.layers.Dense(<span class="number">10</span>, activation=<span class="string">&quot;softmax&quot;</span>))</span><br><span class="line"></span><br><span class="line"><span class="comment"># 2.编译模型</span></span><br><span class="line">optimizer = keras.optimizers.Nadam(learning_rate=<span class="number">0.003</span>)</span><br><span class="line">model_with_dropout.<span class="built_in">compile</span>(loss=<span class="string">&quot;sparse_categorical_crossentropy&quot;</span>, </span><br><span class="line">                           optimizer=optimizer, </span><br><span class="line">                           metrics=[<span class="string">&quot;accuracy&quot;</span>])</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 3.训练模型</span></span><br><span class="line">lr_scheduler = keras.callbacks.ReduceLROnPlateau(factor=<span class="number">1</span>/<span class="number">3</span>, patience=<span class="number">4</span>)</span><br><span class="line"></span><br><span class="line">history_with_dropout = model_with_dropout.fit(x_train, y_train, epochs=<span class="number">25</span>, batch_size=<span class="number">128</span>,</span><br><span class="line">                                              validation_data=(x_valid, y_valid),</span><br><span class="line">                                              callbacks=[lr_scheduler])</span><br></pre></td></tr></table></figure>
+<pre><code>Epoch 1/25
+430/430 [==============================] - 8s 16ms/step - loss: 0.8331 - accuracy: 0.7204 - val_loss: 0.4820 - val_accuracy: 0.8290 - lr: 0.0030
+Epoch 2/25
+430/430 [==============================] - 7s 17ms/step - loss: 0.4750 - accuracy: 0.8316 - val_loss: 0.4168 - val_accuracy: 0.8586 - lr: 0.0030
+Epoch 3/25
+430/430 [==============================] - 7s 16ms/step - loss: 0.4474 - accuracy: 0.8440 - val_loss: 0.4188 - val_accuracy: 0.8600 - lr: 0.0030
+Epoch 4/25
+430/430 [==============================] - 7s 17ms/step - loss: 0.3892 - accuracy: 0.8620 - val_loss: 0.3509 - val_accuracy: 0.8774 - lr: 0.0030
+Epoch 5/25
+430/430 [==============================] - 7s 17ms/step - loss: 0.3694 - accuracy: 0.8702 - val_loss: 0.3763 - val_accuracy: 0.8548 - lr: 0.0030
+Epoch 6/25
+430/430 [==============================] - 7s 17ms/step - loss: 0.3506 - accuracy: 0.8758 - val_loss: 0.3687 - val_accuracy: 0.8754 - lr: 0.0030
+Epoch 7/25
+430/430 [==============================] - 7s 17ms/step - loss: 0.3407 - accuracy: 0.8797 - val_loss: 0.3697 - val_accuracy: 0.8700 - lr: 0.0030
+Epoch 8/25
+430/430 [==============================] - 7s 17ms/step - loss: 0.3362 - accuracy: 0.8824 - val_loss: 0.3767 - val_accuracy: 0.8666 - lr: 0.0030
+Epoch 9/25
+430/430 [==============================] - 7s 17ms/step - loss: 0.2661 - accuracy: 0.9041 - val_loss: 0.2933 - val_accuracy: 0.8966 - lr: 0.0010
+Epoch 10/25
+430/430 [==============================] - 7s 17ms/step - loss: 0.2487 - accuracy: 0.9090 - val_loss: 0.2946 - val_accuracy: 0.8970 - lr: 0.0010
+Epoch 11/25
+430/430 [==============================] - 7s 17ms/step - loss: 0.2408 - accuracy: 0.9118 - val_loss: 0.3200 - val_accuracy: 0.8952 - lr: 0.0010
+Epoch 12/25
+430/430 [==============================] - 7s 17ms/step - loss: 0.2335 - accuracy: 0.9145 - val_loss: 0.3137 - val_accuracy: 0.8896 - lr: 0.0010
+Epoch 13/25
+430/430 [==============================] - 7s 17ms/step - loss: 0.2277 - accuracy: 0.9167 - val_loss: 0.2923 - val_accuracy: 0.8952 - lr: 0.0010
+Epoch 14/25
+430/430 [==============================] - 7s 17ms/step - loss: 0.2213 - accuracy: 0.9182 - val_loss: 0.3001 - val_accuracy: 0.8968 - lr: 0.0010
+Epoch 15/25
+430/430 [==============================] - 7s 17ms/step - loss: 0.2144 - accuracy: 0.9204 - val_loss: 0.3046 - val_accuracy: 0.8960 - lr: 0.0010
+Epoch 16/25
+430/430 [==============================] - 7s 17ms/step - loss: 0.2048 - accuracy: 0.9255 - val_loss: 0.3116 - val_accuracy: 0.8984 - lr: 0.0010
+Epoch 17/25
+430/430 [==============================] - 7s 17ms/step - loss: 0.2021 - accuracy: 0.9252 - val_loss: 0.3191 - val_accuracy: 0.8952 - lr: 0.0010
+Epoch 18/25
+430/430 [==============================] - 7s 17ms/step - loss: 0.1656 - accuracy: 0.9390 - val_loss: 0.3177 - val_accuracy: 0.9038 - lr: 3.3333e-04
+Epoch 19/25
+430/430 [==============================] - 7s 17ms/step - loss: 0.1537 - accuracy: 0.9431 - val_loss: 0.3284 - val_accuracy: 0.9050 - lr: 3.3333e-04
+Epoch 20/25
+430/430 [==============================] - 7s 17ms/step - loss: 0.1476 - accuracy: 0.9449 - val_loss: 0.3322 - val_accuracy: 0.9006 - lr: 3.3333e-04
+Epoch 21/25
+430/430 [==============================] - 7s 17ms/step - loss: 0.1417 - accuracy: 0.9474 - val_loss: 0.3434 - val_accuracy: 0.8994 - lr: 3.3333e-04
+Epoch 22/25
+430/430 [==============================] - 7s 17ms/step - loss: 0.1250 - accuracy: 0.9536 - val_loss: 0.3527 - val_accuracy: 0.9050 - lr: 1.1111e-04
+Epoch 23/25
+430/430 [==============================] - 7s 17ms/step - loss: 0.1190 - accuracy: 0.9560 - val_loss: 0.3574 - val_accuracy: 0.9056 - lr: 1.1111e-04
+Epoch 24/25
+430/430 [==============================] - 7s 17ms/step - loss: 0.1158 - accuracy: 0.9566 - val_loss: 0.3740 - val_accuracy: 0.9034 - lr: 1.1111e-04
+Epoch 25/25
+430/430 [==============================] - 7s 17ms/step - loss: 0.1117 - accuracy: 0.9588 - val_loss: 0.3855 - val_accuracy: 0.9034 - lr: 1.1111e-04
+</code></pre><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 绘制学习曲线</span></span><br><span class="line">pd.DataFrame(history_with_dropout.history).plot()</span><br><span class="line">plt.grid(<span class="literal">True</span>)</span><br><span class="line">plt.show()</span><br><span class="line"></span><br><span class="line"><span class="comment"># 在训练/测试集上评估模型</span></span><br><span class="line">display(model_with_dropout.evaluate(x_train, y_train))</span><br><span class="line">display(model_with_dropout.evaluate(x_test, y_test))</span><br></pre></td></tr></table></figure>
+<p><img src="/2022/01/19/%E5%90%84%E7%A7%8D%E6%AD%A3%E5%88%99%E5%8C%96%E6%96%B9%E6%B3%95%E4%B9%8B%E9%97%B4%E7%9A%84%E5%AF%B9%E6%AF%94/output_38_0.png" alt="png"></p>
+<pre><code>1719/1719 [==============================] - 6s 3ms/step - loss: 0.1015 - accuracy: 0.9624
+
+[0.10153431445360184, 0.9624181985855103]
+
+
+313/313 [==============================] - 1s 3ms/step - loss: 0.4297 - accuracy: 0.8955
+
+[0.4297321140766144, 0.8955000042915344]
+</code></pre><h2 id="AlphaDropout-自归一化网络"><a href="#AlphaDropout-自归一化网络" class="headerlink" title="AlphaDropout (自归一化网络)"></a>AlphaDropout (自归一化网络)</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">keras.backend.clear_session()</span><br><span class="line">tf.random.set_seed(<span class="number">42</span>)</span><br><span class="line">np.random.seed(<span class="number">42</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 1.构建模型</span></span><br><span class="line">model_with_alpha_dropout = keras.models.Sequential([</span><br><span class="line">    keras.layers.Flatten(input_shape=x_train.shape[<span class="number">1</span>:]),</span><br><span class="line">    keras.layers.Dense(<span class="number">400</span>, activation=<span class="string">&quot;selu&quot;</span>, kernel_initializer=<span class="string">&quot;lecun_normal&quot;</span>),</span><br><span class="line">    keras.layers.Dense(<span class="number">200</span>, activation=<span class="string">&quot;selu&quot;</span>, kernel_initializer=<span class="string">&quot;lecun_normal&quot;</span>)</span><br><span class="line">])</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> _ <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">6</span>):</span><br><span class="line">    model_with_alpha_dropout.add(keras.layers.Dense(<span class="number">80</span>, activation=<span class="string">&quot;selu&quot;</span>, kernel_initializer=<span class="string">&quot;lecun_normal&quot;</span>))</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> _ <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">2</span>):</span><br><span class="line">    model_with_alpha_dropout.add(keras.layers.Dense(<span class="number">80</span>, activation=<span class="string">&quot;selu&quot;</span>, kernel_initializer=<span class="string">&quot;lecun_normal&quot;</span>))</span><br><span class="line">    model_with_alpha_dropout.add(keras.layers.AlphaDropout(<span class="number">0.25</span>))</span><br><span class="line"></span><br><span class="line">model_with_alpha_dropout.add(keras.layers.Dense(<span class="number">10</span>, activation=<span class="string">&quot;softmax&quot;</span>))</span><br><span class="line"></span><br><span class="line"><span class="comment"># 2.编译模型</span></span><br><span class="line">optimizer = keras.optimizers.Nadam(learning_rate=<span class="number">0.003</span>)</span><br><span class="line">model_with_alpha_dropout.<span class="built_in">compile</span>(loss=<span class="string">&quot;sparse_categorical_crossentropy&quot;</span>, </span><br><span class="line">                                 optimizer=optimizer, </span><br><span class="line">                                 metrics=[<span class="string">&quot;accuracy&quot;</span>])</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 输入特征标准化 (μ=0, σ=1)</span></span><br><span class="line">x_means = x_train.mean(axis=<span class="number">0</span>) </span><br><span class="line">x_stds = x_train.std(axis=<span class="number">0</span>)</span><br><span class="line"></span><br><span class="line">x_train_scaled = (x_train - x_means) / x_stds </span><br><span class="line">x_valid_scaled = (x_valid - x_means) / x_stds</span><br><span class="line">x_test_scaled = (x_test - x_means) / x_stds</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 3.训练模型</span></span><br><span class="line">lr_scheduler = keras.callbacks.ReduceLROnPlateau(factor=<span class="number">1</span>/<span class="number">3</span>, patience=<span class="number">4</span>)</span><br><span class="line"></span><br><span class="line">history_with_alpha_dropout = model_with_alpha_dropout.fit(x_train_scaled, y_train, epochs=<span class="number">25</span>, batch_size=<span class="number">128</span>,</span><br><span class="line">                                                          validation_data=(x_valid_scaled, y_valid),</span><br><span class="line">                                                          callbacks=[lr_scheduler])</span><br></pre></td></tr></table></figure>
+<pre><code>Epoch 1/25
+430/430 [==============================] - 9s 18ms/step - loss: 0.6672 - accuracy: 0.7771 - val_loss: 0.5470 - val_accuracy: 0.8572 - lr: 0.0030
+Epoch 2/25
+430/430 [==============================] - 7s 17ms/step - loss: 0.4653 - accuracy: 0.8437 - val_loss: 0.5983 - val_accuracy: 0.8474 - lr: 0.0030
+Epoch 3/25
+430/430 [==============================] - 7s 17ms/step - loss: 0.4090 - accuracy: 0.8605 - val_loss: 0.5949 - val_accuracy: 0.8572 - lr: 0.0030
+Epoch 4/25
+430/430 [==============================] - 7s 17ms/step - loss: 0.3917 - accuracy: 0.8655 - val_loss: 0.5147 - val_accuracy: 0.8720 - lr: 0.0030
+Epoch 5/25
+430/430 [==============================] - 8s 18ms/step - loss: 0.3594 - accuracy: 0.8782 - val_loss: 0.4578 - val_accuracy: 0.8768 - lr: 0.0030
+Epoch 6/25
+430/430 [==============================] - 8s 18ms/step - loss: 0.3398 - accuracy: 0.8837 - val_loss: 0.5777 - val_accuracy: 0.8672 - lr: 0.0030
+Epoch 7/25
+430/430 [==============================] - 8s 18ms/step - loss: 0.3399 - accuracy: 0.8849 - val_loss: 0.5091 - val_accuracy: 0.8790 - lr: 0.0030
+Epoch 8/25
+430/430 [==============================] - 7s 17ms/step - loss: 0.3175 - accuracy: 0.8912 - val_loss: 0.5224 - val_accuracy: 0.8776 - lr: 0.0030
+Epoch 9/25
+430/430 [==============================] - 7s 17ms/step - loss: 0.3103 - accuracy: 0.8946 - val_loss: 0.5111 - val_accuracy: 0.8818 - lr: 0.0030
+Epoch 10/25
+430/430 [==============================] - 7s 17ms/step - loss: 0.2435 - accuracy: 0.9147 - val_loss: 0.4527 - val_accuracy: 0.8938 - lr: 0.0010
+Epoch 11/25
+430/430 [==============================] - 8s 19ms/step - loss: 0.2196 - accuracy: 0.9221 - val_loss: 0.5114 - val_accuracy: 0.8952 - lr: 0.0010
+Epoch 12/25
+430/430 [==============================] - 7s 17ms/step - loss: 0.2074 - accuracy: 0.9256 - val_loss: 0.4812 - val_accuracy: 0.8868 - lr: 0.0010
+Epoch 13/25
+430/430 [==============================] - 7s 17ms/step - loss: 0.1983 - accuracy: 0.9283 - val_loss: 0.5023 - val_accuracy: 0.8938 - lr: 0.0010
+Epoch 14/25
+430/430 [==============================] - 7s 17ms/step - loss: 0.1901 - accuracy: 0.9319 - val_loss: 0.5339 - val_accuracy: 0.8906 - lr: 0.0010
+Epoch 15/25
+430/430 [==============================] - 7s 17ms/step - loss: 0.1602 - accuracy: 0.9434 - val_loss: 0.5606 - val_accuracy: 0.8988 - lr: 3.3333e-04
+Epoch 16/25
+430/430 [==============================] - 7s 17ms/step - loss: 0.1466 - accuracy: 0.9483 - val_loss: 0.5909 - val_accuracy: 0.8974 - lr: 3.3333e-04
+Epoch 17/25
+430/430 [==============================] - 7s 17ms/step - loss: 0.1372 - accuracy: 0.9513 - val_loss: 0.6188 - val_accuracy: 0.8988 - lr: 3.3333e-04
+Epoch 18/25
+430/430 [==============================] - 7s 17ms/step - loss: 0.1315 - accuracy: 0.9535 - val_loss: 0.6030 - val_accuracy: 0.8964 - lr: 3.3333e-04
+Epoch 19/25
+430/430 [==============================] - 7s 17ms/step - loss: 0.1150 - accuracy: 0.9596 - val_loss: 0.6832 - val_accuracy: 0.9014 - lr: 1.1111e-04
+Epoch 20/25
+430/430 [==============================] - 7s 17ms/step - loss: 0.1102 - accuracy: 0.9619 - val_loss: 0.7075 - val_accuracy: 0.8992 - lr: 1.1111e-04
+Epoch 21/25
+430/430 [==============================] - 7s 17ms/step - loss: 0.1056 - accuracy: 0.9629 - val_loss: 0.7323 - val_accuracy: 0.8990 - lr: 1.1111e-04
+Epoch 22/25
+430/430 [==============================] - 8s 17ms/step - loss: 0.1027 - accuracy: 0.9641 - val_loss: 0.7475 - val_accuracy: 0.8998 - lr: 1.1111e-04
+Epoch 23/25
+430/430 [==============================] - 7s 17ms/step - loss: 0.0959 - accuracy: 0.9673 - val_loss: 0.7682 - val_accuracy: 0.9000 - lr: 3.7037e-05
+Epoch 24/25
+430/430 [==============================] - 7s 17ms/step - loss: 0.0939 - accuracy: 0.9679 - val_loss: 0.7781 - val_accuracy: 0.9014 - lr: 3.7037e-05
+Epoch 25/25
+430/430 [==============================] - 7s 17ms/step - loss: 0.0921 - accuracy: 0.9686 - val_loss: 0.8001 - val_accuracy: 0.9000 - lr: 3.7037e-05
+</code></pre><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 绘制学习曲线</span></span><br><span class="line">pd.DataFrame(history_with_alpha_dropout.history).plot()</span><br><span class="line">plt.grid(<span class="literal">True</span>)</span><br><span class="line">plt.show()</span><br><span class="line"></span><br><span class="line"><span class="comment"># 在训练/测试集上评估模型</span></span><br><span class="line">display(model_with_alpha_dropout.evaluate(x_train_scaled, y_train))</span><br><span class="line">display(model_with_alpha_dropout.evaluate(x_test_scaled, y_test))</span><br></pre></td></tr></table></figure>
+<p><img src="/2022/01/19/%E5%90%84%E7%A7%8D%E6%AD%A3%E5%88%99%E5%8C%96%E6%96%B9%E6%B3%95%E4%B9%8B%E9%97%B4%E7%9A%84%E5%AF%B9%E6%AF%94/output_43_0.png" alt="png"></p>
+<pre><code>1719/1719 [==============================] - 6s 4ms/step - loss: 0.1080 - accuracy: 0.9704
+
+[0.10797912627458572, 0.9703999757766724]
+
+
+313/313 [==============================] - 1s 4ms/step - loss: 0.9345 - accuracy: 0.8960
+
+[0.9344537258148193, 0.8960000276565552]
+</code></pre><h1 id="结论-1"><a href="#结论-1" class="headerlink" title="结论 1"></a>结论 1</h1><div class="table-container">
+<table>
+<thead>
+<tr>
+<th>Regularization</th>
+<th>Training speed</th>
+<th>Convergence speed</th>
+<th>Accu on train</th>
+<th>Accu on test</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>No Reg</td>
+<td>7s/epoch</td>
+<td>/</td>
+<td>0.9661</td>
+<td>0.8949</td>
+</tr>
+<tr>
+<td>Batch Normalization</td>
+<td>17s/epoch</td>
+<td>/</td>
+<td>0.9914</td>
+<td>0.9016</td>
+</tr>
+<tr>
+<td>EarlyStopping</td>
+<td>7s/epoch</td>
+<td>19 epochs</td>
+<td>0.9382</td>
+<td>0.8977</td>
+</tr>
+<tr>
+<td>L1 Reg</td>
+<td>8s/epoch</td>
+<td>/</td>
+<td>0.9666</td>
+<td>0.8969</td>
+</tr>
+<tr>
+<td>L2 Reg</td>
+<td>8s/epoch</td>
+<td>/</td>
+<td>0.9660</td>
+<td>0.8957</td>
+</tr>
+<tr>
+<td>L1_L2 Reg</td>
+<td>8s/epoch</td>
+<td>/</td>
+<td>0.9726</td>
+<td>0.8947</td>
+</tr>
+<tr>
+<td>Regular Dropout</td>
+<td>7s/epoch</td>
+<td>/</td>
+<td>0.9624</td>
+<td>0.8955</td>
+</tr>
+<tr>
+<td>Alpha Dropout</td>
+<td>7s/epoch</td>
+<td>/</td>
+<td>0.9704</td>
+<td>0.8960</td>
+</tr>
+</tbody>
+</table>
+</div>
+<ol>
+<li>单独使用 Batch Normalization 作为正则化手段, 不可避免地<strong>大幅降低了训练速度</strong>, 但也获得了<strong>性能最佳的模型</strong>.</li>
+<li>单独使用 EarlyStopping, <strong>显著降低了训练集上的 Accuracy</strong>, 但模型性能提升甚微.</li>
+<li>单独使用 L1 / L2 / L1_L2 Reg, 相比无正则化区别不大.</li>
+<li>以上所有带正则化的模型仍存在过拟合现象.</li>
+</ol>
+<h1 id="结合多种正则化技术"><a href="#结合多种正则化技术" class="headerlink" title="结合多种正则化技术"></a>结合多种正则化技术</h1><h2 id="Regular-DNN"><a href="#Regular-DNN" class="headerlink" title="Regular DNN"></a>Regular DNN</h2><p>Early Stopping + Batch Normalization (对于较深的网络) + l2 regularization (必要时使用)</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">keras.backend.clear_session()</span><br><span class="line">tf.random.set_seed(<span class="number">42</span>)</span><br><span class="line">np.random.seed(<span class="number">42</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 1.构建模型</span></span><br><span class="line">regular_dnn = keras.models.Sequential([</span><br><span class="line">    keras.layers.Flatten(input_shape=x_train.shape[<span class="number">1</span>:]),</span><br><span class="line">    keras.layers.BatchNormalization(),</span><br><span class="line">    </span><br><span class="line">    keras.layers.Dense(<span class="number">400</span>, activation=<span class="string">&quot;elu&quot;</span>, kernel_initializer=<span class="string">&quot;he_normal&quot;</span>),</span><br><span class="line">    keras.layers.BatchNormalization(),</span><br><span class="line">    </span><br><span class="line">    keras.layers.Dense(<span class="number">200</span>, activation=<span class="string">&quot;elu&quot;</span>, kernel_initializer=<span class="string">&quot;he_normal&quot;</span>),</span><br><span class="line">    keras.layers.BatchNormalization()</span><br><span class="line">])</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> _ <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">8</span>):</span><br><span class="line">    regular_dnn.add(keras.layers.Dense(<span class="number">80</span>, activation=<span class="string">&quot;elu&quot;</span>, kernel_initializer=<span class="string">&quot;he_normal&quot;</span>, </span><br><span class="line">                                       kernel_regularizer=keras.regularizers.l2(<span class="number">3e-5</span>)))</span><br><span class="line">    regular_dnn.add(keras.layers.BatchNormalization())</span><br><span class="line"></span><br><span class="line">regular_dnn.add(keras.layers.Dense(<span class="number">10</span>, activation=<span class="string">&quot;softmax&quot;</span>))</span><br><span class="line"></span><br><span class="line"><span class="comment"># 2.编译模型</span></span><br><span class="line">optimizer = keras.optimizers.Nadam(learning_rate=<span class="number">0.003</span>)</span><br><span class="line">regular_dnn.<span class="built_in">compile</span>(loss=<span class="string">&quot;sparse_categorical_crossentropy&quot;</span>, </span><br><span class="line">                      optimizer=optimizer, </span><br><span class="line">                      metrics=[<span class="string">&quot;accuracy&quot;</span>])</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 3.训练模型</span></span><br><span class="line">lr_scheduler = keras.callbacks.ReduceLROnPlateau(factor=<span class="number">1</span>/<span class="number">4</span>, patience=<span class="number">4</span>)</span><br><span class="line">early_stopping_cb = keras.callbacks.EarlyStopping(patience=<span class="number">5</span>, restore_best_weights=<span class="literal">True</span>)</span><br><span class="line"></span><br><span class="line">regular_history = regular_dnn.fit(x_train, y_train, epochs=<span class="number">25</span>*<span class="number">2</span>, batch_size=<span class="number">128</span>,</span><br><span class="line">                                  validation_data=(x_valid, y_valid),</span><br><span class="line">                                  callbacks=[lr_scheduler, early_stopping_cb])</span><br></pre></td></tr></table></figure>
+<pre><code>Epoch 1/50
+430/430 [==============================] - 21s 40ms/step - loss: 0.5284 - accuracy: 0.8247 - val_loss: 0.3989 - val_accuracy: 0.8758 - lr: 0.0030
+Epoch 2/50
+430/430 [==============================] - 17s 40ms/step - loss: 0.4063 - accuracy: 0.8664 - val_loss: 0.3888 - val_accuracy: 0.8742 - lr: 0.0030
+Epoch 3/50
+430/430 [==============================] - 18s 41ms/step - loss: 0.3723 - accuracy: 0.8772 - val_loss: 0.4385 - val_accuracy: 0.8558 - lr: 0.0030
+Epoch 4/50
+430/430 [==============================] - 17s 40ms/step - loss: 0.3454 - accuracy: 0.8876 - val_loss: 0.3718 - val_accuracy: 0.8792 - lr: 0.0030
+Epoch 5/50
+430/430 [==============================] - 17s 40ms/step - loss: 0.3201 - accuracy: 0.8955 - val_loss: 0.3504 - val_accuracy: 0.8848 - lr: 0.0030
+Epoch 6/50
+430/430 [==============================] - 17s 40ms/step - loss: 0.3059 - accuracy: 0.8998 - val_loss: 0.3587 - val_accuracy: 0.8874 - lr: 0.0030
+Epoch 7/50
+430/430 [==============================] - 17s 40ms/step - loss: 0.2921 - accuracy: 0.9046 - val_loss: 0.3691 - val_accuracy: 0.8848 - lr: 0.0030
+Epoch 8/50
+430/430 [==============================] - 17s 40ms/step - loss: 0.2774 - accuracy: 0.9110 - val_loss: 0.3565 - val_accuracy: 0.8834 - lr: 0.0030
+Epoch 9/50
+430/430 [==============================] - 17s 40ms/step - loss: 0.2620 - accuracy: 0.9150 - val_loss: 0.3554 - val_accuracy: 0.8844 - lr: 0.0030
+Epoch 10/50
+430/430 [==============================] - 17s 40ms/step - loss: 0.1988 - accuracy: 0.9384 - val_loss: 0.3103 - val_accuracy: 0.9054 - lr: 7.5000e-04
+Epoch 11/50
+430/430 [==============================] - 18s 41ms/step - loss: 0.1763 - accuracy: 0.9460 - val_loss: 0.3156 - val_accuracy: 0.9052 - lr: 7.5000e-04
+Epoch 12/50
+430/430 [==============================] - 18s 42ms/step - loss: 0.1659 - accuracy: 0.9502 - val_loss: 0.3260 - val_accuracy: 0.8986 - lr: 7.5000e-04
+Epoch 13/50
+430/430 [==============================] - 17s 40ms/step - loss: 0.1558 - accuracy: 0.9528 - val_loss: 0.3301 - val_accuracy: 0.9026 - lr: 7.5000e-04
+Epoch 14/50
+430/430 [==============================] - 17s 40ms/step - loss: 0.1461 - accuracy: 0.9561 - val_loss: 0.3395 - val_accuracy: 0.9020 - lr: 7.5000e-04
+Epoch 15/50
+430/430 [==============================] - 17s 40ms/step - loss: 0.1184 - accuracy: 0.9670 - val_loss: 0.3509 - val_accuracy: 0.9022 - lr: 1.8750e-04
+</code></pre><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 绘制学习曲线</span></span><br><span class="line">pd.DataFrame(regular_history.history).plot()</span><br><span class="line">plt.grid(<span class="literal">True</span>)</span><br><span class="line">plt.show()</span><br><span class="line"></span><br><span class="line"><span class="comment"># 在训练/测试集上评估模型</span></span><br><span class="line">display(regular_dnn.evaluate(x_train, y_train))</span><br><span class="line">display(regular_dnn.evaluate(x_test, y_test))</span><br></pre></td></tr></table></figure>
+<p><img src="/2022/01/19/%E5%90%84%E7%A7%8D%E6%AD%A3%E5%88%99%E5%8C%96%E6%96%B9%E6%B3%95%E4%B9%8B%E9%97%B4%E7%9A%84%E5%AF%B9%E6%AF%94/output_52_0.png" alt="png"></p>
+<pre><code>1719/1719 [==============================] - 12s 7ms/step - loss: 0.1546 - accuracy: 0.9559
+
+[0.15455804765224457, 0.9559454321861267]
+
+
+313/313 [==============================] - 2s 7ms/step - loss: 0.3264 - accuracy: 0.9036
+
+[0.32639697194099426, 0.9035999774932861]
+</code></pre><h2 id="Self-Normalize-DNN"><a href="#Self-Normalize-DNN" class="headerlink" title="Self-Normalize DNN"></a>Self-Normalize DNN</h2><p>Early Stopping + Alpha Dropout</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">keras.backend.clear_session()</span><br><span class="line">tf.random.set_seed(<span class="number">42</span>)</span><br><span class="line">np.random.seed(<span class="number">42</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 1.构建模型</span></span><br><span class="line">self_norm_dnn = keras.models.Sequential([</span><br><span class="line">    keras.layers.Flatten(input_shape=x_train.shape[<span class="number">1</span>:]),</span><br><span class="line">    keras.layers.Dense(<span class="number">400</span>, activation=<span class="string">&quot;selu&quot;</span>, kernel_initializer=<span class="string">&quot;lecun_normal&quot;</span>),</span><br><span class="line">    keras.layers.Dense(<span class="number">200</span>, activation=<span class="string">&quot;selu&quot;</span>, kernel_initializer=<span class="string">&quot;lecun_normal&quot;</span>)</span><br><span class="line">])</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> _ <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">6</span>):</span><br><span class="line">    self_norm_dnn.add(keras.layers.Dense(<span class="number">80</span>, activation=<span class="string">&quot;selu&quot;</span>, kernel_initializer=<span class="string">&quot;lecun_normal&quot;</span>))</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> _ <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">2</span>):</span><br><span class="line">    self_norm_dnn.add(keras.layers.Dense(<span class="number">80</span>, activation=<span class="string">&quot;selu&quot;</span>, kernel_initializer=<span class="string">&quot;lecun_normal&quot;</span>))</span><br><span class="line">    self_norm_dnn.add(keras.layers.AlphaDropout(<span class="number">0.25</span>))</span><br><span class="line"></span><br><span class="line">self_norm_dnn.add(keras.layers.Dense(<span class="number">10</span>, activation=<span class="string">&quot;softmax&quot;</span>))</span><br><span class="line"></span><br><span class="line"><span class="comment"># 2.编译模型</span></span><br><span class="line">optimizer = keras.optimizers.Nadam(learning_rate=<span class="number">0.003</span>)</span><br><span class="line">self_norm_dnn.<span class="built_in">compile</span>(loss=<span class="string">&quot;sparse_categorical_crossentropy&quot;</span>, </span><br><span class="line">                      optimizer=optimizer, </span><br><span class="line">                      metrics=[<span class="string">&quot;accuracy&quot;</span>])</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 输入特征标准化 (μ=0, σ=1)</span></span><br><span class="line">x_means = x_train.mean(axis=<span class="number">0</span>) </span><br><span class="line">x_stds = x_train.std(axis=<span class="number">0</span>)</span><br><span class="line"></span><br><span class="line">x_train_scaled = (x_train - x_means) / x_stds </span><br><span class="line">x_valid_scaled = (x_valid - x_means) / x_stds</span><br><span class="line">x_test_scaled = (x_test - x_means) / x_stds</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 3.训练模型</span></span><br><span class="line">lr_scheduler = keras.callbacks.ReduceLROnPlateau(factor=<span class="number">1</span>/<span class="number">4</span>, patience=<span class="number">4</span>)</span><br><span class="line">early_stopping_cb = keras.callbacks.EarlyStopping(patience=<span class="number">5</span>, restore_best_weights=<span class="literal">True</span>)</span><br><span class="line"></span><br><span class="line">self_norm_history = self_norm_dnn.fit(x_train_scaled, y_train, epochs=<span class="number">25</span>*<span class="number">2</span>, batch_size=<span class="number">128</span>,</span><br><span class="line">                                      validation_data=(x_valid_scaled, y_valid),</span><br><span class="line">                                      callbacks=[lr_scheduler, early_stopping_cb])</span><br></pre></td></tr></table></figure>
+<pre><code>Epoch 1/50
+430/430 [==============================] - 9s 19ms/step - loss: 0.6619 - accuracy: 0.7798 - val_loss: 0.5637 - val_accuracy: 0.8402 - lr: 0.0030
+Epoch 2/50
+430/430 [==============================] - 8s 18ms/step - loss: 0.4664 - accuracy: 0.8421 - val_loss: 0.5877 - val_accuracy: 0.8522 - lr: 0.0030
+Epoch 3/50
+430/430 [==============================] - 8s 18ms/step - loss: 0.4183 - accuracy: 0.8574 - val_loss: 0.5682 - val_accuracy: 0.8634 - lr: 0.0030
+Epoch 4/50
+430/430 [==============================] - 8s 18ms/step - loss: 0.3946 - accuracy: 0.8657 - val_loss: 0.5031 - val_accuracy: 0.8706 - lr: 0.0030
+Epoch 5/50
+430/430 [==============================] - 7s 17ms/step - loss: 0.3664 - accuracy: 0.8742 - val_loss: 0.4748 - val_accuracy: 0.8760 - lr: 0.0030
+Epoch 6/50
+430/430 [==============================] - 8s 18ms/step - loss: 0.3489 - accuracy: 0.8811 - val_loss: 0.5445 - val_accuracy: 0.8758 - lr: 0.0030
+Epoch 7/50
+430/430 [==============================] - 8s 18ms/step - loss: 0.3360 - accuracy: 0.8865 - val_loss: 0.5468 - val_accuracy: 0.8716 - lr: 0.0030
+Epoch 8/50
+430/430 [==============================] - 8s 18ms/step - loss: 0.3409 - accuracy: 0.8835 - val_loss: 0.4911 - val_accuracy: 0.8716 - lr: 0.0030
+Epoch 9/50
+430/430 [==============================] - 8s 18ms/step - loss: 0.3090 - accuracy: 0.8939 - val_loss: 0.5311 - val_accuracy: 0.8780 - lr: 0.0030
+Epoch 10/50
+430/430 [==============================] - 8s 18ms/step - loss: 0.2407 - accuracy: 0.9152 - val_loss: 0.4742 - val_accuracy: 0.8926 - lr: 7.5000e-04
+Epoch 11/50
+430/430 [==============================] - 8s 18ms/step - loss: 0.2180 - accuracy: 0.9215 - val_loss: 0.5036 - val_accuracy: 0.8944 - lr: 7.5000e-04
+Epoch 12/50
+430/430 [==============================] - 8s 18ms/step - loss: 0.2064 - accuracy: 0.9260 - val_loss: 0.4891 - val_accuracy: 0.8920 - lr: 7.5000e-04
+Epoch 13/50
+430/430 [==============================] - 8s 18ms/step - loss: 0.1953 - accuracy: 0.9291 - val_loss: 0.5147 - val_accuracy: 0.8980 - lr: 7.5000e-04
+Epoch 14/50
+430/430 [==============================] - 8s 18ms/step - loss: 0.1871 - accuracy: 0.9316 - val_loss: 0.5644 - val_accuracy: 0.8958 - lr: 7.5000e-04
+Epoch 15/50
+430/430 [==============================] - 8s 18ms/step - loss: 0.1595 - accuracy: 0.9420 - val_loss: 0.5549 - val_accuracy: 0.8994 - lr: 1.8750e-04
+</code></pre><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 绘制学习曲线</span></span><br><span class="line">pd.DataFrame(self_norm_history.history).plot()</span><br><span class="line">plt.grid(<span class="literal">True</span>)</span><br><span class="line">plt.show()</span><br><span class="line"></span><br><span class="line"><span class="comment"># 在训练/测试集上评估模型</span></span><br><span class="line">display(self_norm_dnn.evaluate(x_train_scaled, y_train))</span><br><span class="line">display(self_norm_dnn.evaluate(x_test_scaled, y_test))</span><br></pre></td></tr></table></figure>
+<p><img src="/2022/01/19/%E5%90%84%E7%A7%8D%E6%AD%A3%E5%88%99%E5%8C%96%E6%96%B9%E6%B3%95%E4%B9%8B%E9%97%B4%E7%9A%84%E5%AF%B9%E6%AF%94/output_58_0.png" alt="png"></p>
+<pre><code>1719/1719 [==============================] - 6s 3ms/step - loss: 0.2535 - accuracy: 0.9248
+
+[0.25346049666404724, 0.9247636198997498]
+
+
+313/313 [==============================] - 1s 3ms/step - loss: 0.5312 - accuracy: 0.8911
+
+[0.5311788320541382, 0.8910999894142151]
+</code></pre><h1 id="结论-2"><a href="#结论-2" class="headerlink" title="结论 2"></a>结论 2</h1><div class="table-container">
+<table>
+<thead>
+<tr>
+<th>Regularization</th>
+<th>Training speed</th>
+<th>Convergence speed</th>
+<th>Accu on train</th>
+<th>Accu on test</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>No Reg</td>
+<td>7s/epoch</td>
+<td>/</td>
+<td>0.9661</td>
+<td>0.8949</td>
+</tr>
+<tr>
+<td>EarlyStopping + Batch Normalization + L2 Reg</td>
+<td>18s/epoch</td>
+<td>10 epochs</td>
+<td>0.9559</td>
+<td>0.9036</td>
+</tr>
+<tr>
+<td>EarlyStopping + Alpha Dropout</td>
+<td>8s/epoch</td>
+<td>10 epochs</td>
+<td>0.9248</td>
+<td>0.8911</td>
+</tr>
+</tbody>
+</table>
+</div>
+<ol>
+<li>对于非自归一化网络, 使用 EarlyStopping + Batch Normalization + L2 Reg 进行正则化, 由于 BN 层的存在, 必然大幅降低训练速度, 但<strong>收敛速度提升</strong>; 而 EarlyStopping 节约了不必要的计算; 最终: 结合多种正则化技术, 达到了模型的<strong>最佳性能</strong>.</li>
+<li>对于自归一化网络, 使用 EarlyStopping + Alpha Dropout 进行正则化, <strong>训练速度得以保持在较快水平</strong>, 且收敛速度提升; EarlyStopping 节约了不必要的计算; <strong>训练集上的 Accuracy 显著降低</strong>, 但最终模型性能不甚理想(可能需要微调其他超参数以发挥该模型的真正性能).</li>
+</ol>
+<p>🐒 可以改进的点: 以上各种模型都涉及大量超参数, 而测试中的配置并非最优超参数组合, 因此模型之间的性能比较未必准确. 另外, 使用 Alpha Dropout 的两个模型的验证误差都很高, 但 accuracy 却没有大幅下降…其原因尚未找到…</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Machine-Learning/" rel="tag"># Machine Learning</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2022/01/19/%E5%90%84%E7%A7%8D%E5%AD%A6%E4%B9%A0%E7%8E%87%E8%B0%83%E5%BA%A6%E4%B9%8B%E9%97%B4%E7%9A%84%E5%AF%B9%E6%AF%94/" rel="prev" title="各种学习率调度之间的对比">
+                  <i class="fa fa-chevron-left"></i> 各种学习率调度之间的对比
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2022/01/19/%E8%92%99%E7%89%B9%E5%8D%A1%E6%B4%9B-Dropout-%E5%AE%9E%E8%B7%B5/" rel="next" title="蒙特卡洛 Dropout 实践">
+                  蒙特卡洛 Dropout 实践 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 2021 – 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Gozen Sanji</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+<script src="https://cdn.jsdelivr.net/npm/hexo-generator-searchdb@1.4.0/dist/search.js" integrity="sha256-vXZMYLEqsROAXkEw93GGIvaB2ab+QW6w3+1ahD9nXXA=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdn.jsdelivr.net/npm/mathjax@3.2.0/es5/tex-mml-chtml.js","integrity":"sha256-r+3itOMtGGjap0x+10hu6jW/gZCzxHsoKrOd7gyRSGY="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+
+</body>
+</html>

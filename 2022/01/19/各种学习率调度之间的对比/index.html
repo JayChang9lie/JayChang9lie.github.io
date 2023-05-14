@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.0.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.4/css/all.min.css" integrity="sha256-mUZM63G8m73Mcidfrv5E+Y61y7a12O5mW4ezU3bxqW4=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.9.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":true,"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+<meta name="description" content="❓ 如何选择使用什么学习率调度? 选项有:   幂调度   指数调度 分段常数调度 性能调度 1Cycle 调度  另外, 学习率调度有两种不同的实现方式, 分别对应 &lt;在每个 epoch 开始前更新学习率&gt; 和 &lt;在每个 step 开始前更新学习率&gt;. 它们在性能上表现如何?">
+<meta property="og:type" content="article">
+<meta property="og:title" content="各种学习率调度之间的对比">
+<meta property="og:url" content="http://example.com/2022/01/19/%E5%90%84%E7%A7%8D%E5%AD%A6%E4%B9%A0%E7%8E%87%E8%B0%83%E5%BA%A6%E4%B9%8B%E9%97%B4%E7%9A%84%E5%AF%B9%E6%AF%94/index.html">
+<meta property="og:site_name" content="Jay&#39;s Blog">
+<meta property="og:description" content="❓ 如何选择使用什么学习率调度? 选项有:   幂调度   指数调度 分段常数调度 性能调度 1Cycle 调度  另外, 学习率调度有两种不同的实现方式, 分别对应 &lt;在每个 epoch 开始前更新学习率&gt; 和 &lt;在每个 step 开始前更新学习率&gt;. 它们在性能上表现如何?">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://example.com/2022/01/19/%E5%90%84%E7%A7%8D%E5%AD%A6%E4%B9%A0%E7%8E%87%E8%B0%83%E5%BA%A6%E4%B9%8B%E9%97%B4%E7%9A%84%E5%AF%B9%E6%AF%94/output_6_0.png">
+<meta property="og:image" content="http://example.com/2022/01/19/%E5%90%84%E7%A7%8D%E5%AD%A6%E4%B9%A0%E7%8E%87%E8%B0%83%E5%BA%A6%E4%B9%8B%E9%97%B4%E7%9A%84%E5%AF%B9%E6%AF%94/output_12_0.png">
+<meta property="og:image" content="http://example.com/2022/01/19/%E5%90%84%E7%A7%8D%E5%AD%A6%E4%B9%A0%E7%8E%87%E8%B0%83%E5%BA%A6%E4%B9%8B%E9%97%B4%E7%9A%84%E5%AF%B9%E6%AF%94/output_18_0.png">
+<meta property="og:image" content="http://example.com/2022/01/19/%E5%90%84%E7%A7%8D%E5%AD%A6%E4%B9%A0%E7%8E%87%E8%B0%83%E5%BA%A6%E4%B9%8B%E9%97%B4%E7%9A%84%E5%AF%B9%E6%AF%94/output_24_0.png">
+<meta property="og:image" content="http://example.com/2022/01/19/%E5%90%84%E7%A7%8D%E5%AD%A6%E4%B9%A0%E7%8E%87%E8%B0%83%E5%BA%A6%E4%B9%8B%E9%97%B4%E7%9A%84%E5%AF%B9%E6%AF%94/output_29_0.png">
+<meta property="og:image" content="http://example.com/2022/01/19/%E5%90%84%E7%A7%8D%E5%AD%A6%E4%B9%A0%E7%8E%87%E8%B0%83%E5%BA%A6%E4%B9%8B%E9%97%B4%E7%9A%84%E5%AF%B9%E6%AF%94/output_33_0.png">
+<meta property="og:image" content="http://example.com/2022/01/19/%E5%90%84%E7%A7%8D%E5%AD%A6%E4%B9%A0%E7%8E%87%E8%B0%83%E5%BA%A6%E4%B9%8B%E9%97%B4%E7%9A%84%E5%AF%B9%E6%AF%94/output_37_1.png">
+<meta property="og:image" content="http://example.com/2022/01/19/%E5%90%84%E7%A7%8D%E5%AD%A6%E4%B9%A0%E7%8E%87%E8%B0%83%E5%BA%A6%E4%B9%8B%E9%97%B4%E7%9A%84%E5%AF%B9%E6%AF%94/output_42_0.png">
+<meta property="article:published_time" content="2022-01-19T08:27:16.000Z">
+<meta property="article:modified_time" content="2022-01-19T08:50:12.857Z">
+<meta property="article:author" content="Gozen Sanji">
+<meta property="article:tag" content="Machine Learning">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/2022/01/19/%E5%90%84%E7%A7%8D%E5%AD%A6%E4%B9%A0%E7%8E%87%E8%B0%83%E5%BA%A6%E4%B9%8B%E9%97%B4%E7%9A%84%E5%AF%B9%E6%AF%94/output_6_0.png">
+
+
+<link rel="canonical" href="http://example.com/2022/01/19/%E5%90%84%E7%A7%8D%E5%AD%A6%E4%B9%A0%E7%8E%87%E8%B0%83%E5%BA%A6%E4%B9%8B%E9%97%B4%E7%9A%84%E5%AF%B9%E6%AF%94/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"en","comments":true,"permalink":"http://example.com/2022/01/19/%E5%90%84%E7%A7%8D%E5%AD%A6%E4%B9%A0%E7%8E%87%E8%B0%83%E5%BA%A6%E4%B9%8B%E9%97%B4%E7%9A%84%E5%AF%B9%E6%AF%94/","path":"2022/01/19/各种学习率调度之间的对比/","title":"各种学习率调度之间的对比"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>各种学习率调度之间的对比 | Jay's Blog</title>
+  
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Jay's Blog</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">🐬</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="user fa-fw"></i>About</a></li>
+        <li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="tags fa-fw"></i>Tags</a></li>
+        <li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="th fa-fw"></i>Categories</a></li>
+        <li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="archive fa-fw"></i>Archives</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>Search
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="Searching..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%AE%9A%E4%B9%89%E6%9E%84%E5%BB%BA%E6%A8%A1%E5%9E%8B%E7%9A%84%E5%87%BD%E6%95%B0"><span class="nav-number">1.</span> <span class="nav-text">定义构建模型的函数</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%B9%82%E8%B0%83%E5%BA%A6"><span class="nav-number">2.</span> <span class="nav-text">幂调度</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%8C%87%E6%95%B0%E8%B0%83%E5%BA%A6"><span class="nav-number">3.</span> <span class="nav-text">指数调度</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AC%AC%E4%B8%80%E7%A7%8D%E5%AE%9E%E7%8E%B0"><span class="nav-number">3.1.</span> <span class="nav-text">第一种实现</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AC%AC%E4%BA%8C%E7%A7%8D%E5%AE%9E%E7%8E%B0"><span class="nav-number">3.2.</span> <span class="nav-text">第二种实现</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%88%86%E6%AE%B5%E5%B8%B8%E6%95%B0%E8%B0%83%E5%BA%A6"><span class="nav-number">4.</span> <span class="nav-text">分段常数调度</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%80%A7%E8%83%BD%E8%B0%83%E5%BA%A6"><span class="nav-number">5.</span> <span class="nav-text">性能调度</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#1Cycle-%E8%B0%83%E5%BA%A6"><span class="nav-number">6.</span> <span class="nav-text">1Cycle 调度</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AF%BB%E6%89%BE%E6%9C%80%E4%BD%B3%E5%AD%A6%E4%B9%A0%E7%8E%87"><span class="nav-number">6.1.</span> <span class="nav-text">寻找最佳学习率</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A0%B9%E6%8D%AE%E6%89%80%E9%80%89%E5%AD%A6%E4%B9%A0%E7%8E%87-%E4%BD%BF%E7%94%A8-1cycle-%E8%B0%83%E5%BA%A6"><span class="nav-number">6.2.</span> <span class="nav-text">根据所选学习率, 使用 1cycle 调度</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%BB%93%E8%AE%BA"><span class="nav-number">7.</span> <span class="nav-text">结论</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Gozen Sanji"
+      src="/images/my_avatar.jpg">
+  <p class="site-author-name" itemprop="name">Gozen Sanji</p>
+  <div class="site-description" itemprop="description">目が覚めた抵抗 型落ちの衝動</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">14</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="Back to top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2022/01/19/%E5%90%84%E7%A7%8D%E5%AD%A6%E4%B9%A0%E7%8E%87%E8%B0%83%E5%BA%A6%E4%B9%8B%E9%97%B4%E7%9A%84%E5%AF%B9%E6%AF%94/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/my_avatar.jpg">
+      <meta itemprop="name" content="Gozen Sanji">
+      <meta itemprop="description" content="目が覚めた抵抗 型落ちの衝動">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Jay's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          各种学习率调度之间的对比
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+      
+
+      <time title="Created: 2022-01-19 16:27:16 / Modified: 16:50:12" itemprop="dateCreated datePublished" datetime="2022-01-19T16:27:16+08:00">2022-01-19</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Machine-Learning/" itemprop="url" rel="index"><span itemprop="name">Machine Learning</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>❓ 如何选择使用什么学习率调度? 选项有: </p>
+<ol>
+<li>幂调度  </li>
+<li>指数调度</li>
+<li>分段常数调度</li>
+<li>性能调度</li>
+<li>1Cycle 调度</li>
+</ol>
+<p>另外, 学习率调度有<strong>两种不同的实现方式</strong>, 分别对应 &lt;在每个 epoch 开始前更新学习率&gt; 和 &lt;在每个 step 开始前更新学习率&gt;. 它们在性能上表现如何?</p>
+<span id="more"></span>
+<p>※ 下面针对相同的 &lt;网络架构 &amp; 优化器&gt;, 对比不同学习率调度的<strong>收敛速度</strong>和<strong>模型性能</strong>.</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># common imports </span></span><br><span class="line"><span class="keyword">import</span> os</span><br><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"><span class="keyword">import</span> pandas <span class="keyword">as</span> pd</span><br><span class="line"><span class="keyword">import</span> matplotlib.pyplot <span class="keyword">as</span> plt</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> tensorflow <span class="keyword">as</span> tf</span><br><span class="line"><span class="keyword">from</span> tensorflow <span class="keyword">import</span> keras</span><br></pre></td></tr></table></figure>
+<p>🔺 针对 Fashion MNIST 数据集, 开展下面的测试.</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 准备数据集 (train, valid, test)</span></span><br><span class="line">(x_train_full, y_train_full), (x_test, y_test) = keras.datasets.fashion_mnist.load_data()</span><br><span class="line"></span><br><span class="line">x_train_full = x_train_full / <span class="number">255.</span></span><br><span class="line">x_test = x_test / <span class="number">255.</span></span><br><span class="line"></span><br><span class="line">x_valid, x_train = x_train_full[:<span class="number">5000</span>], x_train_full[<span class="number">5000</span>:]</span><br><span class="line">y_valid, y_train = y_train_full[:<span class="number">5000</span>], y_train_full[<span class="number">5000</span>:]</span><br><span class="line"></span><br><span class="line"><span class="built_in">print</span>(x_train.shape, y_train.shape, sep=<span class="string">&quot;\t&quot;</span>)</span><br><span class="line"><span class="built_in">print</span>(x_valid.shape, y_valid.shape, sep=<span class="string">&quot;\t&quot;</span>)</span><br><span class="line"><span class="built_in">print</span>(x_test.shape, y_test.shape, sep=<span class="string">&quot;\t&quot;</span>)</span><br></pre></td></tr></table></figure>
+<pre><code>(55000, 28, 28)    (55000,)
+(5000, 28, 28)    (5000,)
+(10000, 28, 28)    (10000,)
+</code></pre><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># fashion_mnist 中数字标签对应的类别名称</span></span><br><span class="line">class_names = [<span class="string">&quot;T-shirt/top&quot;</span>, <span class="string">&quot;Trouser&quot;</span>, <span class="string">&quot;Pullover&quot;</span>, <span class="string">&quot;Dress&quot;</span>, <span class="string">&quot;Coat&quot;</span>, </span><br><span class="line">               <span class="string">&quot;Sandal&quot;</span>, <span class="string">&quot;Shirt&quot;</span>, <span class="string">&quot;Sneaker&quot;</span>, <span class="string">&quot;Bag&quot;</span>, <span class="string">&quot;Ankleboot&quot;</span>]</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 展示部分训练集实例</span></span><br><span class="line">m, n = <span class="number">2</span>, <span class="number">5</span>    <span class="comment"># m 行 n 列</span></span><br><span class="line">rnd_indices = np.random.randint(low=<span class="number">0</span>, high=x_train.shape[<span class="number">0</span>], size=(m * n, ))</span><br><span class="line">x_sample, y_sample = x_train[rnd_indices], y_train[rnd_indices]</span><br><span class="line"></span><br><span class="line">plt.figure(figsize=(n * <span class="number">1.5</span>, m * <span class="number">1.8</span>))</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">1</span>, m + <span class="number">1</span>):</span><br><span class="line">    <span class="keyword">for</span> j <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">1</span>, n + <span class="number">1</span>):</span><br><span class="line">        idx = (i - <span class="number">1</span>) * n + j</span><br><span class="line">        plt.subplot(m, n, idx)</span><br><span class="line">        plt.imshow(x_sample[idx - <span class="number">1</span>], cmap=<span class="string">&quot;binary&quot;</span>)</span><br><span class="line">        plt.title(class_names[y_sample[idx - <span class="number">1</span>]])</span><br><span class="line">        plt.axis(<span class="string">&#x27;off&#x27;</span>)</span><br><span class="line"></span><br><span class="line">plt.show()</span><br></pre></td></tr></table></figure>
+<p><img src="/2022/01/19/%E5%90%84%E7%A7%8D%E5%AD%A6%E4%B9%A0%E7%8E%87%E8%B0%83%E5%BA%A6%E4%B9%8B%E9%97%B4%E7%9A%84%E5%AF%B9%E6%AF%94/output_6_0.png" alt="png"></p>
+<h1 id="定义构建模型的函数"><a href="#定义构建模型的函数" class="headerlink" title="定义构建模型的函数"></a>定义构建模型的函数</h1><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">build_model</span>(<span class="params">optimizer, activation=<span class="string">&quot;elu&quot;</span>, n_layers=<span class="number">4</span>, n_neurons=<span class="number">80</span></span>):</span></span><br><span class="line">    model = keras.models.Sequential([</span><br><span class="line">        keras.layers.Flatten(input_shape=x_train.shape[<span class="number">1</span>:]),</span><br><span class="line">        keras.layers.BatchNormalization(),</span><br><span class="line">        </span><br><span class="line">        keras.layers.Dense(<span class="number">400</span>, activation=activation, kernel_initializer=<span class="string">&quot;he_normal&quot;</span>),</span><br><span class="line">        keras.layers.BatchNormalization(),</span><br><span class="line">        </span><br><span class="line">        keras.layers.Dense(<span class="number">200</span>, activation=activation, kernel_initializer=<span class="string">&quot;he_normal&quot;</span>),</span><br><span class="line">        keras.layers.BatchNormalization(),</span><br><span class="line">    ])</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">for</span> _ <span class="keyword">in</span> <span class="built_in">range</span>(n_layers):</span><br><span class="line">        model.add(keras.layers.Dense(n_neurons, activation=activation, kernel_initializer=<span class="string">&quot;he_normal&quot;</span>))</span><br><span class="line">        model.add(keras.layers.BatchNormalization())</span><br><span class="line">        </span><br><span class="line">    model.add(keras.layers.Dense(<span class="number">10</span>, activation=<span class="string">&quot;softmax&quot;</span>))</span><br><span class="line">    </span><br><span class="line">    model.<span class="built_in">compile</span>(loss=<span class="string">&quot;sparse_categorical_crossentropy&quot;</span>, </span><br><span class="line">                  optimizer=optimizer, </span><br><span class="line">                  metrics=[<span class="string">&quot;accuracy&quot;</span>])</span><br><span class="line">    <span class="keyword">return</span> model</span><br></pre></td></tr></table></figure>
+<p>Remark: 基于训练速度考虑, 下面选用了 batch_size=128 以加速训练, 但使用更小的 batch_size (如 32) 可能获得更好的模型.</p>
+<h1 id="幂调度"><a href="#幂调度" class="headerlink" title="幂调度"></a>幂调度</h1><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">keras.backend.clear_session()</span><br><span class="line">tf.random.set_seed(<span class="number">42</span>)</span><br><span class="line">np.random.seed(<span class="number">42</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 定义(带幂调度的)优化器, 构建模型</span></span><br><span class="line"><span class="comment"># decay value 表示每 5000 个 step 更新一次 learning rate</span></span><br><span class="line">optimizer = keras.optimizers.Nadam(learning_rate=<span class="number">0.009</span>, decay=<span class="number">1</span>/<span class="number">5000</span>)    </span><br><span class="line">model = build_model(optimizer)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 训练模型</span></span><br><span class="line">es_cb = keras.callbacks.EarlyStopping(patience=<span class="number">5</span>, restore_best_weights=<span class="literal">True</span>)</span><br><span class="line">history = model.fit(x_train, y_train, epochs=<span class="number">100</span>, </span><br><span class="line">                    validation_data=(x_valid, y_valid),</span><br><span class="line">                    batch_size=<span class="number">128</span>,</span><br><span class="line">                    callbacks=[es_cb])</span><br></pre></td></tr></table></figure>
+<pre><code>Epoch 1/100
+430/430 [==============================] - 13s 24ms/step - loss: 0.4903 - accuracy: 0.8215 - val_loss: 0.3833 - val_accuracy: 0.8706
+Epoch 2/100
+430/430 [==============================] - 10s 23ms/step - loss: 0.3652 - accuracy: 0.8666 - val_loss: 0.3747 - val_accuracy: 0.8706
+Epoch 3/100
+430/430 [==============================] - 10s 23ms/step - loss: 0.3305 - accuracy: 0.8774 - val_loss: 0.4111 - val_accuracy: 0.8530
+Epoch 4/100
+430/430 [==============================] - 10s 23ms/step - loss: 0.3070 - accuracy: 0.8880 - val_loss: 0.3452 - val_accuracy: 0.8750
+Epoch 5/100
+430/430 [==============================] - 10s 23ms/step - loss: 0.2825 - accuracy: 0.8951 - val_loss: 0.3383 - val_accuracy: 0.8792
+Epoch 6/100
+430/430 [==============================] - 10s 23ms/step - loss: 0.2699 - accuracy: 0.9001 - val_loss: 0.3114 - val_accuracy: 0.8920
+Epoch 7/100
+430/430 [==============================] - 10s 23ms/step - loss: 0.2561 - accuracy: 0.9040 - val_loss: 0.3404 - val_accuracy: 0.8792
+Epoch 8/100
+430/430 [==============================] - 10s 23ms/step - loss: 0.2477 - accuracy: 0.9082 - val_loss: 0.3086 - val_accuracy: 0.8876
+Epoch 9/100
+430/430 [==============================] - 10s 23ms/step - loss: 0.2317 - accuracy: 0.9154 - val_loss: 0.3457 - val_accuracy: 0.8740
+Epoch 10/100
+430/430 [==============================] - 10s 23ms/step - loss: 0.2214 - accuracy: 0.9187 - val_loss: 0.3439 - val_accuracy: 0.8930
+Epoch 11/100
+430/430 [==============================] - 10s 23ms/step - loss: 0.2117 - accuracy: 0.9207 - val_loss: 0.3006 - val_accuracy: 0.8974
+Epoch 12/100
+430/430 [==============================] - 10s 23ms/step - loss: 0.2027 - accuracy: 0.9248 - val_loss: 0.3517 - val_accuracy: 0.8904
+Epoch 13/100
+430/430 [==============================] - 10s 23ms/step - loss: 0.1972 - accuracy: 0.9273 - val_loss: 0.3063 - val_accuracy: 0.8968
+Epoch 14/100
+430/430 [==============================] - 10s 23ms/step - loss: 0.1875 - accuracy: 0.9302 - val_loss: 0.3425 - val_accuracy: 0.8902
+Epoch 15/100
+430/430 [==============================] - 10s 23ms/step - loss: 0.1791 - accuracy: 0.9344 - val_loss: 0.3241 - val_accuracy: 0.8928
+Epoch 16/100
+430/430 [==============================] - 10s 23ms/step - loss: 0.1743 - accuracy: 0.9356 - val_loss: 0.3675 - val_accuracy: 0.8822
+</code></pre><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 绘制学习曲线</span></span><br><span class="line">pd.DataFrame(history.history).plot()</span><br><span class="line">plt.grid(<span class="literal">True</span>)</span><br><span class="line">plt.show()</span><br><span class="line"></span><br><span class="line"><span class="comment"># 在测试集上评估模型</span></span><br><span class="line">model.evaluate(x_test, y_test)</span><br></pre></td></tr></table></figure>
+<p><img src="/2022/01/19/%E5%90%84%E7%A7%8D%E5%AD%A6%E4%B9%A0%E7%8E%87%E8%B0%83%E5%BA%A6%E4%B9%8B%E9%97%B4%E7%9A%84%E5%AF%B9%E6%AF%94/output_12_0.png" alt="png"></p>
+<pre><code>313/313 [==============================] - 1s 4ms/step - loss: 0.3343 - accuracy: 0.8893
+
+[0.33429378271102905, 0.8892999887466431]
+</code></pre><h1 id="指数调度"><a href="#指数调度" class="headerlink" title="指数调度"></a>指数调度</h1><h2 id="第一种实现"><a href="#第一种实现" class="headerlink" title="第一种实现"></a>第一种实现</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 1.定义指数调度函数</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">exp_decay</span>(<span class="params">lr_0, s</span>):</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">exp_decay_func</span>(<span class="params">epoch</span>):</span></span><br><span class="line">        <span class="keyword">return</span> lr_0 * <span class="number">0.1</span>**(epoch / s)    <span class="comment"># 每 s 个 epoch 更新一次 learning rate</span></span><br><span class="line">    <span class="keyword">return</span> exp_decay_func</span><br><span class="line"></span><br><span class="line">exp_decay_func = exp_decay(lr_0=<span class="number">0.009</span>, s=<span class="number">3</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># Remark: 从下面训练输出来看, 并非每 s 个 epoch 更新一次 learning rate......</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 2.使用上述调度函数创建 LearningRateScheduler 回调</span></span><br><span class="line">exp_lr_scheduler = keras.callbacks.LearningRateScheduler(exp_decay_func)</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 3.将此回调传递给 fit() 中的 callbacks 参数</span></span><br><span class="line">keras.backend.clear_session()</span><br><span class="line">tf.random.set_seed(<span class="number">42</span>)</span><br><span class="line">np.random.seed(<span class="number">42</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 定义优化器, 构建模型</span></span><br><span class="line">optimizer = keras.optimizers.Nadam(learning_rate=<span class="number">0.009</span>)    </span><br><span class="line">model = build_model(optimizer)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 训练模型</span></span><br><span class="line">es_cb = keras.callbacks.EarlyStopping(patience=<span class="number">5</span>, restore_best_weights=<span class="literal">True</span>)</span><br><span class="line">history = model.fit(x_train, y_train, epochs=<span class="number">100</span>, </span><br><span class="line">                    validation_data=(x_valid, y_valid),</span><br><span class="line">                    batch_size=<span class="number">128</span>,</span><br><span class="line">                    callbacks=[es_cb, exp_lr_scheduler])</span><br></pre></td></tr></table></figure>
+<pre><code>Epoch 1/100
+430/430 [==============================] - 12s 23ms/step - loss: 0.4903 - accuracy: 0.8211 - val_loss: 0.3804 - val_accuracy: 0.8740 - lr: 0.0090
+Epoch 2/100
+430/430 [==============================] - 10s 23ms/step - loss: 0.3309 - accuracy: 0.8782 - val_loss: 0.3392 - val_accuracy: 0.8768 - lr: 0.0042
+Epoch 3/100
+430/430 [==============================] - 10s 24ms/step - loss: 0.2749 - accuracy: 0.8970 - val_loss: 0.3342 - val_accuracy: 0.8770 - lr: 0.0019
+Epoch 4/100
+430/430 [==============================] - 10s 24ms/step - loss: 0.2371 - accuracy: 0.9122 - val_loss: 0.2884 - val_accuracy: 0.8946 - lr: 9.0000e-04
+Epoch 5/100
+430/430 [==============================] - 10s 24ms/step - loss: 0.2071 - accuracy: 0.9219 - val_loss: 0.2804 - val_accuracy: 0.9000 - lr: 4.1774e-04
+Epoch 6/100
+430/430 [==============================] - 10s 24ms/step - loss: 0.1918 - accuracy: 0.9280 - val_loss: 0.2745 - val_accuracy: 0.8990 - lr: 1.9390e-04
+Epoch 7/100
+430/430 [==============================] - 10s 24ms/step - loss: 0.1816 - accuracy: 0.9314 - val_loss: 0.2703 - val_accuracy: 0.9018 - lr: 9.0000e-05
+Epoch 8/100
+430/430 [==============================] - 10s 24ms/step - loss: 0.1772 - accuracy: 0.9336 - val_loss: 0.2718 - val_accuracy: 0.9018 - lr: 4.1774e-05
+Epoch 9/100
+430/430 [==============================] - 10s 24ms/step - loss: 0.1742 - accuracy: 0.9356 - val_loss: 0.2728 - val_accuracy: 0.9018 - lr: 1.9390e-05
+Epoch 10/100
+430/430 [==============================] - 10s 23ms/step - loss: 0.1726 - accuracy: 0.9359 - val_loss: 0.2729 - val_accuracy: 0.9030 - lr: 9.0000e-06
+Epoch 11/100
+430/430 [==============================] - 10s 23ms/step - loss: 0.1727 - accuracy: 0.9354 - val_loss: 0.2731 - val_accuracy: 0.9018 - lr: 4.1774e-06
+Epoch 12/100
+430/430 [==============================] - 10s 23ms/step - loss: 0.1726 - accuracy: 0.9362 - val_loss: 0.2731 - val_accuracy: 0.9024 - lr: 1.9390e-06
+</code></pre><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 绘制学习曲线</span></span><br><span class="line">pd.DataFrame(history.history).plot()</span><br><span class="line">plt.grid(<span class="literal">True</span>)</span><br><span class="line">plt.show()</span><br><span class="line"></span><br><span class="line"><span class="comment"># 在测试集上评估模型</span></span><br><span class="line">model.evaluate(x_test, y_test)</span><br></pre></td></tr></table></figure>
+<p><img src="/2022/01/19/%E5%90%84%E7%A7%8D%E5%AD%A6%E4%B9%A0%E7%8E%87%E8%B0%83%E5%BA%A6%E4%B9%8B%E9%97%B4%E7%9A%84%E5%AF%B9%E6%AF%94/output_18_0.png" alt="png"></p>
+<pre><code>313/313 [==============================] - 1s 4ms/step - loss: 0.2981 - accuracy: 0.8966
+
+[0.29814115166664124, 0.8966000080108643]
+</code></pre><h2 id="第二种实现"><a href="#第二种实现" class="headerlink" title="第二种实现"></a>第二种实现</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 1.使用 keras.optimizers.schedule 中的调度来定义学习率</span></span><br><span class="line">s = <span class="number">15</span> * <span class="built_in">len</span>(x_train) // <span class="number">128</span>    </span><br><span class="line"><span class="comment"># s 为假设训练 15 个轮次且 batch size=128 时总的训练 step 数</span></span><br><span class="line">learning_rate = keras.optimizers.schedules.ExponentialDecay(initial_learning_rate=<span class="number">0.009</span>,</span><br><span class="line">                                                            decay_steps=s, decay_rate=<span class="number">0.1</span>)</span><br></pre></td></tr></table></figure>
+<p>要使用此方法实现<strong>其他学习率调度</strong>, 可参考下面的链接:<br><a target="_blank" rel="noopener" href="https://tensorflow.google.cn/api_docs/python/tf/keras/optimizers/schedules?hl=en">https://tensorflow.google.cn/api_docs/python/tf/keras/optimizers/schedules?hl=en</a></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 2.以上述学习率作为优化器学习率 (这里不能用 Nadam...) </span></span><br><span class="line">optimizer = keras.optimizers.Adam(learning_rate=learning_rate)</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 3.使用上述优化器训练模型</span></span><br><span class="line">keras.backend.clear_session()</span><br><span class="line">tf.random.set_seed(<span class="number">42</span>)</span><br><span class="line">np.random.seed(<span class="number">42</span>)</span><br><span class="line"></span><br><span class="line">model = build_model(optimizer)</span><br><span class="line">es_cb = keras.callbacks.EarlyStopping(patience=<span class="number">5</span>, restore_best_weights=<span class="literal">True</span>)</span><br><span class="line">history = model.fit(x_train, y_train, epochs=<span class="number">100</span>, </span><br><span class="line">                    validation_data=(x_valid, y_valid),</span><br><span class="line">                    batch_size=<span class="number">128</span>,</span><br><span class="line">                    callbacks=[es_cb])</span><br></pre></td></tr></table></figure>
+<pre><code>Epoch 1/100
+430/430 [==============================] - 7s 14ms/step - loss: 0.4937 - accuracy: 0.8215 - val_loss: 0.3949 - val_accuracy: 0.8542
+Epoch 2/100
+430/430 [==============================] - 5s 12ms/step - loss: 0.3724 - accuracy: 0.8629 - val_loss: 0.3517 - val_accuracy: 0.8770
+Epoch 3/100
+430/430 [==============================] - 5s 12ms/step - loss: 0.3303 - accuracy: 0.8783 - val_loss: 0.4212 - val_accuracy: 0.8522
+Epoch 4/100
+430/430 [==============================] - 5s 12ms/step - loss: 0.3029 - accuracy: 0.8887 - val_loss: 0.3395 - val_accuracy: 0.8770
+Epoch 5/100
+430/430 [==============================] - 5s 12ms/step - loss: 0.2692 - accuracy: 0.8999 - val_loss: 0.2835 - val_accuracy: 0.8914
+Epoch 6/100
+430/430 [==============================] - 5s 12ms/step - loss: 0.2477 - accuracy: 0.9080 - val_loss: 0.2935 - val_accuracy: 0.8916
+Epoch 7/100
+430/430 [==============================] - 7s 15ms/step - loss: 0.2252 - accuracy: 0.9165 - val_loss: 0.3083 - val_accuracy: 0.8902
+Epoch 8/100
+430/430 [==============================] - 6s 15ms/step - loss: 0.2067 - accuracy: 0.9232 - val_loss: 0.2852 - val_accuracy: 0.8958
+Epoch 9/100
+430/430 [==============================] - 6s 14ms/step - loss: 0.1877 - accuracy: 0.9306 - val_loss: 0.2797 - val_accuracy: 0.9030
+Epoch 10/100
+430/430 [==============================] - 6s 13ms/step - loss: 0.1701 - accuracy: 0.9356 - val_loss: 0.3188 - val_accuracy: 0.8972
+Epoch 11/100
+430/430 [==============================] - 6s 13ms/step - loss: 0.1559 - accuracy: 0.9411 - val_loss: 0.3083 - val_accuracy: 0.8968
+Epoch 12/100
+430/430 [==============================] - 6s 13ms/step - loss: 0.1412 - accuracy: 0.9469 - val_loss: 0.3034 - val_accuracy: 0.8988
+Epoch 13/100
+430/430 [==============================] - 6s 13ms/step - loss: 0.1277 - accuracy: 0.9523 - val_loss: 0.2980 - val_accuracy: 0.9078
+Epoch 14/100
+430/430 [==============================] - 6s 13ms/step - loss: 0.1123 - accuracy: 0.9582 - val_loss: 0.3333 - val_accuracy: 0.8972
+</code></pre><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 绘制学习曲线</span></span><br><span class="line">pd.DataFrame(history.history).plot()</span><br><span class="line">plt.grid(<span class="literal">True</span>)</span><br><span class="line">plt.show()</span><br><span class="line"></span><br><span class="line"><span class="comment"># 在测试集上评估模型</span></span><br><span class="line">model.evaluate(x_test, y_test)</span><br></pre></td></tr></table></figure>
+<p><img src="/2022/01/19/%E5%90%84%E7%A7%8D%E5%AD%A6%E4%B9%A0%E7%8E%87%E8%B0%83%E5%BA%A6%E4%B9%8B%E9%97%B4%E7%9A%84%E5%AF%B9%E6%AF%94/output_24_0.png" alt="png"></p>
+<pre><code>313/313 [==============================] - 1s 4ms/step - loss: 0.3387 - accuracy: 0.8896
+
+[0.3386974036693573, 0.8895999789237976]
+</code></pre><h1 id="分段常数调度"><a href="#分段常数调度" class="headerlink" title="分段常数调度"></a>分段常数调度</h1><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 1.定义分段常数调度函数</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">piecewise_constant_func</span>(<span class="params">epoch</span>):</span></span><br><span class="line">    <span class="keyword">if</span> epoch &lt; <span class="number">3</span>:</span><br><span class="line">        <span class="keyword">return</span> <span class="number">0.009</span></span><br><span class="line">    <span class="keyword">elif</span> epoch &lt; <span class="number">6</span>:</span><br><span class="line">        <span class="keyword">return</span> <span class="number">0.003</span></span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        <span class="keyword">return</span> <span class="number">0.001</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 2.使用上述调度函数创建 LearningRateScheduler 回调</span></span><br><span class="line">piecewise_constant_lr_scheduler = keras.callbacks.LearningRateScheduler(piecewise_constant_func)</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 3.将此回调传递给 fit() 中的 callbacks 参数</span></span><br><span class="line">keras.backend.clear_session()</span><br><span class="line">tf.random.set_seed(<span class="number">42</span>)</span><br><span class="line">np.random.seed(<span class="number">42</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 定义优化器, 构建模型</span></span><br><span class="line">optimizer = keras.optimizers.Nadam(learning_rate=<span class="number">0.009</span>)    </span><br><span class="line">model = build_model(optimizer)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 训练模型</span></span><br><span class="line">es_cb = keras.callbacks.EarlyStopping(patience=<span class="number">5</span>, restore_best_weights=<span class="literal">True</span>)</span><br><span class="line">history = model.fit(x_train, y_train, epochs=<span class="number">100</span>, </span><br><span class="line">                    validation_data=(x_valid, y_valid),</span><br><span class="line">                    batch_size=<span class="number">128</span>,</span><br><span class="line">                    callbacks=[es_cb, piecewise_constant_lr_scheduler])</span><br></pre></td></tr></table></figure>
+<pre><code>Epoch 1/100
+430/430 [==============================] - 13s 24ms/step - loss: 0.4903 - accuracy: 0.8213 - val_loss: 0.3870 - val_accuracy: 0.8682 - lr: 0.0090
+Epoch 2/100
+430/430 [==============================] - 10s 24ms/step - loss: 0.3643 - accuracy: 0.8672 - val_loss: 0.3671 - val_accuracy: 0.8720 - lr: 0.0090
+Epoch 3/100
+430/430 [==============================] - 10s 24ms/step - loss: 0.3302 - accuracy: 0.8775 - val_loss: 0.4405 - val_accuracy: 0.8404 - lr: 0.0090
+Epoch 4/100
+430/430 [==============================] - 10s 24ms/step - loss: 0.2599 - accuracy: 0.9039 - val_loss: 0.2952 - val_accuracy: 0.8934 - lr: 0.0030
+Epoch 5/100
+430/430 [==============================] - 10s 24ms/step - loss: 0.2377 - accuracy: 0.9097 - val_loss: 0.2852 - val_accuracy: 0.8972 - lr: 0.0030
+Epoch 6/100
+430/430 [==============================] - 10s 24ms/step - loss: 0.2253 - accuracy: 0.9159 - val_loss: 0.2886 - val_accuracy: 0.8970 - lr: 0.0030- ETA: 0s - loss: 0.2253 - accuracy
+Epoch 7/100
+430/430 [==============================] - 10s 24ms/step - loss: 0.1828 - accuracy: 0.9320 - val_loss: 0.2748 - val_accuracy: 0.9040 - lr: 0.0010
+Epoch 8/100
+430/430 [==============================] - 11s 25ms/step - loss: 0.1668 - accuracy: 0.9373 - val_loss: 0.2692 - val_accuracy: 0.9028 - lr: 0.0010
+Epoch 9/100
+430/430 [==============================] - 11s 25ms/step - loss: 0.1561 - accuracy: 0.9424 - val_loss: 0.2827 - val_accuracy: 0.9022 - lr: 0.0010
+Epoch 10/100
+430/430 [==============================] - 10s 24ms/step - loss: 0.1468 - accuracy: 0.9441 - val_loss: 0.3056 - val_accuracy: 0.9016 - lr: 0.0010
+Epoch 11/100
+430/430 [==============================] - 11s 24ms/step - loss: 0.1372 - accuracy: 0.9484 - val_loss: 0.3081 - val_accuracy: 0.8996 - lr: 0.0010
+Epoch 12/100
+430/430 [==============================] - 10s 24ms/step - loss: 0.1287 - accuracy: 0.9518 - val_loss: 0.3078 - val_accuracy: 0.9030 - lr: 0.0010
+Epoch 13/100
+430/430 [==============================] - 10s 24ms/step - loss: 0.1210 - accuracy: 0.9545 - val_loss: 0.3082 - val_accuracy: 0.9010 - lr: 0.0010
+</code></pre><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 绘制学习曲线</span></span><br><span class="line">pd.DataFrame(history.history).plot()</span><br><span class="line">plt.grid(<span class="literal">True</span>)</span><br><span class="line">plt.show()</span><br><span class="line"></span><br><span class="line"><span class="comment"># 在测试集上评估模型</span></span><br><span class="line">model.evaluate(x_test, y_test)</span><br></pre></td></tr></table></figure>
+<p><img src="/2022/01/19/%E5%90%84%E7%A7%8D%E5%AD%A6%E4%B9%A0%E7%8E%87%E8%B0%83%E5%BA%A6%E4%B9%8B%E9%97%B4%E7%9A%84%E5%AF%B9%E6%AF%94/output_29_0.png" alt="png"></p>
+<pre><code>313/313 [==============================] - 1s 5ms/step - loss: 0.3019 - accuracy: 0.8990: 0s - los
+
+[0.30188095569610596, 0.8989999890327454]
+</code></pre><h1 id="性能调度"><a href="#性能调度" class="headerlink" title="性能调度"></a>性能调度</h1><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 1.创建 ReduceLROnPlateau 回调</span></span><br><span class="line">performance_lr_scheduler = keras.callbacks.ReduceLROnPlateau(factor=<span class="number">0.25</span>, patience=<span class="number">2</span>)</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 2.将此回调传递给 fit() 中的 callbacks 参数</span></span><br><span class="line">keras.backend.clear_session()</span><br><span class="line">tf.random.set_seed(<span class="number">42</span>)</span><br><span class="line">np.random.seed(<span class="number">42</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 定义优化器, 构建模型</span></span><br><span class="line">optimizer = keras.optimizers.Nadam(learning_rate=<span class="number">0.009</span>)    </span><br><span class="line">model = build_model(optimizer)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 训练模型</span></span><br><span class="line">es_cb = keras.callbacks.EarlyStopping(patience=<span class="number">5</span>, restore_best_weights=<span class="literal">True</span>)</span><br><span class="line">history = model.fit(x_train, y_train, epochs=<span class="number">100</span>, </span><br><span class="line">                    validation_data=(x_valid, y_valid),</span><br><span class="line">                    batch_size=<span class="number">128</span>,</span><br><span class="line">                    callbacks=[es_cb, performance_lr_scheduler])</span><br></pre></td></tr></table></figure>
+<pre><code>Epoch 1/100
+430/430 [==============================] - 13s 24ms/step - loss: 0.4903 - accuracy: 0.8213 - val_loss: 0.3849 - val_accuracy: 0.8700 - lr: 0.0090
+Epoch 2/100
+430/430 [==============================] - 10s 24ms/step - loss: 0.3642 - accuracy: 0.8670 - val_loss: 0.3712 - val_accuracy: 0.8716 - lr: 0.0090
+Epoch 3/100
+430/430 [==============================] - 10s 24ms/step - loss: 0.3305 - accuracy: 0.8787 - val_loss: 0.4373 - val_accuracy: 0.8462 - lr: 0.0090
+Epoch 4/100
+430/430 [==============================] - 10s 24ms/step - loss: 0.3077 - accuracy: 0.8865 - val_loss: 0.3519 - val_accuracy: 0.8670 - lr: 0.0090
+Epoch 5/100
+430/430 [==============================] - 10s 24ms/step - loss: 0.2831 - accuracy: 0.8946 - val_loss: 0.3161 - val_accuracy: 0.8792 - lr: 0.0090
+Epoch 6/100
+430/430 [==============================] - 10s 24ms/step - loss: 0.2691 - accuracy: 0.9006 - val_loss: 0.3206 - val_accuracy: 0.8834 - lr: 0.0090
+Epoch 7/100
+430/430 [==============================] - 10s 23ms/step - loss: 0.2561 - accuracy: 0.9046 - val_loss: 0.3191 - val_accuracy: 0.8844 - lr: 0.0090
+Epoch 8/100
+430/430 [==============================] - 10s 23ms/step - loss: 0.1977 - accuracy: 0.9258 - val_loss: 0.2603 - val_accuracy: 0.9028 - lr: 0.0022
+Epoch 9/100
+430/430 [==============================] - 10s 24ms/step - loss: 0.1764 - accuracy: 0.9343 - val_loss: 0.2731 - val_accuracy: 0.8996 - lr: 0.0022
+Epoch 10/100
+430/430 [==============================] - ETA: 0s - loss: 0.1659 - accuracy: 0.93 - 10s 24ms/step - loss: 0.1656 - accuracy: 0.9373 - val_loss: 0.2882 - val_accuracy: 0.9024 - lr: 0.0022
+Epoch 11/100
+430/430 [==============================] - 11s 24ms/step - loss: 0.1377 - accuracy: 0.9487 - val_loss: 0.2825 - val_accuracy: 0.9028 - lr: 5.6250e-04
+Epoch 12/100
+430/430 [==============================] - 10s 24ms/step - loss: 0.1282 - accuracy: 0.9525 - val_loss: 0.2891 - val_accuracy: 0.9040 - lr: 5.6250e-04
+Epoch 13/100
+430/430 [==============================] - 10s 24ms/step - loss: 0.1192 - accuracy: 0.9559 - val_loss: 0.2879 - val_accuracy: 0.9088 - lr: 1.4062e-04
+</code></pre><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 绘制学习曲线</span></span><br><span class="line">pd.DataFrame(history.history).plot()</span><br><span class="line">plt.grid(<span class="literal">True</span>)</span><br><span class="line">plt.show()</span><br><span class="line"></span><br><span class="line"><span class="comment"># 在测试集上评估模型</span></span><br><span class="line">model.evaluate(x_test, y_test)</span><br></pre></td></tr></table></figure>
+<p><img src="/2022/01/19/%E5%90%84%E7%A7%8D%E5%AD%A6%E4%B9%A0%E7%8E%87%E8%B0%83%E5%BA%A6%E4%B9%8B%E9%97%B4%E7%9A%84%E5%AF%B9%E6%AF%94/output_33_0.png" alt="png"></p>
+<pre><code>313/313 [==============================] - 1s 4ms/step - loss: 0.2989 - accuracy: 0.8971
+
+[0.2988533079624176, 0.8970999717712402]
+</code></pre><h1 id="1Cycle-调度"><a href="#1Cycle-调度" class="headerlink" title="1Cycle 调度"></a>1Cycle 调度</h1><h2 id="寻找最佳学习率"><a href="#寻找最佳学习率" class="headerlink" title="寻找最佳学习率"></a>寻找最佳学习率</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line">K = keras.backend</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">ExponentialLearningRate</span>(<span class="params">keras.callbacks.Callback</span>):</span></span><br><span class="line">    <span class="string">&quot;&quot;&quot; 继承 Callback 以自定义回调 &quot;&quot;&quot;</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span>(<span class="params">self, factor</span>):</span></span><br><span class="line">        self.factor = factor</span><br><span class="line">        self.rates = []    </span><br><span class="line">        self.losses = []</span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">on_batch_end</span>(<span class="params">self, batch, logs</span>):</span></span><br><span class="line">        <span class="string">&quot;&quot;&quot; 在每个 step 结束时：记录当前学习率和 loss 值并更新当前学习率 &quot;&quot;&quot;</span></span><br><span class="line">        self.rates.append(K.get_value(self.model.optimizer.lr))</span><br><span class="line">        self.losses.append(logs[<span class="string">&quot;loss&quot;</span>])</span><br><span class="line">        K.set_value(self.model.optimizer.lr, self.model.optimizer.lr * self.factor)</span><br><span class="line"></span><br><span class="line">        </span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">find_learning_rate</span>(<span class="params">model, X, y, epochs=<span class="number">1</span>, batch_size=<span class="number">32</span>, min_rate=<span class="number">10</span>**-<span class="number">5</span>, max_rate=<span class="number">10</span></span>):</span></span><br><span class="line">    <span class="string">&quot;&quot;&quot; 该函数通过上述自定义回调，获取训练中的学习率以及对应的 loss &quot;&quot;&quot;</span></span><br><span class="line">    init_weights = model.get_weights()</span><br><span class="line">    iterations = <span class="built_in">len</span>(X) // batch_size * epochs</span><br><span class="line">    factor = np.exp(np.log(max_rate / min_rate) / iterations)</span><br><span class="line">    init_lr = K.get_value(model.optimizer.lr)</span><br><span class="line">    K.set_value(model.optimizer.lr, min_rate)</span><br><span class="line">    </span><br><span class="line">    <span class="comment"># 创建回调实例并训练模型</span></span><br><span class="line">    exp_lr = ExponentialLearningRate(factor)</span><br><span class="line">    history = model.fit(X, y, epochs=epochs, batch_size=batch_size,</span><br><span class="line">                        callbacks=[exp_lr])</span><br><span class="line">    </span><br><span class="line">    <span class="comment"># 训练完毕后，重置学习率和模型的连接权重</span></span><br><span class="line">    K.set_value(model.optimizer.lr, init_lr)</span><br><span class="line">    model.set_weights(init_weights)</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">return</span> exp_lr.rates, exp_lr.losses</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">plot_lr_vs_loss</span>(<span class="params">rates, losses</span>):</span></span><br><span class="line">    <span class="string">&quot;&quot;&quot; 绘制 lr vs loss 曲线 &quot;&quot;&quot;</span></span><br><span class="line">    plt.plot(rates, losses)</span><br><span class="line">    plt.gca().set_xscale(<span class="string">&#x27;log&#x27;</span>)</span><br><span class="line">    plt.hlines(<span class="built_in">min</span>(losses), <span class="built_in">min</span>(rates), <span class="built_in">max</span>(rates))</span><br><span class="line">    plt.axis([<span class="built_in">min</span>(rates), <span class="built_in">max</span>(rates), <span class="built_in">min</span>(losses), (losses[<span class="number">0</span>] + <span class="built_in">min</span>(losses)) / <span class="number">2</span>])</span><br><span class="line">    plt.xlabel(<span class="string">&quot;Learning rate&quot;</span>)</span><br><span class="line">    plt.ylabel(<span class="string">&quot;Loss&quot;</span>)</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">keras.backend.clear_session()</span><br><span class="line">tf.random.set_seed(<span class="number">42</span>)</span><br><span class="line">np.random.seed(<span class="number">42</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 定义优化器, 构建模型</span></span><br><span class="line">optimizer = keras.optimizers.Nadam(learning_rate=<span class="number">0.009</span>)    </span><br><span class="line">model = build_model(optimizer)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 训练 1 个轮次并获取 learning &amp; loss </span></span><br><span class="line">rates, losses = find_learning_rate(model, x_train, y_train, epochs=<span class="number">1</span>, batch_size=<span class="number">128</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 根据 learning &amp; loss 作图</span></span><br><span class="line">plot_lr_vs_loss(rates, losses)</span><br></pre></td></tr></table></figure>
+<pre><code>430/430 [==============================] - 13s 25ms/step - loss: 2129.6172 - accuracy: 0.5144
+</code></pre><p><img src="/2022/01/19/%E5%90%84%E7%A7%8D%E5%AD%A6%E4%B9%A0%E7%8E%87%E8%B0%83%E5%BA%A6%E4%B9%8B%E9%97%B4%E7%9A%84%E5%AF%B9%E6%AF%94/output_37_1.png" alt="png"></p>
+<p>Remark: 根据实际测试, 从上图中选取最佳学习率的效果并不好…</p>
+<h2 id="根据所选学习率-使用-1cycle-调度"><a href="#根据所选学习率-使用-1cycle-调度" class="headerlink" title="根据所选学习率, 使用 1cycle 调度"></a>根据所选学习率, 使用 1cycle 调度</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">OneCycleScheduler</span>(<span class="params">keras.callbacks.Callback</span>):</span></span><br><span class="line">    <span class="string">&quot;&quot;&quot; 继承 Callback 类, 实现 1Cycle 调度 &quot;&quot;&quot;</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span>(<span class="params">self, iterations, max_rate, start_rate=<span class="literal">None</span>,</span></span></span><br><span class="line"><span class="params"><span class="function">                 last_iterations=<span class="literal">None</span>, last_rate=<span class="literal">None</span></span>):</span></span><br><span class="line">        self.iterations = iterations    </span><br><span class="line">        self.max_rate = max_rate</span><br><span class="line">        self.start_rate = start_rate <span class="keyword">or</span> max_rate / <span class="number">10</span></span><br><span class="line">        self.last_iterations = last_iterations <span class="keyword">or</span> iterations // <span class="number">10</span> + <span class="number">1</span></span><br><span class="line">        self.half_iteration = (iterations - self.last_iterations) // <span class="number">2</span></span><br><span class="line">        self.last_rate = last_rate <span class="keyword">or</span> self.start_rate / <span class="number">1000</span></span><br><span class="line">        self.iteration = <span class="number">0</span> </span><br><span class="line">        </span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">_interpolate</span>(<span class="params">self, iter1, iter2, rate1, rate2</span>):</span></span><br><span class="line">        <span class="keyword">return</span> ((rate2 - rate1) * (self.iteration - iter1) / (iter2 - iter1) + rate1)</span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">on_batch_begin</span>(<span class="params">self, batch, logs</span>):</span></span><br><span class="line">        </span><br><span class="line">        <span class="keyword">if</span> self.iteration &lt; self.half_iteration:          <span class="comment"># 第一段的学习率</span></span><br><span class="line">            rate = self._interpolate(<span class="number">0</span>, self.half_iteration, self.start_rate, self.max_rate)</span><br><span class="line">        <span class="keyword">elif</span> self.iteration &lt; <span class="number">2</span> * self.half_iteration:    <span class="comment"># 第二段的学习率</span></span><br><span class="line">            rate = self._interpolate(self.half_iteration, <span class="number">2</span> * self.half_iteration, self.max_rate, self.start_rate)</span><br><span class="line">        <span class="keyword">else</span>:                                             <span class="comment"># 最后一段的学习率</span></span><br><span class="line">            rate = self._interpolate(<span class="number">2</span> * self.half_iteration, self.iterations, self.start_rate, self.last_rate)</span><br><span class="line">            rate = <span class="built_in">max</span>(rate, self.last_rate)</span><br><span class="line">        </span><br><span class="line">        <span class="comment"># 当前迭代数自增 1，同时更新学习率</span></span><br><span class="line">        self.iteration += <span class="number">1</span></span><br><span class="line">        K.set_value(self.model.optimizer.lr, rate)</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">n_epochs = <span class="number">20</span></span><br><span class="line">batch_size = <span class="number">128</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 创建 1Cycle 调度回调实例, 并使用该回调训练模型</span></span><br><span class="line">onecycle = OneCycleScheduler(<span class="built_in">len</span>(x_train) // batch_size * n_epochs, max_rate=<span class="number">1e-2</span>)</span><br><span class="line"></span><br><span class="line">history = model.fit(x_train, y_train, epochs=n_epochs,</span><br><span class="line">                    validation_data=(x_valid, y_valid),</span><br><span class="line">                    batch_size=<span class="number">128</span>,</span><br><span class="line">                    callbacks=[onecycle])</span><br></pre></td></tr></table></figure>
+<pre><code>Epoch 1/20
+430/430 [==============================] - 11s 25ms/step - loss: 0.4601 - accuracy: 0.8402 - val_loss: 0.3513 - val_accuracy: 0.8760
+Epoch 2/20
+430/430 [==============================] - 11s 25ms/step - loss: 0.3500 - accuracy: 0.8732 - val_loss: 0.3418 - val_accuracy: 0.8762
+Epoch 3/20
+430/430 [==============================] - 11s 25ms/step - loss: 0.3218 - accuracy: 0.8815 - val_loss: 0.3950 - val_accuracy: 0.8578
+Epoch 4/20
+430/430 [==============================] - 11s 25ms/step - loss: 0.3073 - accuracy: 0.8866 - val_loss: 0.3414 - val_accuracy: 0.8740
+Epoch 5/20
+430/430 [==============================] - 11s 25ms/step - loss: 0.2881 - accuracy: 0.8909 - val_loss: 0.2952 - val_accuracy: 0.8892
+Epoch 6/20
+430/430 [==============================] - 11s 26ms/step - loss: 0.2787 - accuracy: 0.8969 - val_loss: 0.3304 - val_accuracy: 0.8826
+Epoch 7/20
+430/430 [==============================] - 11s 25ms/step - loss: 0.2713 - accuracy: 0.8986 - val_loss: 0.3386 - val_accuracy: 0.8776
+Epoch 8/20
+430/430 [==============================] - 11s 25ms/step - loss: 0.2624 - accuracy: 0.9034 - val_loss: 0.3541 - val_accuracy: 0.8758
+Epoch 9/20
+430/430 [==============================] - 11s 25ms/step - loss: 0.2537 - accuracy: 0.9058 - val_loss: 0.3528 - val_accuracy: 0.8760
+Epoch 10/20
+430/430 [==============================] - 11s 25ms/step - loss: 0.2419 - accuracy: 0.9105 - val_loss: 0.3156 - val_accuracy: 0.8914
+Epoch 11/20
+430/430 [==============================] - 11s 25ms/step - loss: 0.2232 - accuracy: 0.9164 - val_loss: 0.3197 - val_accuracy: 0.8896
+Epoch 12/20
+430/430 [==============================] - 11s 25ms/step - loss: 0.2038 - accuracy: 0.9248 - val_loss: 0.3303 - val_accuracy: 0.8864
+Epoch 13/20
+430/430 [==============================] - 11s 25ms/step - loss: 0.1909 - accuracy: 0.9282 - val_loss: 0.2927 - val_accuracy: 0.8974
+Epoch 14/20
+430/430 [==============================] - 11s 25ms/step - loss: 0.1696 - accuracy: 0.9369 - val_loss: 0.3014 - val_accuracy: 0.8966
+Epoch 15/20
+430/430 [==============================] - 11s 25ms/step - loss: 0.1521 - accuracy: 0.9432 - val_loss: 0.2978 - val_accuracy: 0.8960
+Epoch 16/20
+430/430 [==============================] - 11s 25ms/step - loss: 0.1325 - accuracy: 0.9504 - val_loss: 0.3239 - val_accuracy: 0.8954
+Epoch 17/20
+430/430 [==============================] - 11s 25ms/step - loss: 0.1079 - accuracy: 0.9596 - val_loss: 0.3080 - val_accuracy: 0.9064
+Epoch 18/20
+430/430 [==============================] - 11s 25ms/step - loss: 0.0824 - accuracy: 0.9700 - val_loss: 0.3283 - val_accuracy: 0.9054
+Epoch 19/20
+430/430 [==============================] - 11s 25ms/step - loss: 0.0620 - accuracy: 0.9776 - val_loss: 0.3511 - val_accuracy: 0.9090
+Epoch 20/20
+430/430 [==============================] - 11s 25ms/step - loss: 0.0505 - accuracy: 0.9823 - val_loss: 0.3590 - val_accuracy: 0.9068
+</code></pre><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 绘制学习曲线</span></span><br><span class="line">pd.DataFrame(history.history).plot()</span><br><span class="line">plt.grid(<span class="literal">True</span>)</span><br><span class="line">plt.show()</span><br><span class="line"></span><br><span class="line"><span class="comment"># 在测试集上评估模型</span></span><br><span class="line">model.evaluate(x_test, y_test)</span><br></pre></td></tr></table></figure>
+<p><img src="/2022/01/19/%E5%90%84%E7%A7%8D%E5%AD%A6%E4%B9%A0%E7%8E%87%E8%B0%83%E5%BA%A6%E4%B9%8B%E9%97%B4%E7%9A%84%E5%AF%B9%E6%AF%94/output_42_0.png" alt="png"></p>
+<pre><code>313/313 [==============================] - 1s 5ms/step - loss: 0.4023 - accuracy: 0.9012
+
+[0.4022747278213501, 0.901199996471405]
+</code></pre><h1 id="结论"><a href="#结论" class="headerlink" title="结论"></a>结论</h1><div class="table-container">
+<table>
+<thead>
+<tr>
+<th>Scheduler</th>
+<th>Initial Learning Rate</th>
+<th>Training speed</th>
+<th>Convergence speed</th>
+<th>Evaluation on x_test</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Power scheduling</td>
+<td>0.009</td>
+<td>10s/epoch</td>
+<td>11 epochs</td>
+<td>accuracy=0.8893</td>
+</tr>
+<tr>
+<td>Exponential scheduling 1</td>
+<td>0.009</td>
+<td>10s/epoch</td>
+<td>7 epochs</td>
+<td>accuracy=0.8966</td>
+</tr>
+<tr>
+<td>Exponential scheduling 2</td>
+<td>0.009</td>
+<td>6s/epoch</td>
+<td>9 epochs</td>
+<td>accuracy=0.8896</td>
+</tr>
+<tr>
+<td>Piecewise constant scheduling</td>
+<td>0.009</td>
+<td>10s/epoch</td>
+<td>8 epochs</td>
+<td>accuracy=0.8990</td>
+</tr>
+<tr>
+<td>Performance scheduling</td>
+<td>0.009</td>
+<td>10s/epoch</td>
+<td>8 epochs</td>
+<td>accuracy=0.8971</td>
+</tr>
+<tr>
+<td>1cycle scheduling</td>
+<td>0.001</td>
+<td>11s/epoch</td>
+<td>/</td>
+<td>accuracy=0.9012</td>
+</tr>
+</tbody>
+</table>
+</div>
+<ol>
+<li>幂调度在各方面都不优于指数调度.</li>
+<li>指数调度的第1种实现: 训练速度一般, 收敛速度较快, 模型性能更好.</li>
+<li>指数调度的第2种实现: <strong>训练速度快</strong>, 收敛速度较慢, 模型性能稍差.</li>
+<li>分段常数调度的训练 &amp; 收敛速度都不错, 模型性能也较好, 但<strong>难以选择超参数</strong>的最优组合.</li>
+<li>性能调度的训练 &amp; 收敛速度都不错, 模型性能也较好, 并且<strong>实现非常简单</strong>, 超参数选择也不困难.</li>
+<li>1Cycle 调度的学习率呈分段的线性函数变化, <strong>需要提前预估 epochs</strong>, 并且虽然达到了最佳性能, 但从其训练输出来看, 这样的结果似乎有点儿难以理解…</li>
+</ol>
+<p>🐒 可以改进的点: 困难还是在于难以快速地获取最佳学习率…[6.1]中的方法似乎也不很可靠.</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Machine-Learning/" rel="tag"># Machine Learning</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2022/01/19/%E5%90%84%E7%A7%8D%E4%BC%98%E5%8C%96%E5%99%A8%E4%B9%8B%E9%97%B4%E7%9A%84%E5%AF%B9%E6%AF%94/" rel="prev" title="各种优化器之间的对比">
+                  <i class="fa fa-chevron-left"></i> 各种优化器之间的对比
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2022/01/19/%E5%90%84%E7%A7%8D%E6%AD%A3%E5%88%99%E5%8C%96%E6%96%B9%E6%B3%95%E4%B9%8B%E9%97%B4%E7%9A%84%E5%AF%B9%E6%AF%94/" rel="next" title="各种正则化方法之间的对比">
+                  各种正则化方法之间的对比 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 2021 – 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Gozen Sanji</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+<script src="https://cdn.jsdelivr.net/npm/hexo-generator-searchdb@1.4.0/dist/search.js" integrity="sha256-vXZMYLEqsROAXkEw93GGIvaB2ab+QW6w3+1ahD9nXXA=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdn.jsdelivr.net/npm/mathjax@3.2.0/es5/tex-mml-chtml.js","integrity":"sha256-r+3itOMtGGjap0x+10hu6jW/gZCzxHsoKrOd7gyRSGY="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+
+</body>
+</html>

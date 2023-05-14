@@ -1,0 +1,761 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.0.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.4/css/all.min.css" integrity="sha256-mUZM63G8m73Mcidfrv5E+Y61y7a12O5mW4ezU3bxqW4=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.9.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":true,"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+<meta name="description" content="第一篇 &amp;nbsp &amp;nbsp 分析基础">
+<meta property="og:type" content="article">
+<meta property="og:title" content="【笔记】数学分析新讲-第1篇">
+<meta property="og:url" content="http://example.com/2023/05/14/%E3%80%90%E7%AC%94%E8%AE%B0%E3%80%91%E6%95%B0%E5%AD%A6%E5%88%86%E6%9E%90%E6%96%B0%E8%AE%B2-%E7%AC%AC1%E7%AF%87/index.html">
+<meta property="og:site_name" content="Jay&#39;s Blog">
+<meta property="og:description" content="第一篇 &amp;nbsp &amp;nbsp 分析基础">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://example.com/2023/05/14/%E3%80%90%E7%AC%94%E8%AE%B0%E3%80%91%E6%95%B0%E5%AD%A6%E5%88%86%E6%9E%90%E6%96%B0%E8%AE%B2-%E7%AC%AC1%E7%AF%87/Chapter%200%20预备知识.jpg">
+<meta property="og:image" content="http://example.com/2023/05/14/%E3%80%90%E7%AC%94%E8%AE%B0%E3%80%91%E6%95%B0%E5%AD%A6%E5%88%86%E6%9E%90%E6%96%B0%E8%AE%B2-%E7%AC%AC1%E7%AF%87/Users/Gozen%20Sanji/Desktop/STUDY/学习笔记-Typora/Chapter%201%20实数.jpg">
+<meta property="og:image" content="http://example.com/2023/05/14/%E3%80%90%E7%AC%94%E8%AE%B0%E3%80%91%E6%95%B0%E5%AD%A6%E5%88%86%E6%9E%90%E6%96%B0%E8%AE%B2-%E7%AC%AC1%E7%AF%87/Users/Gozen%20Sanji/Desktop/STUDY/学习笔记-Typora/Chapter%202%20极限.jpg">
+<meta property="og:image" content="http://example.com/2023/05/14/%E3%80%90%E7%AC%94%E8%AE%B0%E3%80%91%E6%95%B0%E5%AD%A6%E5%88%86%E6%9E%90%E6%96%B0%E8%AE%B2-%E7%AC%AC1%E7%AF%87/Users/Gozen%20Sanji/Desktop/STUDY/学习笔记-Typora/c2s2thm3.png">
+<meta property="og:image" content="http://example.com/2023/05/14/%E3%80%90%E7%AC%94%E8%AE%B0%E3%80%91%E6%95%B0%E5%AD%A6%E5%88%86%E6%9E%90%E6%96%B0%E8%AE%B2-%E7%AC%AC1%E7%AF%87/Users/Gozen%20Sanji/Desktop/STUDY/学习笔记-Typora/c2s4thm4.png">
+<meta property="og:image" content="http://example.com/2023/05/14/%E3%80%90%E7%AC%94%E8%AE%B0%E3%80%91%E6%95%B0%E5%AD%A6%E5%88%86%E6%9E%90%E6%96%B0%E8%AE%B2-%E7%AC%AC1%E7%AF%87/Users/Gozen%20Sanji/Desktop/STUDY/学习笔记-Typora/c2s6thm1.png">
+<meta property="og:image" content="http://example.com/2023/05/14/%E3%80%90%E7%AC%94%E8%AE%B0%E3%80%91%E6%95%B0%E5%AD%A6%E5%88%86%E6%9E%90%E6%96%B0%E8%AE%B2-%E7%AC%AC1%E7%AF%87/Users/Gozen%20Sanji/Desktop/STUDY/学习笔记-Typora/c2s1thm1.png">
+<meta property="og:image" content="http://example.com/2023/05/14/%E3%80%90%E7%AC%94%E8%AE%B0%E3%80%91%E6%95%B0%E5%AD%A6%E5%88%86%E6%9E%90%E6%96%B0%E8%AE%B2-%E7%AC%AC1%E7%AF%87/Users/Gozen%20Sanji/Desktop/STUDY/学习笔记-Typora/c2s2remark.png">
+<meta property="og:image" content="http://example.com/2023/05/14/%E3%80%90%E7%AC%94%E8%AE%B0%E3%80%91%E6%95%B0%E5%AD%A6%E5%88%86%E6%9E%90%E6%96%B0%E8%AE%B2-%E7%AC%AC1%E7%AF%87/Users/Gozen%20Sanji/Desktop/STUDY/学习笔记-Typora/c2s3remark.png">
+<meta property="og:image" content="http://example.com/2023/05/14/%E3%80%90%E7%AC%94%E8%AE%B0%E3%80%91%E6%95%B0%E5%AD%A6%E5%88%86%E6%9E%90%E6%96%B0%E8%AE%B2-%E7%AC%AC1%E7%AF%87/Users/Gozen%20Sanji/Desktop/STUDY/学习笔记-Typora/c2s1e3.png">
+<meta property="og:image" content="http://example.com/2023/05/14/%E3%80%90%E7%AC%94%E8%AE%B0%E3%80%91%E6%95%B0%E5%AD%A6%E5%88%86%E6%9E%90%E6%96%B0%E8%AE%B2-%E7%AC%AC1%E7%AF%87/Users/Gozen%20Sanji/Desktop/STUDY/学习笔记-Typora/c2s1e5.png">
+<meta property="og:image" content="http://example.com/2023/05/14/%E3%80%90%E7%AC%94%E8%AE%B0%E3%80%91%E6%95%B0%E5%AD%A6%E5%88%86%E6%9E%90%E6%96%B0%E8%AE%B2-%E7%AC%AC1%E7%AF%87/Users/Gozen%20Sanji/Desktop/STUDY/学习笔记-Typora/c2s1e7.png">
+<meta property="og:image" content="http://example.com/2023/05/14/%E3%80%90%E7%AC%94%E8%AE%B0%E3%80%91%E6%95%B0%E5%AD%A6%E5%88%86%E6%9E%90%E6%96%B0%E8%AE%B2-%E7%AC%AC1%E7%AF%87/Users/Gozen%20Sanji/Desktop/STUDY/学习笔记-Typora/c2s1e8.png">
+<meta property="og:image" content="http://example.com/2023/05/14/%E3%80%90%E7%AC%94%E8%AE%B0%E3%80%91%E6%95%B0%E5%AD%A6%E5%88%86%E6%9E%90%E6%96%B0%E8%AE%B2-%E7%AC%AC1%E7%AF%87/Users/Gozen%20Sanji/Desktop/STUDY/学习笔记-Typora/c2s1e9.png">
+<meta property="og:image" content="http://example.com/2023/05/14/%E3%80%90%E7%AC%94%E8%AE%B0%E3%80%91%E6%95%B0%E5%AD%A6%E5%88%86%E6%9E%90%E6%96%B0%E8%AE%B2-%E7%AC%AC1%E7%AF%87/Users/Gozen%20Sanji/Desktop/STUDY/学习笔记-Typora/c2s1e10.png">
+<meta property="og:image" content="http://example.com/2023/05/14/%E3%80%90%E7%AC%94%E8%AE%B0%E3%80%91%E6%95%B0%E5%AD%A6%E5%88%86%E6%9E%90%E6%96%B0%E8%AE%B2-%E7%AC%AC1%E7%AF%87/Users/Gozen%20Sanji/Desktop/STUDY/学习笔记-Typora/c2s1e11.png">
+<meta property="og:image" content="http://example.com/2023/05/14/%E3%80%90%E7%AC%94%E8%AE%B0%E3%80%91%E6%95%B0%E5%AD%A6%E5%88%86%E6%9E%90%E6%96%B0%E8%AE%B2-%E7%AC%AC1%E7%AF%87/Users/Gozen%20Sanji/Desktop/STUDY/学习笔记-Typora/c2s1e12.png">
+<meta property="og:image" content="http://example.com/2023/05/14/%E3%80%90%E7%AC%94%E8%AE%B0%E3%80%91%E6%95%B0%E5%AD%A6%E5%88%86%E6%9E%90%E6%96%B0%E8%AE%B2-%E7%AC%AC1%E7%AF%87/Users/Gozen%20Sanji/Desktop/STUDY/学习笔记-Typora/c2s1e13.png">
+<meta property="og:image" content="http://example.com/2023/05/14/%E3%80%90%E7%AC%94%E8%AE%B0%E3%80%91%E6%95%B0%E5%AD%A6%E5%88%86%E6%9E%90%E6%96%B0%E8%AE%B2-%E7%AC%AC1%E7%AF%87/Users/Gozen%20Sanji/Desktop/STUDY/学习笔记-Typora/c2s1e14.png">
+<meta property="og:image" content="http://example.com/2023/05/14/%E3%80%90%E7%AC%94%E8%AE%B0%E3%80%91%E6%95%B0%E5%AD%A6%E5%88%86%E6%9E%90%E6%96%B0%E8%AE%B2-%E7%AC%AC1%E7%AF%87/Users/Gozen%20Sanji/Desktop/STUDY/学习笔记-Typora/c2s2e3.png">
+<meta property="og:image" content="http://example.com/2023/05/14/%E3%80%90%E7%AC%94%E8%AE%B0%E3%80%91%E6%95%B0%E5%AD%A6%E5%88%86%E6%9E%90%E6%96%B0%E8%AE%B2-%E7%AC%AC1%E7%AF%87/Users/Gozen%20Sanji/Desktop/STUDY/学习笔记-Typora/c2s2e4.png">
+<meta property="og:image" content="http://example.com/2023/05/14/%E3%80%90%E7%AC%94%E8%AE%B0%E3%80%91%E6%95%B0%E5%AD%A6%E5%88%86%E6%9E%90%E6%96%B0%E8%AE%B2-%E7%AC%AC1%E7%AF%87/Users/Gozen%20Sanji/Desktop/STUDY/学习笔记-Typora/c2s2e6.png">
+<meta property="og:image" content="http://example.com/2023/05/14/%E3%80%90%E7%AC%94%E8%AE%B0%E3%80%91%E6%95%B0%E5%AD%A6%E5%88%86%E6%9E%90%E6%96%B0%E8%AE%B2-%E7%AC%AC1%E7%AF%87/Users/Gozen%20Sanji/Desktop/STUDY/学习笔记-Typora/c2s2e7.png">
+<meta property="og:image" content="http://example.com/2023/05/14/%E3%80%90%E7%AC%94%E8%AE%B0%E3%80%91%E6%95%B0%E5%AD%A6%E5%88%86%E6%9E%90%E6%96%B0%E8%AE%B2-%E7%AC%AC1%E7%AF%87/Users/Gozen%20Sanji/Desktop/STUDY/学习笔记-Typora/c2s2e9.png">
+<meta property="og:image" content="http://example.com/2023/05/14/%E3%80%90%E7%AC%94%E8%AE%B0%E3%80%91%E6%95%B0%E5%AD%A6%E5%88%86%E6%9E%90%E6%96%B0%E8%AE%B2-%E7%AC%AC1%E7%AF%87/Users/Gozen%20Sanji/Desktop/STUDY/学习笔记-Typora/c2s2e8.png">
+<meta property="og:image" content="http://example.com/2023/05/14/%E3%80%90%E7%AC%94%E8%AE%B0%E3%80%91%E6%95%B0%E5%AD%A6%E5%88%86%E6%9E%90%E6%96%B0%E8%AE%B2-%E7%AC%AC1%E7%AF%87/Users/Gozen%20Sanji/Desktop/STUDY/学习笔记-Typora/c2s2e10_1.png">
+<meta property="og:image" content="http://example.com/2023/05/14/%E3%80%90%E7%AC%94%E8%AE%B0%E3%80%91%E6%95%B0%E5%AD%A6%E5%88%86%E6%9E%90%E6%96%B0%E8%AE%B2-%E7%AC%AC1%E7%AF%87/Users/Gozen%20Sanji/Desktop/STUDY/学习笔记-Typora/c2s2e10_2.png">
+<meta property="og:image" content="http://example.com/2023/05/14/%E3%80%90%E7%AC%94%E8%AE%B0%E3%80%91%E6%95%B0%E5%AD%A6%E5%88%86%E6%9E%90%E6%96%B0%E8%AE%B2-%E7%AC%AC1%E7%AF%87/Users/Gozen%20Sanji/Desktop/STUDY/学习笔记-Typora/c2s2e11_1.png">
+<meta property="og:image" content="http://example.com/2023/05/14/%E3%80%90%E7%AC%94%E8%AE%B0%E3%80%91%E6%95%B0%E5%AD%A6%E5%88%86%E6%9E%90%E6%96%B0%E8%AE%B2-%E7%AC%AC1%E7%AF%87/Users/Gozen%20Sanji/Desktop/STUDY/学习笔记-Typora/c2s2e11_2.png">
+<meta property="og:image" content="http://example.com/2023/05/14/%E3%80%90%E7%AC%94%E8%AE%B0%E3%80%91%E6%95%B0%E5%AD%A6%E5%88%86%E6%9E%90%E6%96%B0%E8%AE%B2-%E7%AC%AC1%E7%AF%87/Users/Gozen%20Sanji/Desktop/STUDY/学习笔记-Typora/c2s2e12_1.png">
+<meta property="og:image" content="http://example.com/2023/05/14/%E3%80%90%E7%AC%94%E8%AE%B0%E3%80%91%E6%95%B0%E5%AD%A6%E5%88%86%E6%9E%90%E6%96%B0%E8%AE%B2-%E7%AC%AC1%E7%AF%87/Users/Gozen%20Sanji/Desktop/STUDY/学习笔记-Typora/c2s2e12_2.png">
+<meta property="og:image" content="http://example.com/2023/05/14/%E3%80%90%E7%AC%94%E8%AE%B0%E3%80%91%E6%95%B0%E5%AD%A6%E5%88%86%E6%9E%90%E6%96%B0%E8%AE%B2-%E7%AC%AC1%E7%AF%87/Users/Gozen%20Sanji/Desktop/STUDY/学习笔记-Typora/c2s2e13.png">
+<meta property="og:image" content="http://example.com/2023/05/14/%E3%80%90%E7%AC%94%E8%AE%B0%E3%80%91%E6%95%B0%E5%AD%A6%E5%88%86%E6%9E%90%E6%96%B0%E8%AE%B2-%E7%AC%AC1%E7%AF%87/Users/Gozen%20Sanji/Desktop/STUDY/学习笔记-Typora/c2s3e1.png">
+<meta property="og:image" content="http://example.com/2023/05/14/%E3%80%90%E7%AC%94%E8%AE%B0%E3%80%91%E6%95%B0%E5%AD%A6%E5%88%86%E6%9E%90%E6%96%B0%E8%AE%B2-%E7%AC%AC1%E7%AF%87/Users/Gozen%20Sanji/Desktop/STUDY/学习笔记-Typora/c2s3e2_1.png">
+<meta property="og:image" content="http://example.com/2023/05/14/%E3%80%90%E7%AC%94%E8%AE%B0%E3%80%91%E6%95%B0%E5%AD%A6%E5%88%86%E6%9E%90%E6%96%B0%E8%AE%B2-%E7%AC%AC1%E7%AF%87/Users/Gozen%20Sanji/Desktop/STUDY/学习笔记-Typora/c2s3e2_2.png">
+<meta property="og:image" content="http://example.com/2023/05/14/%E3%80%90%E7%AC%94%E8%AE%B0%E3%80%91%E6%95%B0%E5%AD%A6%E5%88%86%E6%9E%90%E6%96%B0%E8%AE%B2-%E7%AC%AC1%E7%AF%87/Users/Gozen%20Sanji/Desktop/STUDY/学习笔记-Typora/c2s3e3_1.png">
+<meta property="og:image" content="http://example.com/2023/05/14/%E3%80%90%E7%AC%94%E8%AE%B0%E3%80%91%E6%95%B0%E5%AD%A6%E5%88%86%E6%9E%90%E6%96%B0%E8%AE%B2-%E7%AC%AC1%E7%AF%87/Users/Gozen%20Sanji/Desktop/STUDY/学习笔记-Typora/c2s3e3_2.png">
+<meta property="og:image" content="http://example.com/2023/05/14/%E3%80%90%E7%AC%94%E8%AE%B0%E3%80%91%E6%95%B0%E5%AD%A6%E5%88%86%E6%9E%90%E6%96%B0%E8%AE%B2-%E7%AC%AC1%E7%AF%87/Users/Gozen%20Sanji/Desktop/STUDY/学习笔记-Typora/c2s3e4.png">
+<meta property="og:image" content="http://example.com/2023/05/14/%E3%80%90%E7%AC%94%E8%AE%B0%E3%80%91%E6%95%B0%E5%AD%A6%E5%88%86%E6%9E%90%E6%96%B0%E8%AE%B2-%E7%AC%AC1%E7%AF%87/Users/Gozen%20Sanji/Desktop/STUDY/学习笔记-Typora/c2s3e6.png">
+<meta property="og:image" content="http://example.com/2023/05/14/%E3%80%90%E7%AC%94%E8%AE%B0%E3%80%91%E6%95%B0%E5%AD%A6%E5%88%86%E6%9E%90%E6%96%B0%E8%AE%B2-%E7%AC%AC1%E7%AF%87/Users/Gozen%20Sanji/Desktop/STUDY/学习笔记-Typora/c2s3e7.png">
+<meta property="og:image" content="http://example.com/2023/05/14/%E3%80%90%E7%AC%94%E8%AE%B0%E3%80%91%E6%95%B0%E5%AD%A6%E5%88%86%E6%9E%90%E6%96%B0%E8%AE%B2-%E7%AC%AC1%E7%AF%87/Users/Gozen%20Sanji/Desktop/STUDY/学习笔记-Typora/c2s3e8.png">
+<meta property="og:image" content="http://example.com/2023/05/14/%E3%80%90%E7%AC%94%E8%AE%B0%E3%80%91%E6%95%B0%E5%AD%A6%E5%88%86%E6%9E%90%E6%96%B0%E8%AE%B2-%E7%AC%AC1%E7%AF%87/Users/Gozen%20Sanji/Desktop/STUDY/学习笔记-Typora/c2s4e5.png">
+<meta property="og:image" content="http://example.com/2023/05/14/%E3%80%90%E7%AC%94%E8%AE%B0%E3%80%91%E6%95%B0%E5%AD%A6%E5%88%86%E6%9E%90%E6%96%B0%E8%AE%B2-%E7%AC%AC1%E7%AF%87/Users/Gozen%20Sanji/Desktop/STUDY/学习笔记-Typora/c2s4e6.png">
+<meta property="og:image" content="http://example.com/2023/05/14/%E3%80%90%E7%AC%94%E8%AE%B0%E3%80%91%E6%95%B0%E5%AD%A6%E5%88%86%E6%9E%90%E6%96%B0%E8%AE%B2-%E7%AC%AC1%E7%AF%87/Users/Gozen%20Sanji/Desktop/STUDY/学习笔记-Typora/c2s5e3.png">
+<meta property="og:image" content="http://example.com/2023/05/14/%E3%80%90%E7%AC%94%E8%AE%B0%E3%80%91%E6%95%B0%E5%AD%A6%E5%88%86%E6%9E%90%E6%96%B0%E8%AE%B2-%E7%AC%AC1%E7%AF%87/Users/Gozen%20Sanji/Desktop/STUDY/学习笔记-Typora/c2s5e5.png">
+<meta property="og:image" content="http://example.com/2023/05/14/%E3%80%90%E7%AC%94%E8%AE%B0%E3%80%91%E6%95%B0%E5%AD%A6%E5%88%86%E6%9E%90%E6%96%B0%E8%AE%B2-%E7%AC%AC1%E7%AF%87/Users/Gozen%20Sanji/Desktop/STUDY/学习笔记-Typora/c2s5e6.png">
+<meta property="og:image" content="http://example.com/2023/05/14/%E3%80%90%E7%AC%94%E8%AE%B0%E3%80%91%E6%95%B0%E5%AD%A6%E5%88%86%E6%9E%90%E6%96%B0%E8%AE%B2-%E7%AC%AC1%E7%AF%87/Users/Gozen%20Sanji/Desktop/STUDY/学习笔记-Typora/c2s5e7_1.png">
+<meta property="og:image" content="http://example.com/2023/05/14/%E3%80%90%E7%AC%94%E8%AE%B0%E3%80%91%E6%95%B0%E5%AD%A6%E5%88%86%E6%9E%90%E6%96%B0%E8%AE%B2-%E7%AC%AC1%E7%AF%87/Users/Gozen%20Sanji/Desktop/STUDY/学习笔记-Typora/c2s5e7_2.png">
+<meta property="og:image" content="http://example.com/2023/05/14/%E3%80%90%E7%AC%94%E8%AE%B0%E3%80%91%E6%95%B0%E5%AD%A6%E5%88%86%E6%9E%90%E6%96%B0%E8%AE%B2-%E7%AC%AC1%E7%AF%87/Users/Gozen%20Sanji/Desktop/STUDY/学习笔记-Typora/c2s5e8.png">
+<meta property="og:image" content="http://example.com/2023/05/14/%E3%80%90%E7%AC%94%E8%AE%B0%E3%80%91%E6%95%B0%E5%AD%A6%E5%88%86%E6%9E%90%E6%96%B0%E8%AE%B2-%E7%AC%AC1%E7%AF%87/Users/Gozen%20Sanji/Desktop/STUDY/学习笔记-Typora/c2s5e9_1.png">
+<meta property="og:image" content="http://example.com/2023/05/14/%E3%80%90%E7%AC%94%E8%AE%B0%E3%80%91%E6%95%B0%E5%AD%A6%E5%88%86%E6%9E%90%E6%96%B0%E8%AE%B2-%E7%AC%AC1%E7%AF%87/Users/Gozen%20Sanji/Desktop/STUDY/学习笔记-Typora/c2s5e9_2.png">
+<meta property="og:image" content="http://example.com/2023/05/14/%E3%80%90%E7%AC%94%E8%AE%B0%E3%80%91%E6%95%B0%E5%AD%A6%E5%88%86%E6%9E%90%E6%96%B0%E8%AE%B2-%E7%AC%AC1%E7%AF%87/Users/Gozen%20Sanji/Desktop/STUDY/学习笔记-Typora/c2s5e10.png">
+<meta property="og:image" content="http://example.com/2023/05/14/%E3%80%90%E7%AC%94%E8%AE%B0%E3%80%91%E6%95%B0%E5%AD%A6%E5%88%86%E6%9E%90%E6%96%B0%E8%AE%B2-%E7%AC%AC1%E7%AF%87/Users/Gozen%20Sanji/Desktop/STUDY/学习笔记-Typora/c2s5e12.png">
+<meta property="og:image" content="http://example.com/2023/05/14/%E3%80%90%E7%AC%94%E8%AE%B0%E3%80%91%E6%95%B0%E5%AD%A6%E5%88%86%E6%9E%90%E6%96%B0%E8%AE%B2-%E7%AC%AC1%E7%AF%87/Users/Gozen%20Sanji/Desktop/STUDY/学习笔记-Typora/c2s5e13.png">
+<meta property="og:image" content="http://example.com/2023/05/14/%E3%80%90%E7%AC%94%E8%AE%B0%E3%80%91%E6%95%B0%E5%AD%A6%E5%88%86%E6%9E%90%E6%96%B0%E8%AE%B2-%E7%AC%AC1%E7%AF%87/Users/Gozen%20Sanji/Desktop/STUDY/学习笔记-Typora/c2s5e14.png">
+<meta property="og:image" content="http://example.com/2023/05/14/%E3%80%90%E7%AC%94%E8%AE%B0%E3%80%91%E6%95%B0%E5%AD%A6%E5%88%86%E6%9E%90%E6%96%B0%E8%AE%B2-%E7%AC%AC1%E7%AF%87/Users/Gozen%20Sanji/Desktop/STUDY/学习笔记-Typora/Chapter%203%20连续函数.jpg">
+<meta property="og:image" content="http://example.com/2023/05/14/%E3%80%90%E7%AC%94%E8%AE%B0%E3%80%91%E6%95%B0%E5%AD%A6%E5%88%86%E6%9E%90%E6%96%B0%E8%AE%B2-%E7%AC%AC1%E7%AF%87/Users/Gozen%20Sanji/Desktop/STUDY/学习笔记-Typora/c3s1thm6.png">
+<meta property="og:image" content="http://example.com/2023/05/14/%E3%80%90%E7%AC%94%E8%AE%B0%E3%80%91%E6%95%B0%E5%AD%A6%E5%88%86%E6%9E%90%E6%96%B0%E8%AE%B2-%E7%AC%AC1%E7%AF%87/Users/Gozen%20Sanji/Desktop/STUDY/学习笔记-Typora/c3s2thm2.png">
+<meta property="og:image" content="http://example.com/2023/05/14/%E3%80%90%E7%AC%94%E8%AE%B0%E3%80%91%E6%95%B0%E5%AD%A6%E5%88%86%E6%9E%90%E6%96%B0%E8%AE%B2-%E7%AC%AC1%E7%AF%87/Users/Gozen%20Sanji/Desktop/STUDY/学习笔记-Typora/c3s3thm1.png">
+<meta property="og:image" content="http://example.com/2023/05/14/%E3%80%90%E7%AC%94%E8%AE%B0%E3%80%91%E6%95%B0%E5%AD%A6%E5%88%86%E6%9E%90%E6%96%B0%E8%AE%B2-%E7%AC%AC1%E7%AF%87/Users/Gozen%20Sanji/Desktop/STUDY/学习笔记-Typora/c3s3thm2.png">
+<meta property="og:image" content="http://example.com/2023/05/14/%E3%80%90%E7%AC%94%E8%AE%B0%E3%80%91%E6%95%B0%E5%AD%A6%E5%88%86%E6%9E%90%E6%96%B0%E8%AE%B2-%E7%AC%AC1%E7%AF%87/Users/Gozen%20Sanji/Desktop/STUDY/学习笔记-Typora/c3s4thm2.png">
+<meta property="og:image" content="http://example.com/2023/05/14/%E3%80%90%E7%AC%94%E8%AE%B0%E3%80%91%E6%95%B0%E5%AD%A6%E5%88%86%E6%9E%90%E6%96%B0%E8%AE%B2-%E7%AC%AC1%E7%AF%87/Users/Gozen%20Sanji/Desktop/STUDY/学习笔记-Typora/func_powerx_3.png">
+<meta property="og:image" content="http://example.com/2023/05/14/%E3%80%90%E7%AC%94%E8%AE%B0%E3%80%91%E6%95%B0%E5%AD%A6%E5%88%86%E6%9E%90%E6%96%B0%E8%AE%B2-%E7%AC%AC1%E7%AF%87/Users/Gozen%20Sanji/Desktop/STUDY/学习笔记-Typora/func_powerx_4.png">
+<meta property="og:image" content="http://example.com/2023/05/14/%E3%80%90%E7%AC%94%E8%AE%B0%E3%80%91%E6%95%B0%E5%AD%A6%E5%88%86%E6%9E%90%E6%96%B0%E8%AE%B2-%E7%AC%AC1%E7%AF%87/Users/Gozen%20Sanji/Desktop/STUDY/学习笔记-Typora/func_powerx_5.png">
+<meta property="og:image" content="http://example.com/2023/05/14/%E3%80%90%E7%AC%94%E8%AE%B0%E3%80%91%E6%95%B0%E5%AD%A6%E5%88%86%E6%9E%90%E6%96%B0%E8%AE%B2-%E7%AC%AC1%E7%AF%87/Users/Gozen%20Sanji/Desktop/STUDY/学习笔记-Typora/func_powerx_2.png">
+<meta property="og:image" content="http://example.com/2023/05/14/%E3%80%90%E7%AC%94%E8%AE%B0%E3%80%91%E6%95%B0%E5%AD%A6%E5%88%86%E6%9E%90%E6%96%B0%E8%AE%B2-%E7%AC%AC1%E7%AF%87/Users/Gozen%20Sanji/Desktop/STUDY/学习笔记-Typora/func_sinx.png">
+<meta property="og:image" content="http://example.com/2023/05/14/%E3%80%90%E7%AC%94%E8%AE%B0%E3%80%91%E6%95%B0%E5%AD%A6%E5%88%86%E6%9E%90%E6%96%B0%E8%AE%B2-%E7%AC%AC1%E7%AF%87/Users/Gozen%20Sanji/Desktop/STUDY/学习笔记-Typora/func_cosx.png">
+<meta property="og:image" content="http://example.com/2023/05/14/%E3%80%90%E7%AC%94%E8%AE%B0%E3%80%91%E6%95%B0%E5%AD%A6%E5%88%86%E6%9E%90%E6%96%B0%E8%AE%B2-%E7%AC%AC1%E7%AF%87/Users/Gozen%20Sanji/Desktop/STUDY/学习笔记-Typora/func_tanx_cotx.png">
+<meta property="og:image" content="http://example.com/2023/05/14/%E3%80%90%E7%AC%94%E8%AE%B0%E3%80%91%E6%95%B0%E5%AD%A6%E5%88%86%E6%9E%90%E6%96%B0%E8%AE%B2-%E7%AC%AC1%E7%AF%87/Users/Gozen%20Sanji/Desktop/STUDY/学习笔记-Typora/func_tanx_cotx_2.png">
+<meta property="og:image" content="http://example.com/2023/05/14/%E3%80%90%E7%AC%94%E8%AE%B0%E3%80%91%E6%95%B0%E5%AD%A6%E5%88%86%E6%9E%90%E6%96%B0%E8%AE%B2-%E7%AC%AC1%E7%AF%87/Users/Gozen%20Sanji/Desktop/STUDY/学习笔记-Typora/func_arcsinx.png">
+<meta property="og:image" content="http://example.com/2023/05/14/%E3%80%90%E7%AC%94%E8%AE%B0%E3%80%91%E6%95%B0%E5%AD%A6%E5%88%86%E6%9E%90%E6%96%B0%E8%AE%B2-%E7%AC%AC1%E7%AF%87/Users/Gozen%20Sanji/Desktop/STUDY/学习笔记-Typora/func_arccosx.png">
+<meta property="og:image" content="http://example.com/2023/05/14/%E3%80%90%E7%AC%94%E8%AE%B0%E3%80%91%E6%95%B0%E5%AD%A6%E5%88%86%E6%9E%90%E6%96%B0%E8%AE%B2-%E7%AC%AC1%E7%AF%87/Users/Gozen%20Sanji/Desktop/STUDY/学习笔记-Typora/func_arctanx.png">
+<meta property="og:image" content="http://example.com/2023/05/14/%E3%80%90%E7%AC%94%E8%AE%B0%E3%80%91%E6%95%B0%E5%AD%A6%E5%88%86%E6%9E%90%E6%96%B0%E8%AE%B2-%E7%AC%AC1%E7%AF%87/Users/Gozen%20Sanji/Desktop/STUDY/学习笔记-Typora/func_arccotx.png">
+<meta property="og:image" content="http://example.com/2023/05/14/%E3%80%90%E7%AC%94%E8%AE%B0%E3%80%91%E6%95%B0%E5%AD%A6%E5%88%86%E6%9E%90%E6%96%B0%E8%AE%B2-%E7%AC%AC1%E7%AF%87/Users/Gozen%20Sanji/Desktop/STUDY/学习笔记-Typora/func_secx_cscx.png">
+<meta property="og:image" content="http://example.com/2023/05/14/%E3%80%90%E7%AC%94%E8%AE%B0%E3%80%91%E6%95%B0%E5%AD%A6%E5%88%86%E6%9E%90%E6%96%B0%E8%AE%B2-%E7%AC%AC1%E7%AF%87/Users/Gozen%20Sanji/Desktop/STUDY/学习笔记-Typora/func_secx_cscx_2.png">
+<meta property="og:image" content="http://example.com/2023/05/14/%E3%80%90%E7%AC%94%E8%AE%B0%E3%80%91%E6%95%B0%E5%AD%A6%E5%88%86%E6%9E%90%E6%96%B0%E8%AE%B2-%E7%AC%AC1%E7%AF%87/Users/Gozen%20Sanji/Desktop/STUDY/学习笔记-Typora/func_expx.png">
+<meta property="og:image" content="http://example.com/2023/05/14/%E3%80%90%E7%AC%94%E8%AE%B0%E3%80%91%E6%95%B0%E5%AD%A6%E5%88%86%E6%9E%90%E6%96%B0%E8%AE%B2-%E7%AC%AC1%E7%AF%87/Users/Gozen%20Sanji/Desktop/STUDY/学习笔记-Typora/func_expx_2.png">
+<meta property="og:image" content="http://example.com/2023/05/14/%E3%80%90%E7%AC%94%E8%AE%B0%E3%80%91%E6%95%B0%E5%AD%A6%E5%88%86%E6%9E%90%E6%96%B0%E8%AE%B2-%E7%AC%AC1%E7%AF%87/Users/Gozen%20Sanji/Desktop/STUDY/学习笔记-Typora/func_logx.png">
+<meta property="og:image" content="http://example.com/2023/05/14/%E3%80%90%E7%AC%94%E8%AE%B0%E3%80%91%E6%95%B0%E5%AD%A6%E5%88%86%E6%9E%90%E6%96%B0%E8%AE%B2-%E7%AC%AC1%E7%AF%87/Users/Gozen%20Sanji/Desktop/STUDY/学习笔记-Typora/func_logx_2.png">
+<meta property="og:image" content="http://example.com/2023/05/14/%E3%80%90%E7%AC%94%E8%AE%B0%E3%80%91%E6%95%B0%E5%AD%A6%E5%88%86%E6%9E%90%E6%96%B0%E8%AE%B2-%E7%AC%AC1%E7%AF%87/Users/Gozen%20Sanji/Desktop/STUDY/学习笔记-Typora/c3s1e4e5.png">
+<meta property="og:image" content="http://example.com/2023/05/14/%E3%80%90%E7%AC%94%E8%AE%B0%E3%80%91%E6%95%B0%E5%AD%A6%E5%88%86%E6%9E%90%E6%96%B0%E8%AE%B2-%E7%AC%AC1%E7%AF%87/Users/Gozen%20Sanji/Desktop/STUDY/学习笔记-Typora/c3s1e6e7.png">
+<meta property="og:image" content="http://example.com/2023/05/14/%E3%80%90%E7%AC%94%E8%AE%B0%E3%80%91%E6%95%B0%E5%AD%A6%E5%88%86%E6%9E%90%E6%96%B0%E8%AE%B2-%E7%AC%AC1%E7%AF%87/Users/Gozen%20Sanji/Desktop/STUDY/学习笔记-Typora/c3s2e1.png">
+<meta property="og:image" content="http://example.com/2023/05/14/%E3%80%90%E7%AC%94%E8%AE%B0%E3%80%91%E6%95%B0%E5%AD%A6%E5%88%86%E6%9E%90%E6%96%B0%E8%AE%B2-%E7%AC%AC1%E7%AF%87/Users/Gozen%20Sanji/Desktop/STUDY/学习笔记-Typora/c3s2e2.png">
+<meta property="og:image" content="http://example.com/2023/05/14/%E3%80%90%E7%AC%94%E8%AE%B0%E3%80%91%E6%95%B0%E5%AD%A6%E5%88%86%E6%9E%90%E6%96%B0%E8%AE%B2-%E7%AC%AC1%E7%AF%87/Users/Gozen%20Sanji/Desktop/STUDY/学习笔记-Typora/c3s2e5e6.png">
+<meta property="og:image" content="http://example.com/2023/05/14/%E3%80%90%E7%AC%94%E8%AE%B0%E3%80%91%E6%95%B0%E5%AD%A6%E5%88%86%E6%9E%90%E6%96%B0%E8%AE%B2-%E7%AC%AC1%E7%AF%87/Users/Gozen%20Sanji/Desktop/STUDY/学习笔记-Typora/c3s2e7.png">
+<meta property="og:image" content="http://example.com/2023/05/14/%E3%80%90%E7%AC%94%E8%AE%B0%E3%80%91%E6%95%B0%E5%AD%A6%E5%88%86%E6%9E%90%E6%96%B0%E8%AE%B2-%E7%AC%AC1%E7%AF%87/Users/Gozen%20Sanji/Desktop/STUDY/学习笔记-Typora/c3s3e1.png">
+<meta property="og:image" content="http://example.com/2023/05/14/%E3%80%90%E7%AC%94%E8%AE%B0%E3%80%91%E6%95%B0%E5%AD%A6%E5%88%86%E6%9E%90%E6%96%B0%E8%AE%B2-%E7%AC%AC1%E7%AF%87/Users/Gozen%20Sanji/Desktop/STUDY/学习笔记-Typora/c3s3e5.png">
+<meta property="og:image" content="http://example.com/2023/05/14/%E3%80%90%E7%AC%94%E8%AE%B0%E3%80%91%E6%95%B0%E5%AD%A6%E5%88%86%E6%9E%90%E6%96%B0%E8%AE%B2-%E7%AC%AC1%E7%AF%87/Users/Gozen%20Sanji/Desktop/STUDY/学习笔记-Typora/c3s4e1e2.png">
+<meta property="og:image" content="http://example.com/2023/05/14/%E3%80%90%E7%AC%94%E8%AE%B0%E3%80%91%E6%95%B0%E5%AD%A6%E5%88%86%E6%9E%90%E6%96%B0%E8%AE%B2-%E7%AC%AC1%E7%AF%87/Users/Gozen%20Sanji/Desktop/STUDY/学习笔记-Typora/c3s5e6e7e8.png">
+<meta property="og:image" content="http://example.com/2023/05/14/%E3%80%90%E7%AC%94%E8%AE%B0%E3%80%91%E6%95%B0%E5%AD%A6%E5%88%86%E6%9E%90%E6%96%B0%E8%AE%B2-%E7%AC%AC1%E7%AF%87/Users/Gozen%20Sanji/Desktop/STUDY/学习笔记-Typora/c3s5e9.png">
+<meta property="og:image" content="http://example.com/2023/05/14/%E3%80%90%E7%AC%94%E8%AE%B0%E3%80%91%E6%95%B0%E5%AD%A6%E5%88%86%E6%9E%90%E6%96%B0%E8%AE%B2-%E7%AC%AC1%E7%AF%87/Users/Gozen%20Sanji/Desktop/STUDY/学习笔记-Typora/c3s5e10.png">
+<meta property="og:image" content="http://example.com/2023/05/14/%E3%80%90%E7%AC%94%E8%AE%B0%E3%80%91%E6%95%B0%E5%AD%A6%E5%88%86%E6%9E%90%E6%96%B0%E8%AE%B2-%E7%AC%AC1%E7%AF%87/Users/Gozen%20Sanji/Desktop/STUDY/学习笔记-Typora/c3s5e11e12e13e14.png">
+<meta property="article:published_time" content="2023-05-14T01:56:25.000Z">
+<meta property="article:modified_time" content="2023-05-14T02:50:52.158Z">
+<meta property="article:author" content="Gozen Sanji">
+<meta property="article:tag" content="Mathematics">
+<meta property="article:tag" content="Analysis">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/2023/05/14/%E3%80%90%E7%AC%94%E8%AE%B0%E3%80%91%E6%95%B0%E5%AD%A6%E5%88%86%E6%9E%90%E6%96%B0%E8%AE%B2-%E7%AC%AC1%E7%AF%87/Chapter%200%20预备知识.jpg">
+
+
+<link rel="canonical" href="http://example.com/2023/05/14/%E3%80%90%E7%AC%94%E8%AE%B0%E3%80%91%E6%95%B0%E5%AD%A6%E5%88%86%E6%9E%90%E6%96%B0%E8%AE%B2-%E7%AC%AC1%E7%AF%87/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"en","comments":true,"permalink":"http://example.com/2023/05/14/%E3%80%90%E7%AC%94%E8%AE%B0%E3%80%91%E6%95%B0%E5%AD%A6%E5%88%86%E6%9E%90%E6%96%B0%E8%AE%B2-%E7%AC%AC1%E7%AF%87/","path":"2023/05/14/【笔记】数学分析新讲-第1篇/","title":"【笔记】数学分析新讲-第1篇"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>【笔记】数学分析新讲-第1篇 | Jay's Blog</title>
+  
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Jay's Blog</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">🐬</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="user fa-fw"></i>About</a></li>
+        <li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="tags fa-fw"></i>Tags</a></li>
+        <li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="th fa-fw"></i>Categories</a></li>
+        <li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="archive fa-fw"></i>Archives</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>Search
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="Searching..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link"><span class="nav-number">1.</span> <span class="nav-text">第一篇     分析基础</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E2%9D%84%E7%AC%AC%E9%9B%B6%E7%AB%A0-%E9%A2%84%E5%A4%87%E7%9F%A5%E8%AF%86"><span class="nav-number">2.</span> <span class="nav-text">❄第零章        预备知识</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E2%97%8F-%E6%A0%B8%E5%BF%83%E6%A6%82%E5%BF%B5-amp-%E7%BB%93%E8%AE%BA"><span class="nav-number">2.1.</span> <span class="nav-text">● 核心概念 &amp; 结论</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E2%9D%84%E7%AC%AC%E4%B8%80%E7%AB%A0-%E5%AE%9E%E6%95%B0"><span class="nav-number">3.</span> <span class="nav-text">❄第一章        实数</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E2%97%8F-%E6%A0%B8%E5%BF%83%E6%A6%82%E5%BF%B5-amp-%E7%BB%93%E8%AE%BA-1"><span class="nav-number">3.1.</span> <span class="nav-text">● 核心概念 &amp; 结论</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E2%9D%84%E7%AC%AC%E4%BA%8C%E7%AB%A0-%E6%9E%81%E9%99%90"><span class="nav-number">4.</span> <span class="nav-text">❄第二章        极限</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E2%97%8F-%E6%A0%B8%E5%BF%83%E6%A6%82%E5%BF%B5-amp-%E7%BB%93%E8%AE%BA-2"><span class="nav-number">4.1.</span> <span class="nav-text">● 核心概念 &amp; 结论</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E2%97%8F-%E6%9C%AC%E7%AB%A0%E3%81%AE%E6%B3%A8%E8%AE%B0"><span class="nav-number">4.2.</span> <span class="nav-text">● 本章の注记</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E2%97%8F-%E5%85%B8%E5%9E%8B%E9%97%AE%E9%A2%98%E8%A7%A3%E6%9E%90"><span class="nav-number">4.3.</span> <span class="nav-text">● 典型问题解析</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AC%AC%E4%B8%80%E8%8A%82"><span class="nav-number">4.3.1.</span> <span class="nav-text">@ 第一节</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AC%AC%E4%BA%8C%E8%8A%82"><span class="nav-number">4.3.2.</span> <span class="nav-text">@ 第二节</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AC%AC%E4%B8%89%E8%8A%82"><span class="nav-number">4.3.3.</span> <span class="nav-text">@ 第三节</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AC%AC%E5%9B%9B%E8%8A%82"><span class="nav-number">4.3.4.</span> <span class="nav-text">@ 第四节</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AC%AC%E4%BA%94%E8%8A%82"><span class="nav-number">4.3.5.</span> <span class="nav-text">@ 第五节</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Final-Remark"><span class="nav-number">4.3.6.</span> <span class="nav-text">Final Remark</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E2%9D%84%E7%AC%AC%E4%B8%89%E7%AB%A0-%E8%BF%9E%E7%BB%AD%E5%87%BD%E6%95%B0"><span class="nav-number">5.</span> <span class="nav-text">❄第三章        连续函数</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E2%97%8F-%E6%A0%B8%E5%BF%83%E6%A6%82%E5%BF%B5-amp-%E7%BB%93%E8%AE%BA-3"><span class="nav-number">5.1.</span> <span class="nav-text">● 核心概念 &amp; 结论</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E2%97%8F-%E6%9C%AC%E7%AB%A0%E3%81%AE%E6%B3%A8%E8%AE%B0-1"><span class="nav-number">5.2.</span> <span class="nav-text">● 本章の注记</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E2%97%8F-%E5%85%B8%E5%9E%8B%E9%97%AE%E9%A2%98%E8%A7%A3%E6%9E%90-1"><span class="nav-number">5.3.</span> <span class="nav-text">● 典型问题解析</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AC%AC%E4%B8%80%E8%8A%82-1"><span class="nav-number">5.3.1.</span> <span class="nav-text">@ 第一节</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AC%AC%E4%BA%8C%E8%8A%82-1"><span class="nav-number">5.3.2.</span> <span class="nav-text">@ 第二节</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AC%AC%E4%B8%89%E8%8A%82-1"><span class="nav-number">5.3.3.</span> <span class="nav-text">@ 第三节</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AC%AC%E5%9B%9B%E8%8A%82-1"><span class="nav-number">5.3.4.</span> <span class="nav-text">@ 第四节</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AC%AC%E4%BA%94%E8%8A%82-1"><span class="nav-number">5.3.5.</span> <span class="nav-text">@ 第五节</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Final-Remark-1"><span class="nav-number">5.3.6.</span> <span class="nav-text">Final Remark</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E2%98%80%E7%AC%AC%E4%B8%80%E7%AF%87%E3%81%AE%E6%80%BB%E7%BB%93"><span class="nav-number">6.</span> <span class="nav-text">☀第一篇の总结</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Gozen Sanji"
+      src="/images/my_avatar.jpg">
+  <p class="site-author-name" itemprop="name">Gozen Sanji</p>
+  <div class="site-description" itemprop="description">目が覚めた抵抗 型落ちの衝動</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">14</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="Back to top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2023/05/14/%E3%80%90%E7%AC%94%E8%AE%B0%E3%80%91%E6%95%B0%E5%AD%A6%E5%88%86%E6%9E%90%E6%96%B0%E8%AE%B2-%E7%AC%AC1%E7%AF%87/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/my_avatar.jpg">
+      <meta itemprop="name" content="Gozen Sanji">
+      <meta itemprop="description" content="目が覚めた抵抗 型落ちの衝動">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Jay's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          【笔记】数学分析新讲-第1篇
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+      
+
+      <time title="Created: 2023-05-14 09:56:25 / Modified: 10:50:52" itemprop="dateCreated datePublished" datetime="2023-05-14T09:56:25+08:00">2023-05-14</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Mathematics/" itemprop="url" rel="index"><span itemprop="name">Mathematics</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h1 align="center" style="font-size:50px">第一篇 &nbsp &nbsp 分析基础</h1>
+
+<span id="more"></span>
+<p>[TOC]</p>
+<h1 id="❄第零章-预备知识"><a href="#❄第零章-预备知识" class="headerlink" title="❄第零章        预备知识"></a>❄第零章        预备知识</h1><h2 id="●-核心概念-amp-结论"><a href="#●-核心概念-amp-结论" class="headerlink" title="● 核心概念 &amp; 结论"></a>● 核心概念 &amp; 结论</h2><p><img src="/2023/05/14/%E3%80%90%E7%AC%94%E8%AE%B0%E3%80%91%E6%95%B0%E5%AD%A6%E5%88%86%E6%9E%90%E6%96%B0%E8%AE%B2-%E7%AC%AC1%E7%AF%87/Chapter 0 预备知识.jpg" style="zoom:100%;">  </p>
+<ol>
+<li><p>$ \sum_{k=1}^{n}k = \frac{1}{2} n(n+1) $ </p>
+</li>
+<li><p>$ \sum_{k=1}^{n}k^2 = \frac{1}{6} n(n+1)(2n+1) $ </p>
+</li>
+<li><p>$ \sum_{k=1}^{n}k^3 = [\frac{1}{2} n(n+1)]^2 $ </p>
+</li>
+</ol>
+<hr>
+<h1 id="❄第一章-实数"><a href="#❄第一章-实数" class="headerlink" title="❄第一章        实数"></a>❄第一章        实数</h1><h2 id="●-核心概念-amp-结论-1"><a href="#●-核心概念-amp-结论-1" class="headerlink" title="● 核心概念 &amp; 结论"></a>● 核心概念 &amp; 结论</h2><p><img src="/2023/05/14/%E3%80%90%E7%AC%94%E8%AE%B0%E3%80%91%E6%95%B0%E5%AD%A6%E5%88%86%E6%9E%90%E6%96%B0%E8%AE%B2-%E7%AC%AC1%E7%AF%87/Users/Gozen Sanji\Desktop\STUDY\学习笔记-Typora\Chapter 1 实数.jpg" width="90%"> </p>
+<ol>
+<li><p><strong>确界原理</strong>： $\R$ 的任意非空有上界的子集在 $\R$ 中有上确界；</p>
+</li>
+<li><p>常用不等式：</p>
+<p>$<br>①\quad \big||a|-|b|\big|\leq|a \pm b|\leq|a|+|b| \\<br>②\quad |a_{1} + a_{2} + \dots + a_{n}| \leq |a_{1}| + |a_{2}| + \dots + |a_{n}| \\<br>③\quad \text{Bernoulli 不等式：} (1 + x)^{n} \geq 1 + nx, \; \forall \; x \geq -1\\<br>④\quad \text{算术平均-几何平均不等式：} \frac{x_{1} + x_{2} + \dots + x_{n}}{n} \geq \sqrt[n]            </p>
+<pre><code>&#123;x_&#123;1&#125;x_&#123;2&#125; \dots x_&#123;n&#125;&#125;, \; \forall \; x_&#123;1&#125;, x_&#123;2&#125;, \dots,x_&#123;n&#125; \geq 0 \\
+</code></pre><p>⑤\quad \sin x &lt; x &lt; \tan x, \; \forall \; x \in (0, \frac{\pi}{2}) \\<br>⑥\quad |\sin x| \leq |x|, \; \forall \; x \in \R<br>$ </p>
+</li>
+</ol>
+<hr>
+<h1 id="❄第二章-极限"><a href="#❄第二章-极限" class="headerlink" title="❄第二章        极限"></a>❄第二章        极限</h1><h2 id="●-核心概念-amp-结论-2"><a href="#●-核心概念-amp-结论-2" class="headerlink" title="● 核心概念 &amp; 结论"></a>● 核心概念 &amp; 结论</h2><p><img src="/2023/05/14/%E3%80%90%E7%AC%94%E8%AE%B0%E3%80%91%E6%95%B0%E5%AD%A6%E5%88%86%E6%9E%90%E6%96%B0%E8%AE%B2-%E7%AC%AC1%E7%AF%87/Users/Gozen Sanji\Desktop\STUDY\学习笔记-Typora\Chapter 2 极限.jpg" width="100%">  </p>
+<ol>
+<li>Relation ①：</li>
+</ol>
+<p><img src="/2023/05/14/%E3%80%90%E7%AC%94%E8%AE%B0%E3%80%91%E6%95%B0%E5%AD%A6%E5%88%86%E6%9E%90%E6%96%B0%E8%AE%B2-%E7%AC%AC1%E7%AF%87/Users/Gozen Sanji\Desktop\STUDY\学习笔记-Typora\c2s2thm3.png" width="50%" align="left"></p>
+<ol>
+<li>Relation ②：</li>
+</ol>
+<p><img src="/2023/05/14/%E3%80%90%E7%AC%94%E8%AE%B0%E3%80%91%E6%95%B0%E5%AD%A6%E5%88%86%E6%9E%90%E6%96%B0%E8%AE%B2-%E7%AC%AC1%E7%AF%87/Users/Gozen Sanji\Desktop\STUDY\学习笔记-Typora\c2s4thm4.png" width="50%" align="left"></p>
+<ol>
+<li>Relation ③：</li>
+</ol>
+<p><img src="/2023/05/14/%E3%80%90%E7%AC%94%E8%AE%B0%E3%80%91%E6%95%B0%E5%AD%A6%E5%88%86%E6%9E%90%E6%96%B0%E8%AE%B2-%E7%AC%AC1%E7%AF%87/Users/Gozen Sanji\Desktop\STUDY\学习笔记-Typora\c2s6thm1.png" width="50%" align="left"></p>
+<ol>
+<li>有界序列与无穷小序列：</li>
+</ol>
+<p><img src="/2023/05/14/%E3%80%90%E7%AC%94%E8%AE%B0%E3%80%91%E6%95%B0%E5%AD%A6%E5%88%86%E6%9E%90%E6%96%B0%E8%AE%B2-%E7%AC%AC1%E7%AF%87/Users/Gozen Sanji\Desktop\STUDY\学习笔记-Typora\c2s1thm1.png" width="50%" align="left"></p>
+<ol>
+<li>关于 “收敛序列保序性の推论” 的注记：</li>
+</ol>
+<p><img src="/2023/05/14/%E3%80%90%E7%AC%94%E8%AE%B0%E3%80%91%E6%95%B0%E5%AD%A6%E5%88%86%E6%9E%90%E6%96%B0%E8%AE%B2-%E7%AC%AC1%E7%AF%87/Users/Gozen Sanji\Desktop\STUDY\学习笔记-Typora\c2s2remark.png" width="50%" align="left"></p>
+<ol>
+<li>关于 “闭区间套原理” 的注记：</li>
+</ol>
+<p><img src="/2023/05/14/%E3%80%90%E7%AC%94%E8%AE%B0%E3%80%91%E6%95%B0%E5%AD%A6%E5%88%86%E6%9E%90%E6%96%B0%E8%AE%B2-%E7%AC%AC1%E7%AF%87/Users/Gozen Sanji\Desktop\STUDY\学习笔记-Typora\c2s3remark.png" width="50%" align="left"></p>
+<h2 id="●-本章の注记"><a href="#●-本章の注记" class="headerlink" title="● 本章の注记"></a>● 本章の注记</h2><ol>
+<li>本章介绍了分析基础中最基本的两个概念：<strong>收敛序列</strong> 和 <strong>函数极限</strong> </li>
+<li>序列收敛性常由 $\epsilon-N$ 定义描述</li>
+<li>函数于一点的收敛性常由 $\epsilon-\delta$ 定义 or 序列式定义描述 </li>
+<li>柯西收敛原理仅适用于有穷极限的情况</li>
+<li>单调收敛原理可适用于无穷极限的情况</li>
+</ol>
+<h2 id="●-典型问题解析"><a href="#●-典型问题解析" class="headerlink" title="● 典型问题解析"></a>● 典型问题解析</h2><h3 id="第一节"><a href="#第一节" class="headerlink" title="@ 第一节"></a><strong>@ 第一节</strong></h3><p>1、按定义证明序列有界 / 无界（基于二项展开的不等式缩放、基于分项合并的不等式缩放）</p>
+<p><img src="/2023/05/14/%E3%80%90%E7%AC%94%E8%AE%B0%E3%80%91%E6%95%B0%E5%AD%A6%E5%88%86%E6%9E%90%E6%96%B0%E8%AE%B2-%E7%AC%AC1%E7%AF%87/Users/Gozen Sanji\Desktop\STUDY\学习笔记-Typora\c2s1e3.png" width="400px" align="left"> <img src="/2023/05/14/%E3%80%90%E7%AC%94%E8%AE%B0%E3%80%91%E6%95%B0%E5%AD%A6%E5%88%86%E6%9E%90%E6%96%B0%E8%AE%B2-%E7%AC%AC1%E7%AF%87/Users/Gozen Sanji\Desktop\STUDY\学习笔记-Typora\c2s1e5.png" width="400px" align="left"> </p>
+<p>2、按 $\epsilon-N$ 定义证明序列为无穷小（基于 Bernoulli 不等式的缩放、基于二项展开的不等式缩放）</p>
+<p><img src="/2023/05/14/%E3%80%90%E7%AC%94%E8%AE%B0%E3%80%91%E6%95%B0%E5%AD%A6%E5%88%86%E6%9E%90%E6%96%B0%E8%AE%B2-%E7%AC%AC1%E7%AF%87/Users/Gozen Sanji\Desktop\STUDY\学习笔记-Typora\c2s1e7.png" width="400px" align="left"> <img src="/2023/05/14/%E3%80%90%E7%AC%94%E8%AE%B0%E3%80%91%E6%95%B0%E5%AD%A6%E5%88%86%E6%9E%90%E6%96%B0%E8%AE%B2-%E7%AC%AC1%E7%AF%87/Users/Gozen Sanji\Desktop\STUDY\学习笔记-Typora\c2s1e8.png" width="400px" align="left"> </p>
+<p>3、按 Squeeze Theorem 证明序列为无穷小（逐项缩放）</p>
+<p><img src="/2023/05/14/%E3%80%90%E7%AC%94%E8%AE%B0%E3%80%91%E6%95%B0%E5%AD%A6%E5%88%86%E6%9E%90%E6%96%B0%E8%AE%B2-%E7%AC%AC1%E7%AF%87/Users/Gozen Sanji\Desktop\STUDY\学习笔记-Typora\c2s1e9.png" width="400px" align="left"> </p>
+<p>4、有限个无穷小序列的和与积也是无穷小序列、有界量与无穷小序列的积也是无穷小序列</p>
+<p><img src="/2023/05/14/%E3%80%90%E7%AC%94%E8%AE%B0%E3%80%91%E6%95%B0%E5%AD%A6%E5%88%86%E6%9E%90%E6%96%B0%E8%AE%B2-%E7%AC%AC1%E7%AF%87/Users/Gozen Sanji\Desktop\STUDY\学习笔记-Typora\c2s1e10.png" width="400px" align="left"> <img src="/2023/05/14/%E3%80%90%E7%AC%94%E8%AE%B0%E3%80%91%E6%95%B0%E5%AD%A6%E5%88%86%E6%9E%90%E6%96%B0%E8%AE%B2-%E7%AC%AC1%E7%AF%87/Users/Gozen Sanji\Desktop\STUDY\学习笔记-Typora\c2s1e11.png" width="400px" align="left">  </p>
+<p>5、按 $\epsilon-N$ 定义证明序列为无穷小（n 项和的形式，拆为两部分，分别缩放）</p>
+<p><img src="/2023/05/14/%E3%80%90%E7%AC%94%E8%AE%B0%E3%80%91%E6%95%B0%E5%AD%A6%E5%88%86%E6%9E%90%E6%96%B0%E8%AE%B2-%E7%AC%AC1%E7%AF%87/Users/Gozen Sanji\Desktop\STUDY\学习笔记-Typora\c2s1e12.png" width="400px" align="left"></p>
+<p>6、 按 Squeeze Theorem 证明序列为无穷小（算数平均-几何平均不等式）</p>
+<p><img src="/2023/05/14/%E3%80%90%E7%AC%94%E8%AE%B0%E3%80%91%E6%95%B0%E5%AD%A6%E5%88%86%E6%9E%90%E6%96%B0%E8%AE%B2-%E7%AC%AC1%E7%AF%87/Users/Gozen Sanji\Desktop\STUDY\学习笔记-Typora\c2s1e13.png" width="400px" align="left"></p>
+<p><strong>Remark</strong>：由上面两个例子，有：以 “由无穷小序列的前 n 项构造的算数平均数、几何平均数” 为通项的序列也是无穷小序列 </p>
+<p>7、将 $z_{n}$ 看作无穷小序列 $\{\frac{1}{n}\}$ 的前 n 项所构造的几何平均数 </p>
+<p><img src="/2023/05/14/%E3%80%90%E7%AC%94%E8%AE%B0%E3%80%91%E6%95%B0%E5%AD%A6%E5%88%86%E6%9E%90%E6%96%B0%E8%AE%B2-%E7%AC%AC1%E7%AF%87/Users/Gozen Sanji\Desktop\STUDY\学习笔记-Typora\c2s1e14.png" width="400px" align="left"> </p>
+<h3 id="第二节"><a href="#第二节" class="headerlink" title="@ 第二节"></a><strong>@ 第二节</strong></h3><p>1、证明 $x_{n}\to x$ <strong>等价于证明</strong> $(x_{n}-x) \to 0$ <strong>等价于证明</strong> $x_{n} = x + \alpha_{n}$，其中 $\alpha_{n}$ 是无穷小序列</p>
+<p><img src="/2023/05/14/%E3%80%90%E7%AC%94%E8%AE%B0%E3%80%91%E6%95%B0%E5%AD%A6%E5%88%86%E6%9E%90%E6%96%B0%E8%AE%B2-%E7%AC%AC1%E7%AF%87/Users/Gozen Sanji\Desktop\STUDY\学习笔记-Typora\c2s2e3.png" width="400px" align="left"> <img src="/2023/05/14/%E3%80%90%E7%AC%94%E8%AE%B0%E3%80%91%E6%95%B0%E5%AD%A6%E5%88%86%E6%9E%90%E6%96%B0%E8%AE%B2-%E7%AC%AC1%E7%AF%87/Users/Gozen Sanji\Desktop\STUDY\学习笔记-Typora\c2s2e4.png" width="400px" align="left"></p>
+<p><img src="/2023/05/14/%E3%80%90%E7%AC%94%E8%AE%B0%E3%80%91%E6%95%B0%E5%AD%A6%E5%88%86%E6%9E%90%E6%96%B0%E8%AE%B2-%E7%AC%AC1%E7%AF%87/Users/Gozen Sanji\Desktop\STUDY\学习笔记-Typora\c2s2e6.png" width="400px" align="left"></p>
+<p>2、利用序列极限的四则运算性质计算新序列极限</p>
+<p> <img src="/2023/05/14/%E3%80%90%E7%AC%94%E8%AE%B0%E3%80%91%E6%95%B0%E5%AD%A6%E5%88%86%E6%9E%90%E6%96%B0%E8%AE%B2-%E7%AC%AC1%E7%AF%87/Users/Gozen Sanji\Desktop\STUDY\学习笔记-Typora\c2s2e7.png" width="400px" align="left"> <img src="/2023/05/14/%E3%80%90%E7%AC%94%E8%AE%B0%E3%80%91%E6%95%B0%E5%AD%A6%E5%88%86%E6%9E%90%E6%96%B0%E8%AE%B2-%E7%AC%AC1%E7%AF%87/Users/Gozen Sanji\Desktop\STUDY\学习笔记-Typora\c2s2e9.png" width="400px" align="left"></p>
+<p><strong>Remark</strong>：</p>
+<ol>
+<li><p>由例 3 和例 7 知：$\forall \; a &gt; 0, \; \sqrt[n]{a} \to 1, n \to \infty$  </p>
+</li>
+<li><p>由例 6 知：当 $x_{n} \to x$ 时，$\dfrac{x_{1} + x_{2} + \dots + x_{n}}{n} \to x, \; n \to \infty$ </p>
+</li>
+<li><p>由下面例 10 知：当正实数序列 $x_{n} \to x(&gt;0)$ 时，$\sqrt[n]{x_{1}x_{2} \dots x_{n}} \to x, \; n \to \infty$ </p>
+</li>
+</ol>
+<p>3、需要对 $c$ 的取值分类讨论，其中当 $c&gt;0$ 时，可通过缩放、上述 Remark 1、Squeeze Theorem 得到结论 </p>
+<p> <img src="/2023/05/14/%E3%80%90%E7%AC%94%E8%AE%B0%E3%80%91%E6%95%B0%E5%AD%A6%E5%88%86%E6%9E%90%E6%96%B0%E8%AE%B2-%E7%AC%AC1%E7%AF%87/Users/Gozen Sanji\Desktop\STUDY\学习笔记-Typora\c2s2e8.png" width="400px" align="left"> </p>
+<p>4、利用 Squeeze Theorem 证明的序列收敛性、算术平均-几何平均不等式（扩展）</p>
+<p><img src="/2023/05/14/%E3%80%90%E7%AC%94%E8%AE%B0%E3%80%91%E6%95%B0%E5%AD%A6%E5%88%86%E6%9E%90%E6%96%B0%E8%AE%B2-%E7%AC%AC1%E7%AF%87/Users/Gozen Sanji\Desktop\STUDY\学习笔记-Typora\c2s2e10_1.png" width="400px" align="left"></p>
+<p><img src="/2023/05/14/%E3%80%90%E7%AC%94%E8%AE%B0%E3%80%91%E6%95%B0%E5%AD%A6%E5%88%86%E6%9E%90%E6%96%B0%E8%AE%B2-%E7%AC%AC1%E7%AF%87/Users/Gozen Sanji\Desktop\STUDY\学习笔记-Typora\c2s2e10_2.png" width="400px" align="left"></p>
+<p>5、将 $x_{n} \to x$ 等价转化为 $x_{n} = x + \alpha_{n}$，其中 $\alpha_{n}$ 是无穷小序列后，证明序列收敛的问题得到简化</p>
+<p><img src="/2023/05/14/%E3%80%90%E7%AC%94%E8%AE%B0%E3%80%91%E6%95%B0%E5%AD%A6%E5%88%86%E6%9E%90%E6%96%B0%E8%AE%B2-%E7%AC%AC1%E7%AF%87/Users/Gozen Sanji\Desktop\STUDY\学习笔记-Typora\c2s2e11_1.png" width="400px" align="left"></p>
+<p><img src="/2023/05/14/%E3%80%90%E7%AC%94%E8%AE%B0%E3%80%91%E6%95%B0%E5%AD%A6%E5%88%86%E6%9E%90%E6%96%B0%E8%AE%B2-%E7%AC%AC1%E7%AF%87/Users/Gozen Sanji\Desktop\STUDY\学习笔记-Typora\c2s2e11_2.png" width="400px" align="left"></p>
+<p><img src="/2023/05/14/%E3%80%90%E7%AC%94%E8%AE%B0%E3%80%91%E6%95%B0%E5%AD%A6%E5%88%86%E6%9E%90%E6%96%B0%E8%AE%B2-%E7%AC%AC1%E7%AF%87/Users/Gozen Sanji\Desktop\STUDY\学习笔记-Typora\c2s2e12_1.png" width="400px" align="left"></p>
+<p><img src="/2023/05/14/%E3%80%90%E7%AC%94%E8%AE%B0%E3%80%91%E6%95%B0%E5%AD%A6%E5%88%86%E6%9E%90%E6%96%B0%E8%AE%B2-%E7%AC%AC1%E7%AF%87/Users/Gozen Sanji\Desktop\STUDY\学习笔记-Typora\c2s2e12_2.png" width="400px" align="left"></p>
+<p>6、通过比值极限的保序性，推出分子与分母的大小关系</p>
+<p><img src="/2023/05/14/%E3%80%90%E7%AC%94%E8%AE%B0%E3%80%91%E6%95%B0%E5%AD%A6%E5%88%86%E6%9E%90%E6%96%B0%E8%AE%B2-%E7%AC%AC1%E7%AF%87/Users/Gozen Sanji\Desktop\STUDY\学习笔记-Typora\c2s2e13.png" width="400px" align="left"></p>
+<h3 id="第三节"><a href="#第三节" class="headerlink" title="@ 第三节"></a><strong>@ 第三节</strong></h3><p>1、利用<strong>单调收敛原理</strong>求序列极限的三个例子（递推公式两边取极限，得到关于极限值的方程）</p>
+<p><img src="/2023/05/14/%E3%80%90%E7%AC%94%E8%AE%B0%E3%80%91%E6%95%B0%E5%AD%A6%E5%88%86%E6%9E%90%E6%96%B0%E8%AE%B2-%E7%AC%AC1%E7%AF%87/Users/Gozen Sanji\Desktop\STUDY\学习笔记-Typora\c2s3e1.png" width="400px" align="left"> <img src="/2023/05/14/%E3%80%90%E7%AC%94%E8%AE%B0%E3%80%91%E6%95%B0%E5%AD%A6%E5%88%86%E6%9E%90%E6%96%B0%E8%AE%B2-%E7%AC%AC1%E7%AF%87/Users/Gozen Sanji\Desktop\STUDY\学习笔记-Typora\c2s3e2_1.png" width="400px" align="left"> <img src="/2023/05/14/%E3%80%90%E7%AC%94%E8%AE%B0%E3%80%91%E6%95%B0%E5%AD%A6%E5%88%86%E6%9E%90%E6%96%B0%E8%AE%B2-%E7%AC%AC1%E7%AF%87/Users/Gozen Sanji\Desktop\STUDY\学习笔记-Typora\c2s3e2_2.png" width="400px" align="left">  </p>
+<p><img src="/2023/05/14/%E3%80%90%E7%AC%94%E8%AE%B0%E3%80%91%E6%95%B0%E5%AD%A6%E5%88%86%E6%9E%90%E6%96%B0%E8%AE%B2-%E7%AC%AC1%E7%AF%87/Users/Gozen Sanji\Desktop\STUDY\学习笔记-Typora\c2s3e3_1.png" width="400px" align="left"></p>
+<p><img src="/2023/05/14/%E3%80%90%E7%AC%94%E8%AE%B0%E3%80%91%E6%95%B0%E5%AD%A6%E5%88%86%E6%9E%90%E6%96%B0%E8%AE%B2-%E7%AC%AC1%E7%AF%87/Users/Gozen Sanji\Desktop\STUDY\学习笔记-Typora\c2s3e3_2.png" width="400px" align="left"></p>
+<p>2、重要极限 $(1 + \dfrac{1}{n})^{n} \to e, \; n \to \infty$ 的出处</p>
+<p><img src="/2023/05/14/%E3%80%90%E7%AC%94%E8%AE%B0%E3%80%91%E6%95%B0%E5%AD%A6%E5%88%86%E6%9E%90%E6%96%B0%E8%AE%B2-%E7%AC%AC1%E7%AF%87/Users/Gozen Sanji\Desktop\STUDY\学习笔记-Typora\c2s3e4.png" width="400PX" align="left"></p>
+<p>3、利用<strong>柯西收敛原理</strong>证明序列发散 or 收敛</p>
+<p><img src="/2023/05/14/%E3%80%90%E7%AC%94%E8%AE%B0%E3%80%91%E6%95%B0%E5%AD%A6%E5%88%86%E6%9E%90%E6%96%B0%E8%AE%B2-%E7%AC%AC1%E7%AF%87/Users/Gozen Sanji\Desktop\STUDY\学习笔记-Typora\c2s3e6.png" width="400px" align="left"> <img src="/2023/05/14/%E3%80%90%E7%AC%94%E8%AE%B0%E3%80%91%E6%95%B0%E5%AD%A6%E5%88%86%E6%9E%90%E6%96%B0%E8%AE%B2-%E7%AC%AC1%E7%AF%87/Users/Gozen Sanji\Desktop\STUDY\学习笔记-Typora\c2s3e7.png" width="400px" align="left"></p>
+<p><img src="/2023/05/14/%E3%80%90%E7%AC%94%E8%AE%B0%E3%80%91%E6%95%B0%E5%AD%A6%E5%88%86%E6%9E%90%E6%96%B0%E8%AE%B2-%E7%AC%AC1%E7%AF%87/Users/Gozen Sanji\Desktop\STUDY\学习笔记-Typora\c2s3e8.png" width="400px" align="left"></p>
+<h3 id="第四节"><a href="#第四节" class="headerlink" title="@ 第四节"></a><strong>@ 第四节</strong></h3><p>1、利用 Stolz 定理求 $\dfrac{*}{\infty}$ 型极限</p>
+<p><img src="/2023/05/14/%E3%80%90%E7%AC%94%E8%AE%B0%E3%80%91%E6%95%B0%E5%AD%A6%E5%88%86%E6%9E%90%E6%96%B0%E8%AE%B2-%E7%AC%AC1%E7%AF%87/Users/Gozen Sanji\Desktop\STUDY\学习笔记-Typora\c2s4e5.png" width="400px" align="left"> <img src="/2023/05/14/%E3%80%90%E7%AC%94%E8%AE%B0%E3%80%91%E6%95%B0%E5%AD%A6%E5%88%86%E6%9E%90%E6%96%B0%E8%AE%B2-%E7%AC%AC1%E7%AF%87/Users/Gozen Sanji\Desktop\STUDY\学习笔记-Typora\c2s4e6.png" width="400px" align="left"></p>
+<h3 id="第五节"><a href="#第五节" class="headerlink" title="@ 第五节"></a><strong>@ 第五节</strong></h3><p>1、 按 Heine 序列式定义证明函数（在连续点的）极限</p>
+<p><img src="/2023/05/14/%E3%80%90%E7%AC%94%E8%AE%B0%E3%80%91%E6%95%B0%E5%AD%A6%E5%88%86%E6%9E%90%E6%96%B0%E8%AE%B2-%E7%AC%AC1%E7%AF%87/Users/Gozen Sanji\Desktop\STUDY\学习笔记-Typora\c2s5e3.png" style="width:400px" align="left"> <img src="/2023/05/14/%E3%80%90%E7%AC%94%E8%AE%B0%E3%80%91%E6%95%B0%E5%AD%A6%E5%88%86%E6%9E%90%E6%96%B0%E8%AE%B2-%E7%AC%AC1%E7%AF%87/Users/Gozen Sanji\Desktop\STUDY\学习笔记-Typora\c2s5e5.png" style="width:400px" align="left"></p>
+<p>2、按  Heine 序列式定义证明函数（在非连续点的）极限</p>
+<p><img src="/2023/05/14/%E3%80%90%E7%AC%94%E8%AE%B0%E3%80%91%E6%95%B0%E5%AD%A6%E5%88%86%E6%9E%90%E6%96%B0%E8%AE%B2-%E7%AC%AC1%E7%AF%87/Users/Gozen Sanji\Desktop\STUDY\学习笔记-Typora\c2s5e6.png" style="width:400px" align="left"></p>
+<p><img src="/2023/05/14/%E3%80%90%E7%AC%94%E8%AE%B0%E3%80%91%E6%95%B0%E5%AD%A6%E5%88%86%E6%9E%90%E6%96%B0%E8%AE%B2-%E7%AC%AC1%E7%AF%87/Users/Gozen Sanji\Desktop\STUDY\学习笔记-Typora\c2s5e7_1.png" style="width:400px" align="left"></p>
+<p> <img src="/2023/05/14/%E3%80%90%E7%AC%94%E8%AE%B0%E3%80%91%E6%95%B0%E5%AD%A6%E5%88%86%E6%9E%90%E6%96%B0%E8%AE%B2-%E7%AC%AC1%E7%AF%87/Users/Gozen Sanji\Desktop\STUDY\学习笔记-Typora\c2s5e7_2.png" style="width:400px" align="left"></p>
+<p><img src="/2023/05/14/%E3%80%90%E7%AC%94%E8%AE%B0%E3%80%91%E6%95%B0%E5%AD%A6%E5%88%86%E6%9E%90%E6%96%B0%E8%AE%B2-%E7%AC%AC1%E7%AF%87/Users/Gozen Sanji\Desktop\STUDY\学习笔记-Typora\c2s5e8.png" style="width:400px" align="left"></p>
+<p>3、<strong>多项式函数</strong> 与 <strong>有理函数</strong> 的极限、经过<strong>换元</strong>得到的有理函数极限</p>
+<p><img src="/2023/05/14/%E3%80%90%E7%AC%94%E8%AE%B0%E3%80%91%E6%95%B0%E5%AD%A6%E5%88%86%E6%9E%90%E6%96%B0%E8%AE%B2-%E7%AC%AC1%E7%AF%87/Users/Gozen Sanji\Desktop\STUDY\学习笔记-Typora\c2s5e9_1.png" style="width:400px" align="left"></p>
+<p><img src="/2023/05/14/%E3%80%90%E7%AC%94%E8%AE%B0%E3%80%91%E6%95%B0%E5%AD%A6%E5%88%86%E6%9E%90%E6%96%B0%E8%AE%B2-%E7%AC%AC1%E7%AF%87/Users/Gozen Sanji\Desktop\STUDY\学习笔记-Typora\c2s5e9_2.png" style="width:400px" align="left"></p>
+<p><img src="/2023/05/14/%E3%80%90%E7%AC%94%E8%AE%B0%E3%80%91%E6%95%B0%E5%AD%A6%E5%88%86%E6%9E%90%E6%96%B0%E8%AE%B2-%E7%AC%AC1%E7%AF%87/Users/Gozen Sanji\Desktop\STUDY\学习笔记-Typora\c2s5e10.png" style="width:400px" align="left"></p>
+<p>Remark：</p>
+<ol>
+<li>例 7 为重要极限：$\lim_\limits{x\to0}\dfrac{\sin x}{x}=1$ </li>
+<li>例 9 介绍了多项式及有理函数的极限</li>
+</ol>
+<p>4、利用重要极限计算极限的例子（函数极限的四则运算、$1 - \cos x = 2(\sin(\frac{x}{2}))^2$）</p>
+<p><img src="/2023/05/14/%E3%80%90%E7%AC%94%E8%AE%B0%E3%80%91%E6%95%B0%E5%AD%A6%E5%88%86%E6%9E%90%E6%96%B0%E8%AE%B2-%E7%AC%AC1%E7%AF%87/Users/Gozen Sanji\Desktop\STUDY\学习笔记-Typora\c2s5e12.png" style="width:400px" align="left"></p>
+<p>5、按 $\epsilon-\delta$ 定义证明函数极限</p>
+<p><img src="/2023/05/14/%E3%80%90%E7%AC%94%E8%AE%B0%E3%80%91%E6%95%B0%E5%AD%A6%E5%88%86%E6%9E%90%E6%96%B0%E8%AE%B2-%E7%AC%AC1%E7%AF%87/Users/Gozen Sanji\Desktop\STUDY\学习笔记-Typora\c2s5e13.png" style="width:400px" align="left"> <img src="/2023/05/14/%E3%80%90%E7%AC%94%E8%AE%B0%E3%80%91%E6%95%B0%E5%AD%A6%E5%88%86%E6%9E%90%E6%96%B0%E8%AE%B2-%E7%AC%AC1%E7%AF%87/Users/Gozen Sanji\Desktop\STUDY\学习笔记-Typora\c2s5e14.png" style="width:400px" align="left"></p>
+<h3 id="Final-Remark"><a href="#Final-Remark" class="headerlink" title="Final Remark"></a><strong>Final Remark</strong></h3><p><strong>① 证明序列收敛、求收敛序列极限</strong>  </p>
+<ol>
+<li><p>$\epsilon-N$ 定义 &amp; 不等式缩放</p>
+</li>
+<li><p>Squeeze Theorem &amp; 不等式缩放</p>
+</li>
+<li><p>序列极限の四则运算</p>
+</li>
+<li><p>$(x_{n} \to x) \Leftrightarrow \; (x_{n} - x \to 0) \Leftrightarrow x_{n} = x + \alpha_{n}$，其中 $\alpha_{n}$ 为无穷小序列</p>
+</li>
+<li><p>单调收敛原理 &amp; 递推式两边取极限</p>
+</li>
+<li><p>Cauchy 收敛原理 &amp; 不等式缩放 （只能用于证明序列收敛与否）</p>
+</li>
+<li><p>Stolz Theorem （$\dfrac{\ast}{+\infty}$ 型极限）</p>
+</li>
+<li><p>不等式缩放技巧：二项式定理、Bernoulli 不等式、逐项缩放、拆分 N 项和，分别缩放、算术平均-几何平均不等式</p>
+</li>
+<li><p>一些已证明的结论：</p>
+<p>| $\dfrac{1}{a^{n}}, \dfrac{n}{a^{n}} \to 0, \; |a| &gt; 1$       | $\dfrac{n^{k}}{a^{n}} \to 0, \; a &gt; 1, k \in \N$             | $\dfrac{a^{n}}{n!} \to 0, \; a &gt; 0$                          |<br>| :—————————————————————————————- | :—————————————————————————————- | :—————————————————————————————- |<br>| $\dfrac{\sum_{k=1}^{n} \alpha_{k}}{n} \to \alpha \in \R, \; \alpha_{n} \to \alpha$ | $\sqrt[n]{\prod_{k=1}^{n} \alpha_{k}} \to \alpha &gt; 0, \; \alpha_{n} \to \alpha, \; \alpha_{n} &gt; 0$ | $\sqrt[n]{\prod_{k=1}^{n} \alpha_{k}} \to 0, \; \alpha_{n} \to 0, \alpha_{n} \geq 0$ |<br>| $\sqrt[n]{a} \to 1, \; a &gt; 0$                                | $\sqrt[n]{n} \to 1$                                          |                                                              |<br>| $(1 + \dfrac{1}{n})^{n} \to e$                               | $x_{n} = \dfrac{1}{2}(x_{n-1} + \dfrac{a}{x_{n-1}}) \to \sqrt{a}, \; x_{0} &gt; 0, \; a &gt; 0$ |                                                              |</p>
+</li>
+</ol>
+<p><strong>② 对充分大的 n，判别序列通项的大小关系</strong></p>
+<ol>
+<li>收敛序列保序性（$n^{k} &lt; k^{n} &lt; n!$，自然数 $k \geq 2$）</li>
+</ol>
+<p><strong>③ 证明函数于某点收敛</strong></p>
+<ol>
+<li>Heine 序列式定义 &amp; 不等式缩放（&amp; Squeeze Theorem）</li>
+<li>$\epsilon-\delta$ 定义 &amp; 不等式缩放</li>
+<li>Cauchy 收敛原理</li>
+</ol>
+<p><strong>④ 计算函数极限</strong></p>
+<ol>
+<li>四则运算</li>
+<li>重要极限（$\lim\limits_{x \to 0}\dfrac{\sin x}{x} = 1$）</li>
+<li>多项式、有理函数の极限</li>
+</ol>
+<hr>
+<h1 id="❄第三章-连续函数"><a href="#❄第三章-连续函数" class="headerlink" title="❄第三章        连续函数"></a>❄第三章        连续函数</h1><h2 id="●-核心概念-amp-结论-3"><a href="#●-核心概念-amp-结论-3" class="headerlink" title="● 核心概念 &amp; 结论"></a>● 核心概念 &amp; 结论</h2><p><img src="/2023/05/14/%E3%80%90%E7%AC%94%E8%AE%B0%E3%80%91%E6%95%B0%E5%AD%A6%E5%88%86%E6%9E%90%E6%96%B0%E8%AE%B2-%E7%AC%AC1%E7%AF%87/Users/Gozen Sanji\Desktop\STUDY\学习笔记-Typora\Chapter 3 连续函数.jpg" align="center">   </p>
+<ol>
+<li><p>Relation ①：</p>
+<p><img src="/2023/05/14/%E3%80%90%E7%AC%94%E8%AE%B0%E3%80%91%E6%95%B0%E5%AD%A6%E5%88%86%E6%9E%90%E6%96%B0%E8%AE%B2-%E7%AC%AC1%E7%AF%87/Users/Gozen Sanji\Desktop\STUDY\学习笔记-Typora\c3s1thm6.png" width="50%" align="left"></p>
+</li>
+</ol>
+<ol>
+<li>Remark：最大值、最小值定理中的最值即为 $f$ 在 $[a, b]$ 中的上、下确界</li>
+</ol>
+<ol>
+<li><p><strong>连续与一致连续的区别</strong>（按 ε-δ 定义）：</p>
+<ol>
+<li><p>连续：对给定 $\epsilon &gt; 0$，在不同 $x_{0}$ 处相应的 $\delta$ 未必相同</p>
+</li>
+<li><p>一致连续：对任意 $\epsilon &gt; 0$，存在适用于一切 $x_{0}$ 的 $\delta &gt; 0$，只要 $|x - x_{0}| &lt; \delta$，就有 $|f(x) - f(x_{0})| &lt; \epsilon$ </p>
+</li>
+</ol>
+</li>
+</ol>
+<ol>
+<li><p>① 介值定理</p>
+<p><img src="/2023/05/14/%E3%80%90%E7%AC%94%E8%AE%B0%E3%80%91%E6%95%B0%E5%AD%A6%E5%88%86%E6%9E%90%E6%96%B0%E8%AE%B2-%E7%AC%AC1%E7%AF%87/Users/Gozen Sanji\Desktop\STUDY\学习笔记-Typora\c3s2thm2.png" width="50%" align="left"></p>
+<p>② 几何式陈述</p>
+<p><img src="/2023/05/14/%E3%80%90%E7%AC%94%E8%AE%B0%E3%80%91%E6%95%B0%E5%AD%A6%E5%88%86%E6%9E%90%E6%96%B0%E8%AE%B2-%E7%AC%AC1%E7%AF%87/Users/Gozen Sanji\Desktop\STUDY\学习笔记-Typora\c3s3thm1.png" width="50%" align="left"></p>
+<p>③ 上述定理的逆命题一般而言是不成立的……</p>
+<p><img src="/2023/05/14/%E3%80%90%E7%AC%94%E8%AE%B0%E3%80%91%E6%95%B0%E5%AD%A6%E5%88%86%E6%9E%90%E6%96%B0%E8%AE%B2-%E7%AC%AC1%E7%AF%87/Users/Gozen Sanji\Desktop\STUDY\学习笔记-Typora\c3s3thm2.png" width="70%" align="left"></p>
+</li>
+</ol>
+<ol>
+<li><p>指数函数の定义过程：</p>
+<p>​    ① 本章第三节例 5 中定义了<strong>算术根</strong>。</p>
+<p>​    ② 基于算术根定义<strong>分数次方幂</strong>如下：</p>
+<p>​            设 $m, n \in \N$：</p>
+<p>​            Ⅰ、 定义  $a^{\frac{m}{n}}=(\sqrt[n]{a})^m, \; a \geq 0$ </p>
+<p>​            Ⅱ、 定义  $a^{-\frac{m}{n}} = \dfrac{1}{a^{\frac{m}{n}}} = \dfrac{1}{(\sqrt[n]{a})^m}, \; a &gt; 0$ </p>
+<p>​            Ⅲ、 定义  $a^{0} = 1, \; a &gt; 0$ </p>
+<p>​            至此，当 $a &gt; 0$ 时，$\forall r \in \Q, \; a^{r}$ 有定义。</p>
+<p>​    ③ 基于分数次方幂（及本章第四节の引理 1 &amp; 引理 2）定义<strong>实数次方幂</strong>如下：</p>
+<p>​            设 $a&gt;0, \; \forall x \in \R$，定义 $a^{x} = \lim\limits_{n \to \infty}a^{q_{n}}$，其中 $\{q_{n}\}$ 为收敛于 $x$ 的任意<strong>有理</strong>序列。</p>
+<p>​            另有实数次方幂の性质如下：</p>
+<p>​            <img src="/2023/05/14/%E3%80%90%E7%AC%94%E8%AE%B0%E3%80%91%E6%95%B0%E5%AD%A6%E5%88%86%E6%9E%90%E6%96%B0%E8%AE%B2-%E7%AC%AC1%E7%AF%87/Users/Gozen Sanji\Desktop\STUDY\学习笔记-Typora\c3s4thm2.png" width="50%" align="center"> </p>
+</li>
+</ol>
+<ol>
+<li><p>基本初等函数：</p>
+<p>​    ① 幂函数（以及多项式函数） </p>
+<p><img src="/2023/05/14/%E3%80%90%E7%AC%94%E8%AE%B0%E3%80%91%E6%95%B0%E5%AD%A6%E5%88%86%E6%9E%90%E6%96%B0%E8%AE%B2-%E7%AC%AC1%E7%AF%87/Users/Gozen Sanji\Desktop\STUDY\学习笔记-Typora\func_powerx_3.png" width="60%" align="center"></p>
+<p><img src="/2023/05/14/%E3%80%90%E7%AC%94%E8%AE%B0%E3%80%91%E6%95%B0%E5%AD%A6%E5%88%86%E6%9E%90%E6%96%B0%E8%AE%B2-%E7%AC%AC1%E7%AF%87/Users/Gozen Sanji\Desktop\STUDY\学习笔记-Typora\func_powerx_4.png" width="60%" align="center"></p>
+<p><img src="/2023/05/14/%E3%80%90%E7%AC%94%E8%AE%B0%E3%80%91%E6%95%B0%E5%AD%A6%E5%88%86%E6%9E%90%E6%96%B0%E8%AE%B2-%E7%AC%AC1%E7%AF%87/Users/Gozen Sanji\Desktop\STUDY\学习笔记-Typora\func_powerx_5.png" width="60%" align="center"></p>
+<p><img src="/2023/05/14/%E3%80%90%E7%AC%94%E8%AE%B0%E3%80%91%E6%95%B0%E5%AD%A6%E5%88%86%E6%9E%90%E6%96%B0%E8%AE%B2-%E7%AC%AC1%E7%AF%87/Users/Gozen Sanji\Desktop\STUDY\学习笔记-Typora\func_powerx_2.png" width="90%" align="center"></p>
+</li>
+</ol>
+<p>   ​    ② 三角函数、反三角函数</p>
+<p>   <img src="/2023/05/14/%E3%80%90%E7%AC%94%E8%AE%B0%E3%80%91%E6%95%B0%E5%AD%A6%E5%88%86%E6%9E%90%E6%96%B0%E8%AE%B2-%E7%AC%AC1%E7%AF%87/Users/Gozen Sanji\Desktop\STUDY\学习笔记-Typora\func_sinx.png" width="90%" align="center"></p>
+<p>   <img src="/2023/05/14/%E3%80%90%E7%AC%94%E8%AE%B0%E3%80%91%E6%95%B0%E5%AD%A6%E5%88%86%E6%9E%90%E6%96%B0%E8%AE%B2-%E7%AC%AC1%E7%AF%87/Users/Gozen Sanji\Desktop\STUDY\学习笔记-Typora\func_cosx.png" width="90%" align="center"></p>
+<p>   <img src="/2023/05/14/%E3%80%90%E7%AC%94%E8%AE%B0%E3%80%91%E6%95%B0%E5%AD%A6%E5%88%86%E6%9E%90%E6%96%B0%E8%AE%B2-%E7%AC%AC1%E7%AF%87/Users/Gozen Sanji\Desktop\STUDY\学习笔记-Typora\func_tanx_cotx.png" width="90%" align="center"></p>
+<p>   <img src="/2023/05/14/%E3%80%90%E7%AC%94%E8%AE%B0%E3%80%91%E6%95%B0%E5%AD%A6%E5%88%86%E6%9E%90%E6%96%B0%E8%AE%B2-%E7%AC%AC1%E7%AF%87/Users/Gozen Sanji\Desktop\STUDY\学习笔记-Typora\func_tanx_cotx_2.png" width="90%" align="center"></p>
+<p>   <img src="/2023/05/14/%E3%80%90%E7%AC%94%E8%AE%B0%E3%80%91%E6%95%B0%E5%AD%A6%E5%88%86%E6%9E%90%E6%96%B0%E8%AE%B2-%E7%AC%AC1%E7%AF%87/Users/Gozen Sanji\Desktop\STUDY\学习笔记-Typora\func_arcsinx.png" width="30%" align="center"></p>
+<p>   <img src="/2023/05/14/%E3%80%90%E7%AC%94%E8%AE%B0%E3%80%91%E6%95%B0%E5%AD%A6%E5%88%86%E6%9E%90%E6%96%B0%E8%AE%B2-%E7%AC%AC1%E7%AF%87/Users/Gozen Sanji\Desktop\STUDY\学习笔记-Typora\func_arccosx.png" width="30%" align="center"></p>
+<p>   <img src="/2023/05/14/%E3%80%90%E7%AC%94%E8%AE%B0%E3%80%91%E6%95%B0%E5%AD%A6%E5%88%86%E6%9E%90%E6%96%B0%E8%AE%B2-%E7%AC%AC1%E7%AF%87/Users/Gozen Sanji\Desktop\STUDY\学习笔记-Typora\func_arctanx.png" width="30%" align="center"></p>
+<p>   <img src="/2023/05/14/%E3%80%90%E7%AC%94%E8%AE%B0%E3%80%91%E6%95%B0%E5%AD%A6%E5%88%86%E6%9E%90%E6%96%B0%E8%AE%B2-%E7%AC%AC1%E7%AF%87/Users/Gozen Sanji\Desktop\STUDY\学习笔记-Typora\func_arccotx.png" width="30%" align="center"></p>
+<p>   <img src="/2023/05/14/%E3%80%90%E7%AC%94%E8%AE%B0%E3%80%91%E6%95%B0%E5%AD%A6%E5%88%86%E6%9E%90%E6%96%B0%E8%AE%B2-%E7%AC%AC1%E7%AF%87/Users/Gozen Sanji\Desktop\STUDY\学习笔记-Typora\func_secx_cscx.png" width="90%" align="center"></p>
+<p>   <img src="/2023/05/14/%E3%80%90%E7%AC%94%E8%AE%B0%E3%80%91%E6%95%B0%E5%AD%A6%E5%88%86%E6%9E%90%E6%96%B0%E8%AE%B2-%E7%AC%AC1%E7%AF%87/Users/Gozen Sanji\Desktop\STUDY\学习笔记-Typora\func_secx_cscx_2.png" width="90%" align="center"></p>
+<p>   ​    ③ 对数函数、指数函数</p>
+<p>   <img src="/2023/05/14/%E3%80%90%E7%AC%94%E8%AE%B0%E3%80%91%E6%95%B0%E5%AD%A6%E5%88%86%E6%9E%90%E6%96%B0%E8%AE%B2-%E7%AC%AC1%E7%AF%87/Users/Gozen Sanji\Desktop\STUDY\学习笔记-Typora\func_expx.png" width="70%" align="center"></p>
+<p>   <img src="/2023/05/14/%E3%80%90%E7%AC%94%E8%AE%B0%E3%80%91%E6%95%B0%E5%AD%A6%E5%88%86%E6%9E%90%E6%96%B0%E8%AE%B2-%E7%AC%AC1%E7%AF%87/Users/Gozen Sanji\Desktop\STUDY\学习笔记-Typora\func_expx_2.png" width="70%" align="center"></p>
+<p>   <img src="/2023/05/14/%E3%80%90%E7%AC%94%E8%AE%B0%E3%80%91%E6%95%B0%E5%AD%A6%E5%88%86%E6%9E%90%E6%96%B0%E8%AE%B2-%E7%AC%AC1%E7%AF%87/Users/Gozen Sanji\Desktop\STUDY\学习笔记-Typora\func_logx.png" width="30%" align="center"></p>
+<p>   <img src="/2023/05/14/%E3%80%90%E7%AC%94%E8%AE%B0%E3%80%91%E6%95%B0%E5%AD%A6%E5%88%86%E6%9E%90%E6%96%B0%E8%AE%B2-%E7%AC%AC1%E7%AF%87/Users/Gozen Sanji\Desktop\STUDY\学习笔记-Typora\func_logx_2.png" width="30%" align="center"></p>
+<ol>
+<li><p>符号 $O()、o()、～$ 的定义：</p>
+<script type="math/tex; mode=display">
+\text{当} \; x \to a \; \text{时}
+    \begin{cases}
+        f(x) = O\Big(g(x)\Big): & \Big\lvert \frac{f(x)}{g(x)} \Big\lvert \leq M, \; x                     \in \check{U}(a) \\
+        f(x) = o\Big(g(x)\Big): & \lim\limits_{x \to a} \frac{f(x)}{g(x)} = 0 \\
+        f(x) \; ～ \; g(x): & \lim\limits_{x \to a} \frac{f(x)}{g(x)} = 1 \\ 
+    \end{cases}</script></li>
+<li><p><strong>重要极限</strong>总结：</p>
+<p>​    ①  $\lim\limits_{x \to 0}\dfrac{\sin x}{x} = 1$ </p>
+<p>​    ②  $\lim\limits_{x \to \infty} \Big( 1 + \dfrac{1}{x} \Big) ^ x = e \; \Longleftrightarrow \; \lim\limits_{a \to 0} \big( 1 + a \big) ^ \frac{1}{a} = e$ </p>
+<p>​    ③  对 ② 右边取对数，得：$\lim\limits_{a \to 0}\dfrac{\ln(1+a)}{a} = 1$ 【类似地有： $\lim\limits_{a \to 0}\dfrac{\log_{b}(1+a)}{a} = \dfrac{1}{\ln b}$】</p>
+<p>​    ④  $\lim\limits_{a \to 0}\dfrac{e^{a} - 1}{a} = 1$ 【令 $\beta = e^{a} - 1$ 即可转化为 ③ の倒数形式，类似地有：$\lim\limits_{a \to 0}\dfrac{b^{a} - 1}{a} = \ln b$】</p>
+<p>​    ⑤  $\lim \limits_{a \to 0} \dfrac{(1 + a)^{\mu}-1}{a} = \mu$ 【由 $(1+a)^{\mu} = e^{\mu \times \ln (1+a)}$，原极限可化为 ③ 和 ④ 之积の形式】</p>
+</li>
+</ol>
+<h2 id="●-本章の注记-1"><a href="#●-本章の注记-1" class="headerlink" title="● 本章の注记"></a>● 本章の注记</h2><ol>
+<li>本章介绍了 <strong>函数于一点の连续性</strong> 以及 <strong>闭区间上连续函数の性质</strong></li>
+<li>函数于一点的连续性本质上是通过极限定义的，因而有两种等价定义：<strong>序列式定义</strong> 和 <strong>$\epsilon-\delta$ 定义</strong>；由于这种定义方式，函数在连续点附近是<strong>局部有界</strong>、<strong>局部保序</strong>的，同时<strong>四则运算、函数复合也保持该点的连续性</strong></li>
+<li>间断点是对应于连续点的概念，它可由该点处单侧极限的情况区分为<strong>两类间断点</strong></li>
+<li>由函数在一点连续（及单侧连续）即可定义函数在一个闭区间上连续，此时函数具有如下<strong>整体性质</strong>：<ul>
+<li>零值定理、介值定理</li>
+<li>有界性、最值定理</li>
+<li>一致连续性</li>
+</ul>
+</li>
+<li>从单调函数出发定义了<strong>反函数</strong>、从算术根出发定义了<strong>指数函数</strong>、进而定义了其反函数——<strong>对数函数</strong>，并介绍了它们的基本性质</li>
+<li>指出了<strong>初等函数の连续性</strong></li>
+<li>介绍了五类<strong>重要极限</strong></li>
+<li>介绍了<strong>等价量</strong> &amp; 它们在函数极限计算中的作用</li>
+</ol>
+<h2 id="●-典型问题解析-1"><a href="#●-典型问题解析-1" class="headerlink" title="● 典型问题解析"></a>● 典型问题解析</h2><h3 id="第一节-1"><a href="#第一节-1" class="headerlink" title="@ 第一节"></a><strong>@ 第一节</strong></h3><p>1、利用左右极限判断函数の间断点类型（包括特殊の<strong>狄利克雷函数和黎曼函数</strong>）</p>
+<p><img src="/2023/05/14/%E3%80%90%E7%AC%94%E8%AE%B0%E3%80%91%E6%95%B0%E5%AD%A6%E5%88%86%E6%9E%90%E6%96%B0%E8%AE%B2-%E7%AC%AC1%E7%AF%87/Users/Gozen Sanji\Desktop\STUDY\学习笔记-Typora\c3s1e4e5.png" style="width:400px" align="left"><img src="/2023/05/14/%E3%80%90%E7%AC%94%E8%AE%B0%E3%80%91%E6%95%B0%E5%AD%A6%E5%88%86%E6%9E%90%E6%96%B0%E8%AE%B2-%E7%AC%AC1%E7%AF%87/Users/Gozen Sanji\Desktop\STUDY\学习笔记-Typora\c3s1e6e7.png" style="width:400px" align="left"></p>
+<h3 id="第二节-1"><a href="#第二节-1" class="headerlink" title="@ 第二节"></a><strong>@ 第二节</strong></h3><p>1、零值定理の应用：<strong>Brouwer 不动点定理 &amp; 对分区间法求方程根的近似值</strong> </p>
+<p><img src="/2023/05/14/%E3%80%90%E7%AC%94%E8%AE%B0%E3%80%91%E6%95%B0%E5%AD%A6%E5%88%86%E6%9E%90%E6%96%B0%E8%AE%B2-%E7%AC%AC1%E7%AF%87/Users/Gozen Sanji\Desktop\STUDY\学习笔记-Typora\c3s2e1.png" style="width:400px" align="left"><img src="/2023/05/14/%E3%80%90%E7%AC%94%E8%AE%B0%E3%80%91%E6%95%B0%E5%AD%A6%E5%88%86%E6%9E%90%E6%96%B0%E8%AE%B2-%E7%AC%AC1%E7%AF%87/Users/Gozen Sanji\Desktop\STUDY\学习笔记-Typora\c3s2e2.png" style="width:400px" align="left"></p>
+<p>2、从定义出发判断一致连续性</p>
+<p><img src="/2023/05/14/%E3%80%90%E7%AC%94%E8%AE%B0%E3%80%91%E6%95%B0%E5%AD%A6%E5%88%86%E6%9E%90%E6%96%B0%E8%AE%B2-%E7%AC%AC1%E7%AF%87/Users/Gozen Sanji\Desktop\STUDY\学习笔记-Typora\c3s2e5e6.png" style="width:400px" align="left"> </p>
+<p>3、利用一致连续性の等价条件（序列式描述）证明函数不一致连续</p>
+<p><img src="/2023/05/14/%E3%80%90%E7%AC%94%E8%AE%B0%E3%80%91%E6%95%B0%E5%AD%A6%E5%88%86%E6%9E%90%E6%96%B0%E8%AE%B2-%E7%AC%AC1%E7%AF%87/Users/Gozen Sanji\Desktop\STUDY\学习笔记-Typora\c3s2e7.png" style="width:400px" align="left"> </p>
+<h3 id="第三节-1"><a href="#第三节-1" class="headerlink" title="@ 第三节"></a><strong>@ 第三节</strong></h3><p>1、 虽然连续函数可将区间映射为区间，但将区间映射为区间的未必是连续函数</p>
+<p><img src="/2023/05/14/%E3%80%90%E7%AC%94%E8%AE%B0%E3%80%91%E6%95%B0%E5%AD%A6%E5%88%86%E6%9E%90%E6%96%B0%E8%AE%B2-%E7%AC%AC1%E7%AF%87/Users/Gozen Sanji\Desktop\STUDY\学习笔记-Typora\c3s3e1.png" style="width:400px" align="left"></p>
+<p>2、算术根の定义与存在唯一性</p>
+<p><img src="/2023/05/14/%E3%80%90%E7%AC%94%E8%AE%B0%E3%80%91%E6%95%B0%E5%AD%A6%E5%88%86%E6%9E%90%E6%96%B0%E8%AE%B2-%E7%AC%AC1%E7%AF%87/Users/Gozen Sanji\Desktop\STUDY\学习笔记-Typora\c3s3e5.png" style="width:400px" align="left"></p>
+<h3 id="第四节-1"><a href="#第四节-1" class="headerlink" title="@ 第四节"></a><strong>@ 第四节</strong></h3><p>1、<strong>幂函数</strong>与<strong>幂指函数</strong>的连续性（将他们视为连续函数的复合）</p>
+<p><img src="/2023/05/14/%E3%80%90%E7%AC%94%E8%AE%B0%E3%80%91%E6%95%B0%E5%AD%A6%E5%88%86%E6%9E%90%E6%96%B0%E8%AE%B2-%E7%AC%AC1%E7%AF%87/Users/Gozen Sanji\Desktop\STUDY\学习笔记-Typora\c3s4e1e2.png" style="width:400px" align="left"></p>
+<h3 id="第五节-1"><a href="#第五节-1" class="headerlink" title="@ 第五节"></a><strong>@ 第五节</strong></h3><p>1、 $(x-a)^{k} \;\; (x \to a)$ 型无穷小、$\dfrac{1}{(x-a)^{k}} \;\; (x \to a)$ 型无穷大、$x^{k} \;\; (x \to \infty)$ 型无穷大</p>
+<p><img src="/2023/05/14/%E3%80%90%E7%AC%94%E8%AE%B0%E3%80%91%E6%95%B0%E5%AD%A6%E5%88%86%E6%9E%90%E6%96%B0%E8%AE%B2-%E7%AC%AC1%E7%AF%87/Users/Gozen Sanji\Desktop\STUDY\学习笔记-Typora\c3s5e6e7e8.png" style="width:400px" align="left"></p>
+<p>2、$x \to +\infty$ 时，无穷大の阶<strong>降序排列</strong>为：$a^{x}$、$x^{\mu}$、$\log_{a}x$，其中 $a &gt; 1, \mu &gt; 0$  </p>
+<p><img src="/2023/05/14/%E3%80%90%E7%AC%94%E8%AE%B0%E3%80%91%E6%95%B0%E5%AD%A6%E5%88%86%E6%9E%90%E6%96%B0%E8%AE%B2-%E7%AC%AC1%E7%AF%87/Users/Gozen Sanji\Desktop\STUDY\学习笔记-Typora\c3s5e9.png" style="width:400px" align="left"></p>
+<p><img src="/2023/05/14/%E3%80%90%E7%AC%94%E8%AE%B0%E3%80%91%E6%95%B0%E5%AD%A6%E5%88%86%E6%9E%90%E6%96%B0%E8%AE%B2-%E7%AC%AC1%E7%AF%87/Users/Gozen Sanji\Desktop\STUDY\学习笔记-Typora\c3s5e10.png" style="width:400px" align="left"></p>
+<p>3、利用等价因式替换求函数极限</p>
+<p><img src="/2023/05/14/%E3%80%90%E7%AC%94%E8%AE%B0%E3%80%91%E6%95%B0%E5%AD%A6%E5%88%86%E6%9E%90%E6%96%B0%E8%AE%B2-%E7%AC%AC1%E7%AF%87/Users/Gozen Sanji\Desktop\STUDY\学习笔记-Typora\c3s5e11e12e13e14.png" style="width:400px" align="left"> </p>
+<h3 id="Final-Remark-1"><a href="#Final-Remark-1" class="headerlink" title="Final Remark"></a><strong>Final Remark</strong></h3><p><strong>① 函数间断点（及其类型）の判定</strong> </p>
+<ol>
+<li>$f(a-), \; f(a+)$ の存在性、取值 &amp; $f(a)$ の取值</li>
+</ol>
+<p><strong>② 求方程根の近似值</strong></p>
+<ol>
+<li>区间对分法（理论依据为零值定理）</li>
+</ol>
+<p><strong>③ 判断函数の一致连续性</strong></p>
+<ol>
+<li>$\epsilon-\delta$ 定义</li>
+<li>一致连续性の等价条件（序列式描述）常用于证明函数不一致连续</li>
+</ol>
+<p><strong>④ 判定高阶无穷小（大）</strong></p>
+<ol>
+<li>极限定义</li>
+</ol>
+<p><strong>⑤ 求函数极限</strong></p>
+<ol>
+<li>等价因式替换</li>
+</ol>
+<hr>
+<h1 id="☀第一篇の总结"><a href="#☀第一篇の总结" class="headerlink" title="☀第一篇の总结"></a>☀第一篇の总结</h1><p>本篇介绍了数学分析中一些<strong>最基本的概念</strong>：</p>
+<ol>
+<li>集合 &amp; 映射、实数系 $\R$；</li>
+<li>序列极限 &amp; 函数极限 の 概念与基本性质；</li>
+<li>函数在一点的连续性 &amp; 局部性质、单侧连续 &amp; 间断点；</li>
+<li>函数在闭区间上的连续性 &amp; <strong>整体性质</strong>、初等函数的连续性；</li>
+</ol>
+<p>同时也介绍了许多常用不等式和重要极限。</p>
+<p>涉及的<strong>典型问题</strong>包括：</p>
+<ol>
+<li>序列收敛性 &amp; 极限计算；</li>
+<li>函数收敛性 &amp; 极限计算；</li>
+<li>函数间断点的判定、一致连续性的判定</li>
+</ol>
+<p>相应例题和总结可在第二、三章的典型问题解析中找到。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Mathematics/" rel="tag"># Mathematics</a>
+              <a href="/tags/Analysis/" rel="tag"># Analysis</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2023/03/08/Ensemble-Learning-Methods/" rel="prev" title="Ensemble Learning Methods">
+                  <i class="fa fa-chevron-left"></i> Ensemble Learning Methods
+                </a>
+            </div>
+            <div class="post-nav-item">
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 2021 – 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Gozen Sanji</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+<script src="https://cdn.jsdelivr.net/npm/hexo-generator-searchdb@1.4.0/dist/search.js" integrity="sha256-vXZMYLEqsROAXkEw93GGIvaB2ab+QW6w3+1ahD9nXXA=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdn.jsdelivr.net/npm/mathjax@3.2.0/es5/tex-mml-chtml.js","integrity":"sha256-r+3itOMtGGjap0x+10hu6jW/gZCzxHsoKrOd7gyRSGY="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+
+</body>
+</html>

@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.0.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.4/css/all.min.css" integrity="sha256-mUZM63G8m73Mcidfrv5E+Y61y7a12O5mW4ezU3bxqW4=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.9.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":true,"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+<meta name="description" content="Generative Adversarial Networks GAN 由两个神经网络组成:  生成器: 接受一个随机分布(一般为高斯分布), 并输出一些数据.  判别器: 判断接收的数据是训练集中的 “真实数据”, 还是由生成器生成的 “假数据”.">
+<meta property="og:type" content="article">
+<meta property="og:title" content="生成对抗网络 (Generative Adversarial Networks)">
+<meta property="og:url" content="http://example.com/2022/02/16/%E7%94%9F%E6%88%90%E5%AF%B9%E6%8A%97%E7%BD%91%E7%BB%9C-Generative-Adversarial-Networks/index.html">
+<meta property="og:site_name" content="Jay&#39;s Blog">
+<meta property="og:description" content="Generative Adversarial Networks GAN 由两个神经网络组成:  生成器: 接受一个随机分布(一般为高斯分布), 并输出一些数据.  判别器: 判断接收的数据是训练集中的 “真实数据”, 还是由生成器生成的 “假数据”.">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://example.com/2022/02/16/%E7%94%9F%E6%88%90%E5%AF%B9%E6%8A%97%E7%BD%91%E7%BB%9C-Generative-Adversarial-Networks/GAN.PNG">
+<meta property="og:image" content="http://example.com/2022/02/16/%E7%94%9F%E6%88%90%E5%AF%B9%E6%8A%97%E7%BD%91%E7%BB%9C-Generative-Adversarial-Networks/output_24_1.png">
+<meta property="og:image" content="http://example.com/2022/02/16/%E7%94%9F%E6%88%90%E5%AF%B9%E6%8A%97%E7%BD%91%E7%BB%9C-Generative-Adversarial-Networks/output_37_1.png">
+<meta property="og:image" content="http://example.com/2022/02/16/%E7%94%9F%E6%88%90%E5%AF%B9%E6%8A%97%E7%BD%91%E7%BB%9C-Generative-Adversarial-Networks/output_37_3.png">
+<meta property="og:image" content="http://example.com/2022/02/16/%E7%94%9F%E6%88%90%E5%AF%B9%E6%8A%97%E7%BD%91%E7%BB%9C-Generative-Adversarial-Networks/output_37_5.png">
+<meta property="og:image" content="http://example.com/2022/02/16/%E7%94%9F%E6%88%90%E5%AF%B9%E6%8A%97%E7%BD%91%E7%BB%9C-Generative-Adversarial-Networks/output_37_95.png">
+<meta property="og:image" content="http://example.com/2022/02/16/%E7%94%9F%E6%88%90%E5%AF%B9%E6%8A%97%E7%BD%91%E7%BB%9C-Generative-Adversarial-Networks/output_37_97.png">
+<meta property="og:image" content="http://example.com/2022/02/16/%E7%94%9F%E6%88%90%E5%AF%B9%E6%8A%97%E7%BD%91%E7%BB%9C-Generative-Adversarial-Networks/output_37_99.png">
+<meta property="og:image" content="http://example.com/2022/02/16/%E7%94%9F%E6%88%90%E5%AF%B9%E6%8A%97%E7%BD%91%E7%BB%9C-Generative-Adversarial-Networks/Progressive%20Growing%20of%20GANs.PNG">
+<meta property="og:image" content="http://example.com/2022/02/16/%E7%94%9F%E6%88%90%E5%AF%B9%E6%8A%97%E7%BD%91%E7%BB%9C-Generative-Adversarial-Networks/StyleGAN.PNG">
+<meta property="article:published_time" content="2022-02-16T12:24:18.000Z">
+<meta property="article:modified_time" content="2022-02-16T12:31:18.697Z">
+<meta property="article:author" content="Gozen Sanji">
+<meta property="article:tag" content="Machine Learning">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/2022/02/16/%E7%94%9F%E6%88%90%E5%AF%B9%E6%8A%97%E7%BD%91%E7%BB%9C-Generative-Adversarial-Networks/GAN.PNG">
+
+
+<link rel="canonical" href="http://example.com/2022/02/16/%E7%94%9F%E6%88%90%E5%AF%B9%E6%8A%97%E7%BD%91%E7%BB%9C-Generative-Adversarial-Networks/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"en","comments":true,"permalink":"http://example.com/2022/02/16/%E7%94%9F%E6%88%90%E5%AF%B9%E6%8A%97%E7%BD%91%E7%BB%9C-Generative-Adversarial-Networks/","path":"2022/02/16/生成对抗网络-Generative-Adversarial-Networks/","title":"生成对抗网络 (Generative Adversarial Networks)"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>生成对抗网络 (Generative Adversarial Networks) | Jay's Blog</title>
+  
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Jay's Blog</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">🐬</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="user fa-fw"></i>About</a></li>
+        <li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="tags fa-fw"></i>Tags</a></li>
+        <li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="th fa-fw"></i>Categories</a></li>
+        <li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="archive fa-fw"></i>Archives</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>Search
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="Searching..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8A%A0%E8%BD%BD-amp-%E5%88%92%E5%88%86%E6%95%B0%E6%8D%AE%E9%9B%86"><span class="nav-number">1.</span> <span class="nav-text">加载 &amp; 划分数据集</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9E%84%E5%BB%BA%E7%94%9F%E6%88%90%E5%99%A8"><span class="nav-number">2.</span> <span class="nav-text">构建生成器</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9E%84%E5%BB%BA%E5%88%A4%E5%88%AB%E5%99%A8"><span class="nav-number">3.</span> <span class="nav-text">构建判别器</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BB%84%E5%90%88%E4%B8%BA-GAN"><span class="nav-number">4.</span> <span class="nav-text">组合为 GAN</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BC%96%E8%AF%91%E6%A8%A1%E5%9E%8B"><span class="nav-number">5.</span> <span class="nav-text">编译模型</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%87%AA%E5%AE%9A%E4%B9%89%E8%AE%AD%E7%BB%83%E5%BE%AA%E7%8E%AF"><span class="nav-number">6.</span> <span class="nav-text">自定义训练循环</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%A6%96%E5%85%88%E5%88%9B%E5%BB%BA-Dataset"><span class="nav-number">6.1.</span> <span class="nav-text">首先创建 Dataset</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%9A%E4%B9%89%E8%AE%AD%E7%BB%83%E5%BE%AA%E7%8E%AF"><span class="nav-number">6.2.</span> <span class="nav-text">定义训练循环</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%AE%AD%E7%BB%83-GAN-%E6%97%B6%E7%9A%84%E5%9B%B0%E9%9A%BE-amp-%E6%8C%91%E6%88%98"><span class="nav-number">7.</span> <span class="nav-text">训练 GAN 时的困难 &amp; 挑战</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Deep-Convolutional-GANs-DCGANs"><span class="nav-number">8.</span> <span class="nav-text">Deep Convolutional GANs (DCGANs)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#GANs-%E7%9A%84%E6%B8%90%E8%BF%9B%E5%BC%8F%E5%A2%9E%E9%95%BF"><span class="nav-number">9.</span> <span class="nav-text">GANs 的渐进式增长</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#StyleGANs"><span class="nav-number">10.</span> <span class="nav-text">StyleGANs</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Gozen Sanji"
+      src="/images/my_avatar.jpg">
+  <p class="site-author-name" itemprop="name">Gozen Sanji</p>
+  <div class="site-description" itemprop="description">目が覚めた抵抗 型落ちの衝動</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">14</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="Back to top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2022/02/16/%E7%94%9F%E6%88%90%E5%AF%B9%E6%8A%97%E7%BD%91%E7%BB%9C-Generative-Adversarial-Networks/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/my_avatar.jpg">
+      <meta itemprop="name" content="Gozen Sanji">
+      <meta itemprop="description" content="目が覚めた抵抗 型落ちの衝動">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Jay's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          生成对抗网络 (Generative Adversarial Networks)
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+      
+
+      <time title="Created: 2022-02-16 20:24:18 / Modified: 20:31:18" itemprop="dateCreated datePublished" datetime="2022-02-16T20:24:18+08:00">2022-02-16</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Machine-Learning/" itemprop="url" rel="index"><span itemprop="name">Machine Learning</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p><strong>Generative Adversarial Networks</strong></p>
+<p>GAN 由两个神经网络组成:</p>
+<ol>
+<li><p><strong>生成器</strong>: 接受一个随机分布(一般为高斯分布), 并输出一些数据.</p>
+</li>
+<li><p><strong>判别器</strong>: 判断接收的数据是训练集中的 “真实数据”, 还是由生成器生成的 “假数据”.</p>
+<span id="more"></span>
+</li>
+</ol>
+<p>下图是一个 GAN 架构的示例.</p>
+<p><img src="/2022/02/16/%E7%94%9F%E6%88%90%E5%AF%B9%E6%8A%97%E7%BD%91%E7%BB%9C-Generative-Adversarial-Networks/GAN.PNG" width="80%"></p>
+<p>训练期间, generator 与 discriminator 的目标相反: </p>
+<ol>
+<li>discriminator 试图识别出 “假图片”.</li>
+<li>generator 试图产生足够逼真的 “假图片” 以骗过判别器.</li>
+</ol>
+<hr>
+<p>GAN 的每个 training iteration 有两个阶段:</p>
+<ol>
+<li><strong>第一阶段训练 discriminator</strong>:<br>从训练集中采样一批 “真图像”(标签为 1), 再由 generator 产生同样数量的 “假图像”(标签为 0). 然后 discriminator 使用 binary cross-entropy loss 在这个真假参半的图像批次上训练一个 step. <strong>这期间反向传播仅优化 discriminator 的权重</strong>. </li>
+</ol>
+<ol>
+<li><strong>第二阶段训练 generator</strong>:<br>首先让 generator 产生一批 “假图像”(<strong>将标签设置为 1</strong>), 并让 discriminator 区分其真假 (这次没有 “真图像”). 这里故意将标签设置为 1 是为了让 generator 产生使 discriminator 信以为真的图像. <strong>这期间反向传播仅优化 generator 的权重 (discriminator 的权重被冻结).</strong></li>
+</ol>
+<p>下面基于 Fashion MNIST 来构建一个简单的 GAN.</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># common imports</span></span><br><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"><span class="keyword">import</span> pandas <span class="keyword">as</span> pd</span><br><span class="line"><span class="keyword">import</span> matplotlib.pyplot <span class="keyword">as</span> plt</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> tensorflow <span class="keyword">as</span> tf</span><br><span class="line"><span class="keyword">from</span> tensorflow <span class="keyword">import</span> keras</span><br></pre></td></tr></table></figure>
+<h2 id="加载-amp-划分数据集"><a href="#加载-amp-划分数据集" class="headerlink" title="加载 &amp; 划分数据集"></a>加载 &amp; 划分数据集</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">(X_train_full, y_train_full), (X_test, y_test) = keras.datasets.fashion_mnist.load_data()</span><br><span class="line">X_train_full = X_train_full.astype(np.float32) / <span class="number">255</span></span><br><span class="line">X_test = X_test.astype(np.float32) / <span class="number">255</span></span><br><span class="line">X_train, X_valid = X_train_full[:-<span class="number">5000</span>], X_train_full[-<span class="number">5000</span>:]</span><br><span class="line">y_train, y_valid = y_train_full[:-<span class="number">5000</span>], y_train_full[-<span class="number">5000</span>:]</span><br></pre></td></tr></table></figure>
+<h2 id="构建生成器"><a href="#构建生成器" class="headerlink" title="构建生成器"></a>构建生成器</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">np.random.seed(<span class="number">42</span>)</span><br><span class="line">tf.random.set_seed(<span class="number">42</span>)</span><br><span class="line"></span><br><span class="line">codings_size = <span class="number">30</span></span><br><span class="line"></span><br><span class="line">generator = keras.models.Sequential([</span><br><span class="line">    <span class="comment"># generator 接收的输入类似于 autoencoder 中 decoder 部分接收的输入, 即 &quot;潜在编码&quot;.</span></span><br><span class="line">    keras.layers.Dense(<span class="number">100</span>, activation=<span class="string">&quot;elu&quot;</span>, input_shape=[codings_size]), </span><br><span class="line">    keras.layers.Dense(<span class="number">150</span>, activation=<span class="string">&quot;elu&quot;</span>),</span><br><span class="line">    keras.layers.Dense(<span class="number">28</span> * <span class="number">28</span>, activation=<span class="string">&quot;sigmoid&quot;</span>),</span><br><span class="line">    keras.layers.Reshape([<span class="number">28</span>, <span class="number">28</span>])</span><br><span class="line">])</span><br></pre></td></tr></table></figure>
+<h2 id="构建判别器"><a href="#构建判别器" class="headerlink" title="构建判别器"></a>构建判别器</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">discriminator = keras.models.Sequential([</span><br><span class="line">    <span class="comment"># discriminator 接收的输入就是真/假图像</span></span><br><span class="line">    keras.layers.Flatten(input_shape=[<span class="number">28</span>, <span class="number">28</span>]),</span><br><span class="line">    keras.layers.Dense(<span class="number">150</span>, activation=<span class="string">&quot;elu&quot;</span>), </span><br><span class="line">    keras.layers.Dense(<span class="number">100</span>, activation=<span class="string">&quot;elu&quot;</span>),</span><br><span class="line">    keras.layers.Dense(<span class="number">1</span>, activation=<span class="string">&quot;sigmoid&quot;</span>)    <span class="comment"># 该激活对应图像二分类</span></span><br><span class="line">])</span><br></pre></td></tr></table></figure>
+<h2 id="组合为-GAN"><a href="#组合为-GAN" class="headerlink" title="组合为 GAN"></a>组合为 GAN</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">gan = keras.models.Sequential([generator, discriminator])</span><br></pre></td></tr></table></figure>
+<h2 id="编译模型"><a href="#编译模型" class="headerlink" title="编译模型"></a>编译模型</h2><ol>
+<li>由于 discriminator 是一个二分类器, 故可用 binary cross-entropy 作为其损失函数.</li>
+<li>🔺 generator 将只通过整个 GAN 模型来训练, 因此无需单独编译它. 🔺</li>
+<li>整个 GAN 模型也是一个二分类器, 故也可用 binary cross-entropy 作为其损失函数.</li>
+<li>重要的是, 第二阶段只训练 generator 的权重, 因此在编译 GAN 模型前将 discriminator 设置为不可训练的.</li>
+</ol>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">discriminator.<span class="built_in">compile</span>(loss=<span class="string">&quot;binary_crossentropy&quot;</span>, optimizer=<span class="string">&quot;rmsprop&quot;</span>)</span><br><span class="line">discriminator.trainable = <span class="literal">False</span>    <span class="comment"># 对应上面第四条</span></span><br><span class="line">    </span><br><span class="line">gan.<span class="built_in">compile</span>(loss=<span class="string">&quot;binary_crossentropy&quot;</span>, optimizer=<span class="string">&quot;rmsprop&quot;</span>)</span><br></pre></td></tr></table></figure>
+<p><strong>Remark</strong> on <code>discriminator.trainable = False</code>: </p>
+<ol>
+<li>当对 discriminator 调用 fit() 或 train_on_batch() 时, discriminator 是可训练的; </li>
+<li>当对 gan model     调用 fit() 或 train_on_batch() 时, discriminator 是不可训练的.</li>
+</ol>
+<h2 id="自定义训练循环"><a href="#自定义训练循环" class="headerlink" title="自定义训练循环"></a>自定义训练循环</h2><h3 id="首先创建-Dataset"><a href="#首先创建-Dataset" class="headerlink" title="首先创建 Dataset"></a>首先创建 Dataset</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 从 X_train 创建 Dataset 并乱序 + 分批 + 预取 </span></span><br><span class="line">batch_size = <span class="number">32</span></span><br><span class="line">dataset = tf.data.Dataset.from_tensor_slices(X_train).shuffle(<span class="number">1000</span>)</span><br><span class="line">dataset = dataset.batch(batch_size=batch_size, drop_remainder=<span class="literal">True</span>).prefetch(<span class="number">1</span>)</span><br></pre></td></tr></table></figure>
+<h3 id="定义训练循环"><a href="#定义训练循环" class="headerlink" title="定义训练循环"></a>定义训练循环</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">plot_multiple_images</span>(<span class="params">images, n_cols=<span class="literal">None</span></span>):</span></span><br><span class="line">    <span class="comment"># 用于绘图の辅助函数</span></span><br><span class="line">    n_cols = n_cols <span class="keyword">or</span> <span class="built_in">len</span>(images)</span><br><span class="line">    n_rows = (<span class="built_in">len</span>(images) - <span class="number">1</span>) // n_cols + <span class="number">1</span></span><br><span class="line">    </span><br><span class="line">    <span class="keyword">if</span> images.shape[-<span class="number">1</span>] == <span class="number">1</span>:</span><br><span class="line">        images = np.squeeze(images, axis=-<span class="number">1</span>)</span><br><span class="line">        </span><br><span class="line">    plt.figure(figsize=(n_cols * <span class="number">1.5</span>, n_rows * <span class="number">1.5</span>))</span><br><span class="line">    <span class="keyword">for</span> index, image <span class="keyword">in</span> <span class="built_in">enumerate</span>(images):</span><br><span class="line">        plt.subplot(n_rows, n_cols, index + <span class="number">1</span>)</span><br><span class="line">        plt.imshow(image, cmap=<span class="string">&quot;binary&quot;</span>)</span><br><span class="line">        plt.axis(<span class="string">&quot;off&quot;</span>)</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">train_gan</span>(<span class="params">gan, dataset, batch_size, codings_size, n_epochs=<span class="number">10</span></span>):</span></span><br><span class="line">    generator, discriminator = gan.layers</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">for</span> epoch <span class="keyword">in</span> <span class="built_in">range</span>(n_epochs):</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">&quot;Epoch &#123;&#125;/&#123;&#125;&quot;</span>.<span class="built_in">format</span>(epoch + <span class="number">1</span>, n_epochs))</span><br><span class="line">        <span class="keyword">for</span> X_batch <span class="keyword">in</span> dataset:</span><br><span class="line">            <span class="comment"># 阶段 1: 训练判别器</span></span><br><span class="line">            noise = tf.random.normal(shape=[batch_size, codings_size])</span><br><span class="line">            generated_images = generator(noise)</span><br><span class="line">            X_fake_and_real = tf.concat([generated_images, X_batch], axis=<span class="number">0</span>)</span><br><span class="line">            y1 = tf.constant([[<span class="number">0.</span>]] * batch_size + [[<span class="number">1.</span>]] * batch_size)</span><br><span class="line">            discriminator.trainable = <span class="literal">True</span>     <span class="comment"># 避免 warnings</span></span><br><span class="line">            discriminator.train_on_batch(X_fake_and_real, y1)       </span><br><span class="line">            </span><br><span class="line">            <span class="comment"># 阶段 2: 训练生成器</span></span><br><span class="line">            noise = tf.random.normal(shape=[batch_size, codings_size])</span><br><span class="line">            y2 = tf.constant([[<span class="number">1.</span>]] * batch_size)</span><br><span class="line">            discriminator.trainable = <span class="literal">False</span>    <span class="comment"># 避免 warnings</span></span><br><span class="line">            gan.train_on_batch(noise, y2)</span><br><span class="line">        </span><br><span class="line">        <span class="comment"># 每个轮次结束时展示生成的图像</span></span><br><span class="line">        plot_multiple_images(generated_images, <span class="number">8</span>)</span><br><span class="line">        plt.show()</span><br></pre></td></tr></table></figure>
+<p><strong>Remark</strong> on previous code:</p>
+<ol>
+<li>在训练的第一阶段, 将高斯噪声传递给 generator 以产生 “假图像”, 同时在训练集中采样相同数量的 “真图像”, 将真假图像合并为一个批次. 这个批次对应的标签 $y1$ 中 0 代表 “假图像”, 1 代表 “真图像”. 然后在这个<strong>真假参半的图像批次上</strong>训练 discriminator.</li>
+</ol>
+<ol>
+<li>在训练的第二阶段, 将高斯噪声传递给 gan 模型, 其 generator 将产生一些 “假图像”, 然后其 discriminator 将尝试分辨这些图像的真假. 这批 “假图像” 的标签 $y2$ 被设置为 1 (即表示 “真图像”), 这是为了<strong>让 discriminator 误以为它们是训练集中采样的 “真图像”</strong>.</li>
+</ol>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">train_gan(gan, dataset, batch_size, codings_size, n_epochs=<span class="number">1</span>)</span><br></pre></td></tr></table></figure>
+<pre><code>Epoch 1/1
+</code></pre><p><img src="/2022/02/16/%E7%94%9F%E6%88%90%E5%AF%B9%E6%8A%97%E7%BD%91%E7%BB%9C-Generative-Adversarial-Networks/output_24_1.png" alt="png"></p>
+<p><strong>Remark</strong> on the figure above:<br>由图可见, 生成图像已经开始与 Fashion MNIST 中的图像相似了, 但遗憾的是, generator 并不能产生比这更(明显地)好的图像了…</p>
+<h2 id="训练-GAN-时的困难-amp-挑战"><a href="#训练-GAN-时的困难-amp-挑战" class="headerlink" title="训练 GAN 时的困难 &amp; 挑战"></a>训练 GAN 时的困难 &amp; 挑战</h2><ol>
+<li>事实上, GAN 只能达到唯一的纳什均衡, 即当 generator 产生 “完全逼真” 的图像, 而 discriminator 不得不对每张接收到的图像进行单纯的猜测(50% 正确率)的情况.</li>
+</ol>
+<ol>
+<li>然而, 这种均衡状态能否达到根本没有保证.</li>
+</ol>
+<hr>
+<ol>
+<li>最大的困难在于 <strong>模式崩溃(mode collapse)</strong> 的发生, 即 generator 的输出变得不再多样化. 举例来说, 假设 generator 能够更好地生成逼真的鞋子的图像, 为了骗过 discriminator, 它就会产生更多鞋子的图像. 慢慢地, generator 就会忘记如何生成其它类别的图像了; 同时, discriminator 只会接收到假的鞋子的图像, 于是它也会逐渐忘记如何区分其它类别的假图像. 最终, 当 discriminator 学会区分真假鞋子的图像后, generator 又被迫转而去生成其它类别的图像(比如说连衣裙)而忘记了如何生成逼真的鞋子的图像, 然后 discriminator 也跟着只会区分真假连衣裙的图像…最终的结果是, GAN 逐渐在少数几个类别中循环往复, 但每一个类别都不擅长.</li>
+</ol>
+<ol>
+<li>另外, GAN 对超参数非常敏感, 可能需要花费大量精力来调参.</li>
+</ol>
+<ol>
+<li>解决这些难题的方法有: <strong>experience replay</strong> 和 <strong>mini-batch discrimination</strong> 等.</li>
+</ol>
+<h2 id="Deep-Convolutional-GANs-DCGANs"><a href="#Deep-Convolutional-GANs-DCGANs" class="headerlink" title="Deep Convolutional GANs (DCGANs)"></a>Deep Convolutional GANs (DCGANs)</h2><p>如何构建稳定的 convolutional GANs? 见下述指南:</p>
+<ol>
+<li><p>将 discriminator 中的池化层替换为 <strong>strided Convolutions</strong>; 将 generator 中的池化层替换为 <strong>transposed Convolutions</strong>.</p>
+</li>
+<li><p>在 generator 和 discriminator 中使用 <strong>Batch Normalization</strong> (但 generator 的输出层和 discriminator 的输入层除外).</p>
+</li>
+<li><p>对较深的网络架构, 移除全连接的隐藏层.</p>
+</li>
+<li><p>在 generator 的所有层中使用 <strong>ReLU</strong> 激活, 但其输出层使用 <strong>tanh</strong> 激活.</p>
+</li>
+<li><p>在 discriminator 的所有层中使用 <strong>Leaky ReLU</strong> 激活, 但其输出层使用 <strong>sigmoid</strong> 激活.</p>
+</li>
+</ol>
+<p><strong>Remark</strong>: </p>
+<ol>
+<li>上述指南在多数情况下能帮助构建一个稳定的 DCGAN, 但世事无绝对, 你仍可能需要尝试不同的超参数值; </li>
+<li>有时候, 仅仅改变随机种子并重新训练完全相同的模型也可能成功.</li>
+</ol>
+<p>下面基于 Fashion MNIST 构建一个 DCGAN 作为演示:</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">tf.random.set_seed(<span class="number">42</span>)</span><br><span class="line">np.random.seed(<span class="number">42</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 1.构建生成器</span></span><br><span class="line">codings_size = <span class="number">100</span></span><br><span class="line"></span><br><span class="line">generator = keras.models.Sequential([</span><br><span class="line">    keras.layers.Dense(<span class="number">7</span> * <span class="number">7</span> * <span class="number">128</span>, input_shape=[codings_size]), </span><br><span class="line">    keras.layers.Reshape([<span class="number">7</span>, <span class="number">7</span>, <span class="number">128</span>]), </span><br><span class="line">    keras.layers.BatchNormalization(), </span><br><span class="line">    keras.layers.Conv2DTranspose(<span class="number">64</span>, kernel_size=<span class="number">5</span>, strides=<span class="number">2</span>, padding=<span class="string">&quot;same&quot;</span>, activation=<span class="string">&quot;selu&quot;</span>), </span><br><span class="line">    keras.layers.BatchNormalization(), </span><br><span class="line">    keras.layers.Conv2DTranspose(<span class="number">1</span>, kernel_size=<span class="number">5</span>, strides=<span class="number">2</span>, padding=<span class="string">&quot;same&quot;</span>, activation=<span class="string">&quot;tanh&quot;</span>) </span><br><span class="line">])</span><br><span class="line"></span><br><span class="line"><span class="comment"># 2.构建判别器</span></span><br><span class="line">discriminator = keras.models.Sequential([</span><br><span class="line">    keras.layers.Conv2D(<span class="number">64</span>, kernel_size=<span class="number">5</span>, strides=<span class="number">2</span>, padding=<span class="string">&quot;same&quot;</span>, </span><br><span class="line">                        activation=keras.layers.LeakyReLU(<span class="number">0.2</span>), input_shape=[<span class="number">28</span>, <span class="number">28</span>, <span class="number">1</span>]),</span><br><span class="line">    keras.layers.Dropout(<span class="number">0.4</span>), </span><br><span class="line">    keras.layers.Conv2D(<span class="number">128</span>, kernel_size=<span class="number">5</span>, strides=<span class="number">2</span>, padding=<span class="string">&quot;same&quot;</span>, </span><br><span class="line">                        activation=keras.layers.LeakyReLU(<span class="number">0.2</span>)),</span><br><span class="line">    keras.layers.Dropout(<span class="number">0.4</span>), </span><br><span class="line">    keras.layers.Flatten(),</span><br><span class="line">    keras.layers.Dense(<span class="number">1</span>, activation=<span class="string">&quot;sigmoid&quot;</span>)  </span><br><span class="line">])</span><br><span class="line"></span><br><span class="line"><span class="comment"># 3.两者结合得到 GAN</span></span><br><span class="line">gan = keras.models.Sequential([generator, discriminator])</span><br></pre></td></tr></table></figure>
+<p><strong>Remark</strong> on the code above:</p>
+<ol>
+<li>generator 接收 100 维的编码向量, 并将其映射为 (7, 7, 128) 的三阶张量, 该张量经过批量归一化后传递至一个转置卷积层(将图像的空间尺度上采样至 14 <em> 14, 同时将深度降至 64). 其结果再经批量归一化后被传递至第二个转置卷积层(空间尺度上采样至 28 </em> 28, 深度降至 1), 该层使用 tanh 激活, 故其输出在 [-1, 1] 中, 因此在训练 GAN 前需将训练集缩放至 [-1, 1] 内. 另外还需要对训练集做 reshape 以添加 channel 维度.</li>
+</ol>
+<ol>
+<li>discriminator 与通常的二分类 CNN 相似, 但其下采样则通过 strides=2 的卷积层实现(而非最大池化层). 另外, 卷积层使用了 Leaky ReLU 激活.</li>
+</ol>
+<ol>
+<li>上面的代码没有完全遵照指南, 以避免训练不稳定的情况.</li>
+</ol>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 添加 channel 维度并缩放至 [-1, 1]</span></span><br><span class="line">X_train_dcgan = X_train.reshape(-<span class="number">1</span>, <span class="number">28</span>, <span class="number">28</span>, <span class="number">1</span>) * <span class="number">2.</span> - <span class="number">1.</span> </span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 模型编译与 [5] 中一致</span></span><br><span class="line">discriminator.<span class="built_in">compile</span>(loss=<span class="string">&quot;binary_crossentropy&quot;</span>, optimizer=<span class="string">&quot;rmsprop&quot;</span>)</span><br><span class="line">discriminator.trainable = <span class="literal">False</span></span><br><span class="line"></span><br><span class="line">gan.<span class="built_in">compile</span>(loss=<span class="string">&quot;binary_crossentropy&quot;</span>, optimizer=<span class="string">&quot;rmsprop&quot;</span>)</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 创建 Dataset 与 [6.1] 中一致</span></span><br><span class="line">batch_size = <span class="number">32</span></span><br><span class="line">dataset = tf.data.Dataset.from_tensor_slices(X_train_dcgan)</span><br><span class="line">dataset = dataset.shuffle(<span class="number">1000</span>)</span><br><span class="line">dataset = dataset.batch(batch_size, drop_remainder=<span class="literal">True</span>).prefetch(<span class="number">1</span>)</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 训练 50 个轮次 (训练方法与 [6.2] 中一致)</span></span><br><span class="line">train_gan(gan, dataset, batch_size, codings_size, n_epochs=<span class="number">50</span>)</span><br></pre></td></tr></table></figure>
+<pre><code>Epoch 1/50
+</code></pre><p><img src="/2022/02/16/%E7%94%9F%E6%88%90%E5%AF%B9%E6%8A%97%E7%BD%91%E7%BB%9C-Generative-Adversarial-Networks/output_37_1.png" alt="png"></p>
+<pre><code>Epoch 2/50
+</code></pre><p><img src="/2022/02/16/%E7%94%9F%E6%88%90%E5%AF%B9%E6%8A%97%E7%BD%91%E7%BB%9C-Generative-Adversarial-Networks/output_37_3.png" alt="png"></p>
+<pre><code>Epoch 3/50
+</code></pre><p><img src="/2022/02/16/%E7%94%9F%E6%88%90%E5%AF%B9%E6%8A%97%E7%BD%91%E7%BB%9C-Generative-Adversarial-Networks/output_37_5.png" alt="png"></p>
+<p>……</p>
+<pre><code>Epoch 48/50
+</code></pre><p><img src="/2022/02/16/%E7%94%9F%E6%88%90%E5%AF%B9%E6%8A%97%E7%BD%91%E7%BB%9C-Generative-Adversarial-Networks/output_37_95.png" alt="png"></p>
+<pre><code>Epoch 49/50
+</code></pre><p><img src="/2022/02/16/%E7%94%9F%E6%88%90%E5%AF%B9%E6%8A%97%E7%BD%91%E7%BB%9C-Generative-Adversarial-Networks/output_37_97.png" alt="png"></p>
+<pre><code>Epoch 50/50
+</code></pre><p><img src="/2022/02/16/%E7%94%9F%E6%88%90%E5%AF%B9%E6%8A%97%E7%BD%91%E7%BB%9C-Generative-Adversarial-Networks/output_37_99.png" alt="png"></p>
+<p><strong>Remark</strong>:</p>
+<ol>
+<li>可以看到, 经过 50 个轮次的训练, DCGAN 已经能生成与 Fashion MNIST 中较为相似的图像了, 但仍有部分图像难以辨认, 或者不够自然…</li>
+</ol>
+<ol>
+<li>可以尝试改动上面 DCGAN 的架构, 你就能明白它对超参数值有多敏感了~</li>
+</ol>
+<ol>
+<li>DCGANs 仍不完美, 若尝试使用它生成很大的图像, 则可能得到局部真实的特征, 但总体上却有违和感(比如一件衬衫两只袖子长短不一).</li>
+</ol>
+<h2 id="GANs-的渐进式增长"><a href="#GANs-的渐进式增长" class="headerlink" title="GANs 的渐进式增长"></a>GANs 的渐进式增长</h2><p><strong>一种重要的技术</strong>: 在训练初期生成较小的图像, 然后逐渐在 generator 和 discriminator 中添加卷积层以产生越来越大的图像. 这些额外的层将添加在 generator 的末尾以及 discriminator 的开头, 并且先前训练好的层仍是可训练的.</p>
+<hr>
+<ol>
+<li>举例而言(参考下图), 在将 generator 的输出从 4x4 扩大至 8x8 时, 在现有卷积层上添加一个上采样层以输出 8x8 的特征图, 其输出再传递给新的卷积层, 而其输出再次被传递给一个输出卷积层, 以输出 8x8x3 的常规图像. </li>
+</ol>
+<ol>
+<li>为避免破坏第一个卷积层的权重, 最终输出是 &lt;原始输出层&gt; 与 &lt;新输出层(以虚线框标识)&gt; 的加权和. 新输出的权重为 $α$, 而原始输出的权重为 $1-α$, 且 $α$ 从 0 慢慢增加到 1. 也就是说: 新输出层将<strong>逐渐取代</strong>原始输出层.</li>
+</ol>
+<ol>
+<li>在向 discriminator 中添加新卷积层时, 也使用类似的逐渐取代的策略.</li>
+</ol>
+<p><img src="/2022/02/16/%E7%94%9F%E6%88%90%E5%AF%B9%E6%8A%97%E7%BD%91%E7%BB%9C-Generative-Adversarial-Networks/Progressive Growing of GANs.PNG" width="80%"></p>
+<p>其它旨在 <strong>增加输出多样性</strong> &amp; <strong>使训练更稳定</strong> 的技术:</p>
+<ol>
+<li><strong>Minibatch standard deviation layer</strong>: 鼓励 generator 产生更多样化的输出, 从而降低模式崩溃的风险.</li>
+</ol>
+<ol>
+<li><strong>Equalized learning rate</strong>:  既可加快训练速度又可提高训练稳定性. (当使用 RMSProp, Adam 或其他<strong>自适应梯度优化器</strong>时, 该技术能显著提高 GAN 的性能)</li>
+</ol>
+<ol>
+<li><strong>Pixelwise normalization layer</strong>: 可避免由 generator 和 discriminator 间的过度竞争而导致的激活爆炸.</li>
+</ol>
+<h2 id="StyleGANs"><a href="#StyleGANs" class="headerlink" title="StyleGANs"></a>StyleGANs</h2><p>在 generator 中使用<strong>风格迁移</strong>技术, 确保生成图像与训练图像(在所有尺度上)有相同的局部结构, 这极大提升了生成图像的质量; 而 discriminator 与 loss func 则没有修改.</p>
+<p>StyleGAN 有两个神经网络组成:</p>
+<ol>
+<li><strong>Mapping network</strong>: 这是一个 8 层的 MLP, 将潜在表征向量 $z$ 映射至向量 $w$, 后者再经仿射变换(下图中方块A)产生了多个向量, 这些向量控制了生成图像在不同 level 上的风格 (从精细的纹理到高阶的特征). 简而言之, <strong>Mapping network 将潜在表征映射至多个风格向量</strong>.</li>
+</ol>
+<ol>
+<li><strong>Synthesis network</strong>: 负责生成图像. 它包含一个 (在训练后) 恒定的输入, 并使用多个卷积层 &amp; 上采样层处理该输入. 不同点在于: (1).一些噪声被添加到输入和卷积层的所有输出中; (2).每个噪声层后有一个<strong>自适应实例归一化层</strong>, 它独立地标准化每个特征图, 然后使用风格向量来确定每个特征图的尺度和偏移量.</li>
+</ol>
+<p><img src="/2022/02/16/%E7%94%9F%E6%88%90%E5%AF%B9%E6%8A%97%E7%BD%91%E7%BB%9C-Generative-Adversarial-Networks/StyleGAN.PNG" width="80%"></p>
+<p>未完待续…</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Machine-Learning/" rel="tag"># Machine Learning</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2022/02/15/%E5%8F%98%E5%88%86%E8%87%AA%E7%BC%96%E7%A0%81%E5%99%A8-Variational-Autoencoder/" rel="prev" title="变分自编码器 (Variational Autoencoder)">
+                  <i class="fa fa-chevron-left"></i> 变分自编码器 (Variational Autoencoder)
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2022/05/03/Better-Plots-With-pairplot-and-PairGrid/" rel="next" title="Better Plots With pairplot and PairGrid">
+                  Better Plots With pairplot and PairGrid <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 2021 – 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Gozen Sanji</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+<script src="https://cdn.jsdelivr.net/npm/hexo-generator-searchdb@1.4.0/dist/search.js" integrity="sha256-vXZMYLEqsROAXkEw93GGIvaB2ab+QW6w3+1ahD9nXXA=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdn.jsdelivr.net/npm/mathjax@3.2.0/es5/tex-mml-chtml.js","integrity":"sha256-r+3itOMtGGjap0x+10hu6jW/gZCzxHsoKrOd7gyRSGY="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+
+</body>
+</html>

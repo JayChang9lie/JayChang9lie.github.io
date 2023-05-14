@@ -1,0 +1,974 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.0.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.4/css/all.min.css" integrity="sha256-mUZM63G8m73Mcidfrv5E+Y61y7a12O5mW4ezU3bxqW4=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.9.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":true,"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+<meta name="description" content="❓ 如何选择优化器? Momentum, Nesterov Momentum, RMSprop, Adam, Nadam?">
+<meta property="og:type" content="article">
+<meta property="og:title" content="各种优化器之间的对比">
+<meta property="og:url" content="http://example.com/2022/01/19/%E5%90%84%E7%A7%8D%E4%BC%98%E5%8C%96%E5%99%A8%E4%B9%8B%E9%97%B4%E7%9A%84%E5%AF%B9%E6%AF%94/index.html">
+<meta property="og:site_name" content="Jay&#39;s Blog">
+<meta property="og:description" content="❓ 如何选择优化器? Momentum, Nesterov Momentum, RMSprop, Adam, Nadam?">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://example.com/2022/01/19/%E5%90%84%E7%A7%8D%E4%BC%98%E5%8C%96%E5%99%A8%E4%B9%8B%E9%97%B4%E7%9A%84%E5%AF%B9%E6%AF%94/output_6_0.png">
+<meta property="og:image" content="http://example.com/2022/01/19/%E5%90%84%E7%A7%8D%E4%BC%98%E5%8C%96%E5%99%A8%E4%B9%8B%E9%97%B4%E7%9A%84%E5%AF%B9%E6%AF%94/output_11_0.png">
+<meta property="og:image" content="http://example.com/2022/01/19/%E5%90%84%E7%A7%8D%E4%BC%98%E5%8C%96%E5%99%A8%E4%B9%8B%E9%97%B4%E7%9A%84%E5%AF%B9%E6%AF%94/output_13_0.png">
+<meta property="og:image" content="http://example.com/2022/01/19/%E5%90%84%E7%A7%8D%E4%BC%98%E5%8C%96%E5%99%A8%E4%B9%8B%E9%97%B4%E7%9A%84%E5%AF%B9%E6%AF%94/output_15_0.png">
+<meta property="og:image" content="http://example.com/2022/01/19/%E5%90%84%E7%A7%8D%E4%BC%98%E5%8C%96%E5%99%A8%E4%B9%8B%E9%97%B4%E7%9A%84%E5%AF%B9%E6%AF%94/output_18_0.png">
+<meta property="og:image" content="http://example.com/2022/01/19/%E5%90%84%E7%A7%8D%E4%BC%98%E5%8C%96%E5%99%A8%E4%B9%8B%E9%97%B4%E7%9A%84%E5%AF%B9%E6%AF%94/output_20_0.png">
+<meta property="og:image" content="http://example.com/2022/01/19/%E5%90%84%E7%A7%8D%E4%BC%98%E5%8C%96%E5%99%A8%E4%B9%8B%E9%97%B4%E7%9A%84%E5%AF%B9%E6%AF%94/output_22_0.png">
+<meta property="og:image" content="http://example.com/2022/01/19/%E5%90%84%E7%A7%8D%E4%BC%98%E5%8C%96%E5%99%A8%E4%B9%8B%E9%97%B4%E7%9A%84%E5%AF%B9%E6%AF%94/output_25_0.png">
+<meta property="og:image" content="http://example.com/2022/01/19/%E5%90%84%E7%A7%8D%E4%BC%98%E5%8C%96%E5%99%A8%E4%B9%8B%E9%97%B4%E7%9A%84%E5%AF%B9%E6%AF%94/output_27_0.png">
+<meta property="og:image" content="http://example.com/2022/01/19/%E5%90%84%E7%A7%8D%E4%BC%98%E5%8C%96%E5%99%A8%E4%B9%8B%E9%97%B4%E7%9A%84%E5%AF%B9%E6%AF%94/output_29_0.png">
+<meta property="og:image" content="http://example.com/2022/01/19/%E5%90%84%E7%A7%8D%E4%BC%98%E5%8C%96%E5%99%A8%E4%B9%8B%E9%97%B4%E7%9A%84%E5%AF%B9%E6%AF%94/output_32_0.png">
+<meta property="og:image" content="http://example.com/2022/01/19/%E5%90%84%E7%A7%8D%E4%BC%98%E5%8C%96%E5%99%A8%E4%B9%8B%E9%97%B4%E7%9A%84%E5%AF%B9%E6%AF%94/output_34_0.png">
+<meta property="og:image" content="http://example.com/2022/01/19/%E5%90%84%E7%A7%8D%E4%BC%98%E5%8C%96%E5%99%A8%E4%B9%8B%E9%97%B4%E7%9A%84%E5%AF%B9%E6%AF%94/output_36_0.png">
+<meta property="og:image" content="http://example.com/2022/01/19/%E5%90%84%E7%A7%8D%E4%BC%98%E5%8C%96%E5%99%A8%E4%B9%8B%E9%97%B4%E7%9A%84%E5%AF%B9%E6%AF%94/output_39_0.png">
+<meta property="og:image" content="http://example.com/2022/01/19/%E5%90%84%E7%A7%8D%E4%BC%98%E5%8C%96%E5%99%A8%E4%B9%8B%E9%97%B4%E7%9A%84%E5%AF%B9%E6%AF%94/output_41_0.png">
+<meta property="og:image" content="http://example.com/2022/01/19/%E5%90%84%E7%A7%8D%E4%BC%98%E5%8C%96%E5%99%A8%E4%B9%8B%E9%97%B4%E7%9A%84%E5%AF%B9%E6%AF%94/output_43_0.png">
+<meta property="article:published_time" content="2022-01-19T08:21:16.000Z">
+<meta property="article:modified_time" content="2022-01-19T08:49:04.684Z">
+<meta property="article:author" content="Gozen Sanji">
+<meta property="article:tag" content="Machine Learning">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/2022/01/19/%E5%90%84%E7%A7%8D%E4%BC%98%E5%8C%96%E5%99%A8%E4%B9%8B%E9%97%B4%E7%9A%84%E5%AF%B9%E6%AF%94/output_6_0.png">
+
+
+<link rel="canonical" href="http://example.com/2022/01/19/%E5%90%84%E7%A7%8D%E4%BC%98%E5%8C%96%E5%99%A8%E4%B9%8B%E9%97%B4%E7%9A%84%E5%AF%B9%E6%AF%94/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"en","comments":true,"permalink":"http://example.com/2022/01/19/%E5%90%84%E7%A7%8D%E4%BC%98%E5%8C%96%E5%99%A8%E4%B9%8B%E9%97%B4%E7%9A%84%E5%AF%B9%E6%AF%94/","path":"2022/01/19/各种优化器之间的对比/","title":"各种优化器之间的对比"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>各种优化器之间的对比 | Jay's Blog</title>
+  
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Jay's Blog</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">🐬</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="user fa-fw"></i>About</a></li>
+        <li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="tags fa-fw"></i>Tags</a></li>
+        <li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="th fa-fw"></i>Categories</a></li>
+        <li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="archive fa-fw"></i>Archives</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>Search
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="Searching..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%AE%9A%E4%B9%89%E6%9E%84%E5%BB%BA-amp-%E8%AE%AD%E7%BB%83%E6%A8%A1%E5%9E%8B%E7%9A%84%E5%87%BD%E6%95%B0"><span class="nav-number">1.</span> <span class="nav-text">定义构建 &amp; 训练模型的函数</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Momentum"><span class="nav-number">2.</span> <span class="nav-text">Momentum</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Nesterov-Momentum"><span class="nav-number">3.</span> <span class="nav-text">Nesterov Momentum</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#RMSprop"><span class="nav-number">4.</span> <span class="nav-text">RMSprop</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Adam"><span class="nav-number">5.</span> <span class="nav-text">Adam</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Nadam"><span class="nav-number">6.</span> <span class="nav-text">Nadam</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%BB%93%E8%AE%BA"><span class="nav-number">7.</span> <span class="nav-text">结论</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Gozen Sanji"
+      src="/images/my_avatar.jpg">
+  <p class="site-author-name" itemprop="name">Gozen Sanji</p>
+  <div class="site-description" itemprop="description">目が覚めた抵抗 型落ちの衝動</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">14</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="Back to top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2022/01/19/%E5%90%84%E7%A7%8D%E4%BC%98%E5%8C%96%E5%99%A8%E4%B9%8B%E9%97%B4%E7%9A%84%E5%AF%B9%E6%AF%94/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/my_avatar.jpg">
+      <meta itemprop="name" content="Gozen Sanji">
+      <meta itemprop="description" content="目が覚めた抵抗 型落ちの衝動">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Jay's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          各种优化器之间的对比
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+      
+
+      <time title="Created: 2022-01-19 16:21:16 / Modified: 16:49:04" itemprop="dateCreated datePublished" datetime="2022-01-19T16:21:16+08:00">2022-01-19</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Machine-Learning/" itemprop="url" rel="index"><span itemprop="name">Machine Learning</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>❓ 如何选择优化器? Momentum, Nesterov Momentum, RMSprop, Adam, Nadam?</p>
+<span id="more"></span>
+<p>※ 下面在相同网络架构上, 使用不同优化器, 对比它们的<strong>收敛速度</strong>和<strong>模型性能</strong>.</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># common imports </span></span><br><span class="line"><span class="keyword">import</span> os</span><br><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"><span class="keyword">import</span> pandas <span class="keyword">as</span> pd</span><br><span class="line"><span class="keyword">import</span> matplotlib.pyplot <span class="keyword">as</span> plt</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> tensorflow <span class="keyword">as</span> tf</span><br><span class="line"><span class="keyword">from</span> tensorflow <span class="keyword">import</span> keras</span><br></pre></td></tr></table></figure>
+<p>🔺 针对 Fashion MNIST 数据集, 开展下面的测试.</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 准备数据集 (train, valid, test)</span></span><br><span class="line">(x_train_full, y_train_full), (x_test, y_test) = keras.datasets.fashion_mnist.load_data()</span><br><span class="line"></span><br><span class="line">x_train_full = x_train_full / <span class="number">255.</span></span><br><span class="line">x_test = x_test / <span class="number">255.</span></span><br><span class="line"></span><br><span class="line">x_valid, x_train = x_train_full[:<span class="number">5000</span>], x_train_full[<span class="number">5000</span>:]</span><br><span class="line">y_valid, y_train = y_train_full[:<span class="number">5000</span>], y_train_full[<span class="number">5000</span>:]</span><br><span class="line"></span><br><span class="line"><span class="built_in">print</span>(x_train.shape, y_train.shape, sep=<span class="string">&quot;\t&quot;</span>)</span><br><span class="line"><span class="built_in">print</span>(x_valid.shape, y_valid.shape, sep=<span class="string">&quot;\t&quot;</span>)</span><br><span class="line"><span class="built_in">print</span>(x_test.shape, y_test.shape, sep=<span class="string">&quot;\t&quot;</span>)</span><br></pre></td></tr></table></figure>
+<pre><code>(55000, 28, 28)    (55000,)
+(5000, 28, 28)    (5000,)
+(10000, 28, 28)    (10000,)
+</code></pre><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># fashion_mnist 中数字标签对应的类别名称</span></span><br><span class="line">class_names = [<span class="string">&quot;T-shirt/top&quot;</span>, <span class="string">&quot;Trouser&quot;</span>, <span class="string">&quot;Pullover&quot;</span>, <span class="string">&quot;Dress&quot;</span>, <span class="string">&quot;Coat&quot;</span>, </span><br><span class="line">               <span class="string">&quot;Sandal&quot;</span>, <span class="string">&quot;Shirt&quot;</span>, <span class="string">&quot;Sneaker&quot;</span>, <span class="string">&quot;Bag&quot;</span>, <span class="string">&quot;Ankleboot&quot;</span>]</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 展示部分训练集实例</span></span><br><span class="line">m, n = <span class="number">2</span>, <span class="number">5</span>    <span class="comment"># m 行 n 列</span></span><br><span class="line">rnd_indices = np.random.randint(low=<span class="number">0</span>, high=x_train.shape[<span class="number">0</span>], size=(m * n, ))</span><br><span class="line">x_sample, y_sample = x_train[rnd_indices], y_train[rnd_indices]</span><br><span class="line"></span><br><span class="line">plt.figure(figsize=(n * <span class="number">1.5</span>, m * <span class="number">1.8</span>))</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">1</span>, m + <span class="number">1</span>):</span><br><span class="line">    <span class="keyword">for</span> j <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">1</span>, n + <span class="number">1</span>):</span><br><span class="line">        idx = (i - <span class="number">1</span>) * n + j</span><br><span class="line">        plt.subplot(m, n, idx)</span><br><span class="line">        plt.imshow(x_sample[idx - <span class="number">1</span>], cmap=<span class="string">&quot;binary&quot;</span>)</span><br><span class="line">        plt.title(class_names[y_sample[idx - <span class="number">1</span>]])</span><br><span class="line">        plt.axis(<span class="string">&#x27;off&#x27;</span>)</span><br><span class="line"></span><br><span class="line">plt.show()</span><br></pre></td></tr></table></figure>
+<p><img src="/2022/01/19/%E5%90%84%E7%A7%8D%E4%BC%98%E5%8C%96%E5%99%A8%E4%B9%8B%E9%97%B4%E7%9A%84%E5%AF%B9%E6%AF%94/output_6_0.png" alt="png"></p>
+<h1 id="定义构建-amp-训练模型的函数"><a href="#定义构建-amp-训练模型的函数" class="headerlink" title="定义构建 &amp; 训练模型的函数"></a>定义构建 &amp; 训练模型的函数</h1><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">build_model</span>(<span class="params">optimizer, activation=<span class="string">&quot;elu&quot;</span>, n_layers=<span class="number">4</span>, n_neurons=<span class="number">100</span></span>):</span></span><br><span class="line">    <span class="comment"># 1.模型构建</span></span><br><span class="line">    model = keras.models.Sequential([</span><br><span class="line">        keras.layers.Flatten(input_shape=x_train.shape[<span class="number">1</span>:]),</span><br><span class="line">        keras.layers.BatchNormalization(),</span><br><span class="line">        </span><br><span class="line">        keras.layers.Dense(<span class="number">400</span>, activation=activation, kernel_initializer=<span class="string">&quot;he_normal&quot;</span>),</span><br><span class="line">        keras.layers.BatchNormalization(),</span><br><span class="line">        </span><br><span class="line">        keras.layers.Dense(<span class="number">200</span>, activation=activation, kernel_initializer=<span class="string">&quot;he_normal&quot;</span>),</span><br><span class="line">        keras.layers.BatchNormalization(),</span><br><span class="line">    ])</span><br><span class="line">    <span class="keyword">for</span> _ <span class="keyword">in</span> <span class="built_in">range</span>(n_layers):</span><br><span class="line">        model.add(keras.layers.Dense(n_neurons, activation=activation, kernel_initializer=<span class="string">&quot;he_normal&quot;</span>))</span><br><span class="line">        model.add(keras.layers.BatchNormalization())</span><br><span class="line">    model.add(keras.layers.Dense(<span class="number">10</span>, activation=<span class="string">&quot;softmax&quot;</span>))</span><br><span class="line">    <span class="comment"># 2.模型编译</span></span><br><span class="line">    model.<span class="built_in">compile</span>(loss=<span class="string">&quot;sparse_categorical_crossentropy&quot;</span>, </span><br><span class="line">                  optimizer=optimizer, </span><br><span class="line">                  metrics=[<span class="string">&quot;accuracy&quot;</span>])</span><br><span class="line">    <span class="keyword">return</span> model</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">train_model</span>(<span class="params">model, batch_size=<span class="number">128</span>, patience=<span class="number">5</span></span>):</span></span><br><span class="line">    <span class="comment"># 默认 batch_size=128 以加速训练, 若模型性能变差, 可设置 batch_size=32</span></span><br><span class="line">    early_stopping_cb = keras.callbacks.EarlyStopping(patience=patience, restore_best_weights=<span class="literal">True</span>)</span><br><span class="line">    history = model.fit(x_train, y_train, epochs=<span class="number">100</span>, </span><br><span class="line">                        validation_data=(x_valid, y_valid),</span><br><span class="line">                        batch_size=batch_size,</span><br><span class="line">                        callbacks=[early_stopping_cb])</span><br><span class="line">    <span class="keyword">return</span> history</span><br></pre></td></tr></table></figure>
+<h1 id="Momentum"><a href="#Momentum" class="headerlink" title="Momentum"></a>Momentum</h1><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">keras.backend.clear_session()</span><br><span class="line">tf.random.set_seed(<span class="number">42</span>)</span><br><span class="line">np.random.seed(<span class="number">42</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 定义优化器, 生成模型, 训练模型</span></span><br><span class="line">momentum = keras.optimizers.SGD(learning_rate=<span class="number">0.001</span>, momentum=<span class="number">0.9</span>)</span><br><span class="line">model_with_momentum = build_model(momentum)</span><br><span class="line">history = train_model(model_with_momentum)</span><br></pre></td></tr></table></figure>
+<pre><code>Epoch 1/100
+430/430 [==============================] - 7s 13ms/step - loss: 0.6790 - accuracy: 0.7709 - val_loss: 0.4564 - val_accuracy: 0.8396
+Epoch 2/100
+430/430 [==============================] - 6s 15ms/step - loss: 0.4439 - accuracy: 0.8425 - val_loss: 0.4004 - val_accuracy: 0.8566
+Epoch 3/100
+430/430 [==============================] - 7s 15ms/step - loss: 0.3972 - accuracy: 0.8589 - val_loss: 0.3731 - val_accuracy: 0.8660
+Epoch 4/100
+430/430 [==============================] - 6s 14ms/step - loss: 0.3691 - accuracy: 0.8685 - val_loss: 0.3591 - val_accuracy: 0.8722
+Epoch 5/100
+430/430 [==============================] - 6s 14ms/step - loss: 0.3443 - accuracy: 0.8772 - val_loss: 0.3512 - val_accuracy: 0.8768
+Epoch 6/100
+430/430 [==============================] - 6s 13ms/step - loss: 0.3311 - accuracy: 0.8793 - val_loss: 0.3423 - val_accuracy: 0.8766
+Epoch 7/100
+430/430 [==============================] - 6s 13ms/step - loss: 0.3154 - accuracy: 0.8867 - val_loss: 0.3334 - val_accuracy: 0.8812
+Epoch 8/100
+430/430 [==============================] - 7s 15ms/step - loss: 0.3037 - accuracy: 0.8893 - val_loss: 0.3271 - val_accuracy: 0.8820
+Epoch 9/100
+430/430 [==============================] - 6s 14ms/step - loss: 0.2911 - accuracy: 0.8926 - val_loss: 0.3231 - val_accuracy: 0.8812
+Epoch 10/100
+430/430 [==============================] - 7s 16ms/step - loss: 0.2805 - accuracy: 0.8977 - val_loss: 0.3231 - val_accuracy: 0.8800
+Epoch 11/100
+430/430 [==============================] - 6s 14ms/step - loss: 0.2707 - accuracy: 0.9016 - val_loss: 0.3206 - val_accuracy: 0.8824
+Epoch 12/100
+430/430 [==============================] - 6s 14ms/step - loss: 0.2627 - accuracy: 0.9039 - val_loss: 0.3182 - val_accuracy: 0.8822
+Epoch 13/100
+430/430 [==============================] - 6s 13ms/step - loss: 0.2552 - accuracy: 0.9067 - val_loss: 0.3145 - val_accuracy: 0.8840
+Epoch 14/100
+430/430 [==============================] - 6s 14ms/step - loss: 0.2464 - accuracy: 0.9097 - val_loss: 0.3167 - val_accuracy: 0.8868
+Epoch 15/100
+430/430 [==============================] - 6s 14ms/step - loss: 0.2374 - accuracy: 0.9141 - val_loss: 0.3174 - val_accuracy: 0.8834
+Epoch 16/100
+430/430 [==============================] - 6s 14ms/step - loss: 0.2329 - accuracy: 0.9149 - val_loss: 0.3188 - val_accuracy: 0.8856
+Epoch 17/100
+430/430 [==============================] - 6s 14ms/step - loss: 0.2242 - accuracy: 0.9187 - val_loss: 0.3166 - val_accuracy: 0.8842
+Epoch 18/100
+430/430 [==============================] - 7s 15ms/step - loss: 0.2188 - accuracy: 0.9204 - val_loss: 0.3149 - val_accuracy: 0.8872
+</code></pre><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 绘制学习曲线</span></span><br><span class="line">pd.DataFrame(history.history).plot()</span><br><span class="line">plt.grid(<span class="literal">True</span>)</span><br><span class="line">plt.show()</span><br><span class="line"></span><br><span class="line"><span class="comment"># 在测试集上评估模型</span></span><br><span class="line">model_with_momentum.evaluate(x_test, y_test)</span><br></pre></td></tr></table></figure>
+<p><img src="/2022/01/19/%E5%90%84%E7%A7%8D%E4%BC%98%E5%8C%96%E5%99%A8%E4%B9%8B%E9%97%B4%E7%9A%84%E5%AF%B9%E6%AF%94/output_11_0.png" alt="png"></p>
+<pre><code>313/313 [==============================] - 2s 5ms/step - loss: 0.3419 - accuracy: 0.8763
+
+[0.34192100167274475, 0.8762999773025513]
+</code></pre><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">keras.backend.clear_session()</span><br><span class="line">tf.random.set_seed(<span class="number">42</span>)</span><br><span class="line">np.random.seed(<span class="number">42</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 定义优化器, 生成模型, 训练模型</span></span><br><span class="line">momentum = keras.optimizers.SGD(learning_rate=<span class="number">0.003</span>, momentum=<span class="number">0.9</span>)</span><br><span class="line">model_with_momentum = build_model(momentum)</span><br><span class="line">history = train_model(model_with_momentum)</span><br></pre></td></tr></table></figure>
+<pre><code>Epoch 1/100
+430/430 [==============================] - 9s 17ms/step - loss: 0.5472 - accuracy: 0.8101 - val_loss: 0.3869 - val_accuracy: 0.8626
+Epoch 2/100
+430/430 [==============================] - 7s 16ms/step - loss: 0.3755 - accuracy: 0.8643 - val_loss: 0.3510 - val_accuracy: 0.8716
+Epoch 3/100
+430/430 [==============================] - 7s 17ms/step - loss: 0.3345 - accuracy: 0.8773 - val_loss: 0.3355 - val_accuracy: 0.8802
+Epoch 4/100
+430/430 [==============================] - 7s 16ms/step - loss: 0.3073 - accuracy: 0.8879 - val_loss: 0.3271 - val_accuracy: 0.8786
+Epoch 5/100
+430/430 [==============================] - 6s 15ms/step - loss: 0.2814 - accuracy: 0.8966 - val_loss: 0.3202 - val_accuracy: 0.8868
+Epoch 6/100
+430/430 [==============================] - 8s 20ms/step - loss: 0.2678 - accuracy: 0.9011 - val_loss: 0.3181 - val_accuracy: 0.8812
+Epoch 7/100
+430/430 [==============================] - 7s 16ms/step - loss: 0.2494 - accuracy: 0.9088 - val_loss: 0.3124 - val_accuracy: 0.8866
+Epoch 8/100
+430/430 [==============================] - 6s 14ms/step - loss: 0.2354 - accuracy: 0.9132 - val_loss: 0.3114 - val_accuracy: 0.8876
+Epoch 9/100
+430/430 [==============================] - 6s 15ms/step - loss: 0.2205 - accuracy: 0.9174 - val_loss: 0.3042 - val_accuracy: 0.8892
+Epoch 10/100
+430/430 [==============================] - 6s 14ms/step - loss: 0.2089 - accuracy: 0.9223 - val_loss: 0.3146 - val_accuracy: 0.8898
+Epoch 11/100
+430/430 [==============================] - 6s 13ms/step - loss: 0.1996 - accuracy: 0.9258 - val_loss: 0.3133 - val_accuracy: 0.8910
+Epoch 12/100
+430/430 [==============================] - 7s 16ms/step - loss: 0.1881 - accuracy: 0.9310 - val_loss: 0.3129 - val_accuracy: 0.8906
+Epoch 13/100
+430/430 [==============================] - 6s 14ms/step - loss: 0.1803 - accuracy: 0.9340 - val_loss: 0.3143 - val_accuracy: 0.8912
+Epoch 14/100
+430/430 [==============================] - 6s 15ms/step - loss: 0.1695 - accuracy: 0.9373 - val_loss: 0.3307 - val_accuracy: 0.8896
+</code></pre><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 绘制学习曲线</span></span><br><span class="line">pd.DataFrame(history.history).plot()</span><br><span class="line">plt.grid(<span class="literal">True</span>)</span><br><span class="line">plt.show()</span><br><span class="line"></span><br><span class="line"><span class="comment"># 在测试集上评估模型</span></span><br><span class="line">model_with_momentum.evaluate(x_test, y_test)</span><br></pre></td></tr></table></figure>
+<p><img src="/2022/01/19/%E5%90%84%E7%A7%8D%E4%BC%98%E5%8C%96%E5%99%A8%E4%B9%8B%E9%97%B4%E7%9A%84%E5%AF%B9%E6%AF%94/output_13_0.png" alt="png"></p>
+<pre><code>313/313 [==============================] - 2s 5ms/step - loss: 0.3337 - accuracy: 0.8836
+
+[0.3336751461029053, 0.8835999965667725]
+</code></pre><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">keras.backend.clear_session()</span><br><span class="line">tf.random.set_seed(<span class="number">42</span>)</span><br><span class="line">np.random.seed(<span class="number">42</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 定义优化器, 生成模型, 训练模型</span></span><br><span class="line">momentum = keras.optimizers.SGD(learning_rate=<span class="number">0.009</span>, momentum=<span class="number">0.9</span>)</span><br><span class="line">model_with_momentum = build_model(momentum)</span><br><span class="line">history = train_model(model_with_momentum)</span><br></pre></td></tr></table></figure>
+<pre><code>Epoch 1/100
+430/430 [==============================] - 8s 16ms/step - loss: 0.4763 - accuracy: 0.8306 - val_loss: 0.3680 - val_accuracy: 0.8668
+Epoch 2/100
+430/430 [==============================] - 6s 14ms/step - loss: 0.3401 - accuracy: 0.8759 - val_loss: 0.3340 - val_accuracy: 0.8764
+Epoch 3/100
+430/430 [==============================] - 6s 13ms/step - loss: 0.3024 - accuracy: 0.8875 - val_loss: 0.3413 - val_accuracy: 0.8802
+Epoch 4/100
+430/430 [==============================] - 6s 14ms/step - loss: 0.2754 - accuracy: 0.8982 - val_loss: 0.3193 - val_accuracy: 0.8828
+Epoch 5/100
+430/430 [==============================] - 6s 14ms/step - loss: 0.2497 - accuracy: 0.9059 - val_loss: 0.3031 - val_accuracy: 0.8896
+Epoch 6/100
+430/430 [==============================] - 6s 14ms/step - loss: 0.2333 - accuracy: 0.9141 - val_loss: 0.3073 - val_accuracy: 0.8860
+Epoch 7/100
+430/430 [==============================] - 5s 12ms/step - loss: 0.2164 - accuracy: 0.9181 - val_loss: 0.3164 - val_accuracy: 0.8874
+Epoch 8/100
+430/430 [==============================] - 6s 13ms/step - loss: 0.2020 - accuracy: 0.9241 - val_loss: 0.3006 - val_accuracy: 0.8922
+Epoch 9/100
+430/430 [==============================] - 7s 15ms/step - loss: 0.1873 - accuracy: 0.9299 - val_loss: 0.3126 - val_accuracy: 0.8906
+Epoch 10/100
+430/430 [==============================] - 6s 15ms/step - loss: 0.1764 - accuracy: 0.9322 - val_loss: 0.3361 - val_accuracy: 0.8880
+Epoch 11/100
+430/430 [==============================] - 6s 14ms/step - loss: 0.1689 - accuracy: 0.9363 - val_loss: 0.3185 - val_accuracy: 0.8922
+Epoch 12/100
+430/430 [==============================] - 7s 16ms/step - loss: 0.1582 - accuracy: 0.9418 - val_loss: 0.3250 - val_accuracy: 0.8908
+Epoch 13/100
+430/430 [==============================] - 7s 16ms/step - loss: 0.1489 - accuracy: 0.9450 - val_loss: 0.3271 - val_accuracy: 0.8936
+</code></pre><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 绘制学习曲线</span></span><br><span class="line">pd.DataFrame(history.history).plot()</span><br><span class="line">plt.grid(<span class="literal">True</span>)</span><br><span class="line">plt.show()</span><br><span class="line"></span><br><span class="line"><span class="comment"># 在测试集上评估模型</span></span><br><span class="line">model_with_momentum.evaluate(x_test, y_test)</span><br></pre></td></tr></table></figure>
+<p><img src="/2022/01/19/%E5%90%84%E7%A7%8D%E4%BC%98%E5%8C%96%E5%99%A8%E4%B9%8B%E9%97%B4%E7%9A%84%E5%AF%B9%E6%AF%94/output_15_0.png" alt="png"></p>
+<pre><code>313/313 [==============================] - 2s 5ms/step - loss: 0.3313 - accuracy: 0.8851
+
+[0.3312726616859436, 0.8851000070571899]
+</code></pre><h1 id="Nesterov-Momentum"><a href="#Nesterov-Momentum" class="headerlink" title="Nesterov Momentum"></a>Nesterov Momentum</h1><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">keras.backend.clear_session()</span><br><span class="line">tf.random.set_seed(<span class="number">42</span>)</span><br><span class="line">np.random.seed(<span class="number">42</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 定义优化器, 生成模型, 训练模型</span></span><br><span class="line">nesterov_momentum = keras.optimizers.SGD(learning_rate=<span class="number">0.001</span>, momentum=<span class="number">0.9</span>, nesterov=<span class="literal">True</span>)</span><br><span class="line">model_with_nesterov_momentum = build_model(nesterov_momentum)</span><br><span class="line">history = train_model(model_with_nesterov_momentum)</span><br></pre></td></tr></table></figure>
+<pre><code>Epoch 1/100
+430/430 [==============================] - 8s 16ms/step - loss: 0.6741 - accuracy: 0.7723 - val_loss: 0.4556 - val_accuracy: 0.8396
+Epoch 2/100
+430/430 [==============================] - 7s 16ms/step - loss: 0.4430 - accuracy: 0.8431 - val_loss: 0.3998 - val_accuracy: 0.8572
+Epoch 3/100
+430/430 [==============================] - 6s 14ms/step - loss: 0.3965 - accuracy: 0.8588 - val_loss: 0.3732 - val_accuracy: 0.8666
+Epoch 4/100
+430/430 [==============================] - 7s 16ms/step - loss: 0.3683 - accuracy: 0.8685 - val_loss: 0.3587 - val_accuracy: 0.8720
+Epoch 5/100
+430/430 [==============================] - 8s 18ms/step - loss: 0.3436 - accuracy: 0.8774 - val_loss: 0.3504 - val_accuracy: 0.8762
+Epoch 6/100
+430/430 [==============================] - 7s 16ms/step - loss: 0.3303 - accuracy: 0.8792 - val_loss: 0.3417 - val_accuracy: 0.8774
+Epoch 7/100
+430/430 [==============================] - 6s 14ms/step - loss: 0.3147 - accuracy: 0.8866 - val_loss: 0.3326 - val_accuracy: 0.8810
+Epoch 8/100
+430/430 [==============================] - 7s 16ms/step - loss: 0.3030 - accuracy: 0.8896 - val_loss: 0.3270 - val_accuracy: 0.8808
+Epoch 9/100
+430/430 [==============================] - 6s 15ms/step - loss: 0.2903 - accuracy: 0.8928 - val_loss: 0.3225 - val_accuracy: 0.8818
+Epoch 10/100
+430/430 [==============================] - 7s 15ms/step - loss: 0.2798 - accuracy: 0.8981 - val_loss: 0.3220 - val_accuracy: 0.8806
+Epoch 11/100
+430/430 [==============================] - 7s 16ms/step - loss: 0.2701 - accuracy: 0.9021 - val_loss: 0.3202 - val_accuracy: 0.8820
+Epoch 12/100
+430/430 [==============================] - 7s 15ms/step - loss: 0.2618 - accuracy: 0.9040 - val_loss: 0.3179 - val_accuracy: 0.8822
+Epoch 13/100
+430/430 [==============================] - 6s 13ms/step - loss: 0.2544 - accuracy: 0.9069 - val_loss: 0.3141 - val_accuracy: 0.8836
+Epoch 14/100
+430/430 [==============================] - 7s 16ms/step - loss: 0.2456 - accuracy: 0.9099 - val_loss: 0.3166 - val_accuracy: 0.8866
+Epoch 15/100
+430/430 [==============================] - 6s 15ms/step - loss: 0.2366 - accuracy: 0.9145 - val_loss: 0.3172 - val_accuracy: 0.8844
+Epoch 16/100
+430/430 [==============================] - 7s 16ms/step - loss: 0.2320 - accuracy: 0.9152 - val_loss: 0.3188 - val_accuracy: 0.8852
+Epoch 17/100
+430/430 [==============================] - 6s 13ms/step - loss: 0.2233 - accuracy: 0.9190 - val_loss: 0.3167 - val_accuracy: 0.8852
+Epoch 18/100
+430/430 [==============================] - 7s 15ms/step - loss: 0.2177 - accuracy: 0.9209 - val_loss: 0.3146 - val_accuracy: 0.8870
+</code></pre><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 绘制学习曲线</span></span><br><span class="line">pd.DataFrame(history.history).plot()</span><br><span class="line">plt.grid(<span class="literal">True</span>)</span><br><span class="line">plt.show()</span><br><span class="line"></span><br><span class="line"><span class="comment"># 在测试集上评估模型</span></span><br><span class="line">model_with_nesterov_momentum.evaluate(x_test, y_test)</span><br></pre></td></tr></table></figure>
+<p><img src="/2022/01/19/%E5%90%84%E7%A7%8D%E4%BC%98%E5%8C%96%E5%99%A8%E4%B9%8B%E9%97%B4%E7%9A%84%E5%AF%B9%E6%AF%94/output_18_0.png" alt="png"></p>
+<pre><code>313/313 [==============================] - 2s 6ms/step - loss: 0.3416 - accuracy: 0.8767
+
+[0.34159716963768005, 0.8766999840736389]
+</code></pre><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">keras.backend.clear_session()</span><br><span class="line">tf.random.set_seed(<span class="number">42</span>)</span><br><span class="line">np.random.seed(<span class="number">42</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 定义优化器, 生成模型, 训练模型</span></span><br><span class="line">nesterov_momentum = keras.optimizers.SGD(learning_rate=<span class="number">0.003</span>, momentum=<span class="number">0.9</span>, nesterov=<span class="literal">True</span>)</span><br><span class="line">model_with_nesterov_momentum = build_model(nesterov_momentum)</span><br><span class="line">history = train_model(model_with_nesterov_momentum)</span><br></pre></td></tr></table></figure>
+<pre><code>Epoch 1/100
+430/430 [==============================] - 8s 15ms/step - loss: 0.5403 - accuracy: 0.8117 - val_loss: 0.3853 - val_accuracy: 0.8630
+Epoch 2/100
+430/430 [==============================] - 6s 15ms/step - loss: 0.3730 - accuracy: 0.8651 - val_loss: 0.3493 - val_accuracy: 0.8736
+Epoch 3/100
+430/430 [==============================] - 7s 15ms/step - loss: 0.3319 - accuracy: 0.8785 - val_loss: 0.3349 - val_accuracy: 0.8796
+Epoch 4/100
+430/430 [==============================] - 8s 19ms/step - loss: 0.3043 - accuracy: 0.8888 - val_loss: 0.3262 - val_accuracy: 0.8786
+Epoch 5/100
+430/430 [==============================] - 6s 14ms/step - loss: 0.2790 - accuracy: 0.8977 - val_loss: 0.3171 - val_accuracy: 0.8876
+Epoch 6/100
+430/430 [==============================] - 6s 15ms/step - loss: 0.2642 - accuracy: 0.9030 - val_loss: 0.3163 - val_accuracy: 0.8830
+Epoch 7/100
+430/430 [==============================] - 7s 17ms/step - loss: 0.2465 - accuracy: 0.9098 - val_loss: 0.3131 - val_accuracy: 0.8856
+Epoch 8/100
+430/430 [==============================] - 8s 20ms/step - loss: 0.2321 - accuracy: 0.9139 - val_loss: 0.3107 - val_accuracy: 0.8886
+Epoch 9/100
+430/430 [==============================] - 6s 15ms/step - loss: 0.2171 - accuracy: 0.9194 - val_loss: 0.3058 - val_accuracy: 0.8898
+Epoch 10/100
+430/430 [==============================] - 6s 14ms/step - loss: 0.2052 - accuracy: 0.9235 - val_loss: 0.3140 - val_accuracy: 0.8894
+Epoch 11/100
+430/430 [==============================] - 6s 15ms/step - loss: 0.1953 - accuracy: 0.9275 - val_loss: 0.3126 - val_accuracy: 0.8906
+Epoch 12/100
+430/430 [==============================] - 8s 19ms/step - loss: 0.1836 - accuracy: 0.9327 - val_loss: 0.3174 - val_accuracy: 0.8902
+Epoch 13/100
+430/430 [==============================] - 6s 15ms/step - loss: 0.1764 - accuracy: 0.9350 - val_loss: 0.3170 - val_accuracy: 0.8896
+Epoch 14/100
+430/430 [==============================] - 6s 13ms/step - loss: 0.1651 - accuracy: 0.9396 - val_loss: 0.3289 - val_accuracy: 0.8906
+</code></pre><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 绘制学习曲线</span></span><br><span class="line">pd.DataFrame(history.history).plot()</span><br><span class="line">plt.grid(<span class="literal">True</span>)</span><br><span class="line">plt.show()</span><br><span class="line"></span><br><span class="line"><span class="comment"># 在测试集上评估模型</span></span><br><span class="line">model_with_nesterov_momentum.evaluate(x_test, y_test)</span><br></pre></td></tr></table></figure>
+<p><img src="/2022/01/19/%E5%90%84%E7%A7%8D%E4%BC%98%E5%8C%96%E5%99%A8%E4%B9%8B%E9%97%B4%E7%9A%84%E5%AF%B9%E6%AF%94/output_20_0.png" alt="png"></p>
+<pre><code>313/313 [==============================] - 1s 4ms/step - loss: 0.3359 - accuracy: 0.8837
+
+[0.3358677625656128, 0.8837000131607056]
+</code></pre><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">keras.backend.clear_session()</span><br><span class="line">tf.random.set_seed(<span class="number">42</span>)</span><br><span class="line">np.random.seed(<span class="number">42</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 定义优化器, 生成模型, 训练模型</span></span><br><span class="line">nesterov_momentum = keras.optimizers.SGD(learning_rate=<span class="number">0.009</span>, momentum=<span class="number">0.9</span>, nesterov=<span class="literal">True</span>)</span><br><span class="line">model_with_nesterov_momentum = build_model(nesterov_momentum)</span><br><span class="line">history = train_model(model_with_nesterov_momentum)</span><br></pre></td></tr></table></figure>
+<pre><code>Epoch 1/100
+430/430 [==============================] - 10s 19ms/step - loss: 0.4669 - accuracy: 0.8332 - val_loss: 0.3616 - val_accuracy: 0.8674
+Epoch 2/100
+430/430 [==============================] - 6s 14ms/step - loss: 0.3346 - accuracy: 0.8781 - val_loss: 0.3282 - val_accuracy: 0.8820
+Epoch 3/100
+430/430 [==============================] - 7s 16ms/step - loss: 0.2964 - accuracy: 0.8901 - val_loss: 0.3420 - val_accuracy: 0.8800
+Epoch 4/100
+430/430 [==============================] - 7s 16ms/step - loss: 0.2682 - accuracy: 0.9017 - val_loss: 0.3156 - val_accuracy: 0.8828
+Epoch 5/100
+430/430 [==============================] - 9s 21ms/step - loss: 0.2442 - accuracy: 0.9083 - val_loss: 0.2981 - val_accuracy: 0.8892
+Epoch 6/100
+430/430 [==============================] - 6s 14ms/step - loss: 0.2266 - accuracy: 0.9159 - val_loss: 0.3098 - val_accuracy: 0.8854
+Epoch 7/100
+430/430 [==============================] - 7s 17ms/step - loss: 0.2102 - accuracy: 0.9207 - val_loss: 0.3190 - val_accuracy: 0.8914
+Epoch 8/100
+430/430 [==============================] - 8s 18ms/step - loss: 0.1951 - accuracy: 0.9265 - val_loss: 0.3074 - val_accuracy: 0.8900
+Epoch 9/100
+430/430 [==============================] - 6s 15ms/step - loss: 0.1807 - accuracy: 0.9332 - val_loss: 0.3180 - val_accuracy: 0.8928
+Epoch 10/100
+430/430 [==============================] - 9s 20ms/step - loss: 0.1696 - accuracy: 0.9360 - val_loss: 0.3292 - val_accuracy: 0.8926
+</code></pre><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 绘制学习曲线</span></span><br><span class="line">pd.DataFrame(history.history).plot()</span><br><span class="line">plt.grid(<span class="literal">True</span>)</span><br><span class="line">plt.show()</span><br><span class="line"></span><br><span class="line"><span class="comment"># 在测试集上评估模型</span></span><br><span class="line">model_with_nesterov_momentum.evaluate(x_test, y_test)</span><br></pre></td></tr></table></figure>
+<p><img src="/2022/01/19/%E5%90%84%E7%A7%8D%E4%BC%98%E5%8C%96%E5%99%A8%E4%B9%8B%E9%97%B4%E7%9A%84%E5%AF%B9%E6%AF%94/output_22_0.png" alt="png"></p>
+<pre><code>313/313 [==============================] - 2s 5ms/step - loss: 0.3270 - accuracy: 0.8803
+
+[0.3269873261451721, 0.880299985408783]
+</code></pre><h1 id="RMSprop"><a href="#RMSprop" class="headerlink" title="RMSprop"></a>RMSprop</h1><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">keras.backend.clear_session()</span><br><span class="line">tf.random.set_seed(<span class="number">42</span>)</span><br><span class="line">np.random.seed(<span class="number">42</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 定义优化器, 生成模型, 训练模型</span></span><br><span class="line">rmsprop = keras.optimizers.RMSprop(learning_rate=<span class="number">0.001</span>)</span><br><span class="line">model_with_rmsprop = build_model(rmsprop)</span><br><span class="line">history = train_model(model_with_rmsprop)</span><br></pre></td></tr></table></figure>
+<pre><code>Epoch 1/100
+430/430 [==============================] - 11s 20ms/step - loss: 0.4623 - accuracy: 0.8330 - val_loss: 0.3530 - val_accuracy: 0.8734
+Epoch 2/100
+430/430 [==============================] - 8s 19ms/step - loss: 0.3422 - accuracy: 0.8730 - val_loss: 0.3366 - val_accuracy: 0.8786
+Epoch 3/100
+430/430 [==============================] - 9s 20ms/step - loss: 0.3019 - accuracy: 0.8869 - val_loss: 0.3575 - val_accuracy: 0.8690
+Epoch 4/100
+430/430 [==============================] - 9s 20ms/step - loss: 0.2734 - accuracy: 0.8982 - val_loss: 0.3104 - val_accuracy: 0.8848
+Epoch 5/100
+430/430 [==============================] - 9s 20ms/step - loss: 0.2479 - accuracy: 0.9058 - val_loss: 0.2948 - val_accuracy: 0.8924
+Epoch 6/100
+430/430 [==============================] - 9s 20ms/step - loss: 0.2303 - accuracy: 0.9139 - val_loss: 0.3111 - val_accuracy: 0.8890
+Epoch 7/100
+430/430 [==============================] - 9s 21ms/step - loss: 0.2133 - accuracy: 0.9207 - val_loss: 0.3307 - val_accuracy: 0.8870
+Epoch 8/100
+430/430 [==============================] - 9s 20ms/step - loss: 0.1970 - accuracy: 0.9259 - val_loss: 0.3165 - val_accuracy: 0.8876
+Epoch 9/100
+430/430 [==============================] - 9s 20ms/step - loss: 0.1806 - accuracy: 0.9318 - val_loss: 0.3165 - val_accuracy: 0.8942
+Epoch 10/100
+430/430 [==============================] - 8s 19ms/step - loss: 0.1691 - accuracy: 0.9363 - val_loss: 0.3131 - val_accuracy: 0.9012
+</code></pre><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 绘制学习曲线</span></span><br><span class="line">pd.DataFrame(history.history).plot()</span><br><span class="line">plt.grid(<span class="literal">True</span>)</span><br><span class="line">plt.show()</span><br><span class="line"></span><br><span class="line"><span class="comment"># 在测试集上评估模型</span></span><br><span class="line">model_with_rmsprop.evaluate(x_test, y_test)</span><br></pre></td></tr></table></figure>
+<p><img src="/2022/01/19/%E5%90%84%E7%A7%8D%E4%BC%98%E5%8C%96%E5%99%A8%E4%B9%8B%E9%97%B4%E7%9A%84%E5%AF%B9%E6%AF%94/output_25_0.png" alt="png"></p>
+<pre><code>313/313 [==============================] - 2s 5ms/step - loss: 0.3321 - accuracy: 0.8803
+
+[0.332133412361145, 0.880299985408783]
+</code></pre><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">keras.backend.clear_session()</span><br><span class="line">tf.random.set_seed(<span class="number">42</span>)</span><br><span class="line">np.random.seed(<span class="number">42</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 定义优化器, 生成模型, 训练模型</span></span><br><span class="line">rmsprop = keras.optimizers.RMSprop(learning_rate=<span class="number">0.003</span>)</span><br><span class="line">model_with_rmsprop = build_model(rmsprop)</span><br><span class="line">history = train_model(model_with_rmsprop)</span><br></pre></td></tr></table></figure>
+<pre><code>Epoch 1/100
+430/430 [==============================] - 10s 20ms/step - loss: 0.5125 - accuracy: 0.8139 - val_loss: 0.4109 - val_accuracy: 0.8638 - loss:
+Epoch 2/100
+430/430 [==============================] - 8s 19ms/step - loss: 0.3701 - accuracy: 0.8647 - val_loss: 0.3595 - val_accuracy: 0.8742
+Epoch 3/100
+430/430 [==============================] - 8s 20ms/step - loss: 0.3252 - accuracy: 0.8812 - val_loss: 0.3858 - val_accuracy: 0.8660
+Epoch 4/100
+430/430 [==============================] - 9s 20ms/step - loss: 0.2951 - accuracy: 0.8920 - val_loss: 0.3519 - val_accuracy: 0.8740
+Epoch 5/100
+430/430 [==============================] - 8s 19ms/step - loss: 0.2694 - accuracy: 0.9001 - val_loss: 0.3025 - val_accuracy: 0.8908
+Epoch 6/100
+430/430 [==============================] - 9s 20ms/step - loss: 0.2508 - accuracy: 0.9078 - val_loss: 0.3159 - val_accuracy: 0.8904
+Epoch 7/100
+430/430 [==============================] - 9s 20ms/step - loss: 0.2349 - accuracy: 0.9139 - val_loss: 0.3265 - val_accuracy: 0.8846
+Epoch 8/100
+430/430 [==============================] - 8s 19ms/step - loss: 0.2176 - accuracy: 0.9212 - val_loss: 0.3428 - val_accuracy: 0.8858
+Epoch 9/100
+430/430 [==============================] - 8s 19ms/step - loss: 0.2043 - accuracy: 0.9249 - val_loss: 0.3161 - val_accuracy: 0.8964
+Epoch 10/100
+430/430 [==============================] - 8s 19ms/step - loss: 0.1905 - accuracy: 0.9296 - val_loss: 0.3248 - val_accuracy: 0.8964
+</code></pre><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 绘制学习曲线</span></span><br><span class="line">pd.DataFrame(history.history).plot()</span><br><span class="line">plt.grid(<span class="literal">True</span>)</span><br><span class="line">plt.show()</span><br><span class="line"></span><br><span class="line"><span class="comment"># 在测试集上评估模型</span></span><br><span class="line">model_with_rmsprop.evaluate(x_test, y_test)</span><br></pre></td></tr></table></figure>
+<p><img src="/2022/01/19/%E5%90%84%E7%A7%8D%E4%BC%98%E5%8C%96%E5%99%A8%E4%B9%8B%E9%97%B4%E7%9A%84%E5%AF%B9%E6%AF%94/output_27_0.png" alt="png"></p>
+<pre><code>313/313 [==============================] - 1s 4ms/step - loss: 0.3396 - accuracy: 0.8794
+
+[0.33956459164619446, 0.8794000148773193]
+</code></pre><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">keras.backend.clear_session()</span><br><span class="line">tf.random.set_seed(<span class="number">42</span>)</span><br><span class="line">np.random.seed(<span class="number">42</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 定义优化器, 生成模型, 训练模型</span></span><br><span class="line">rmsprop = keras.optimizers.RMSprop(learning_rate=<span class="number">0.009</span>)</span><br><span class="line">model_with_rmsprop = build_model(rmsprop)</span><br><span class="line">history = train_model(model_with_rmsprop)</span><br></pre></td></tr></table></figure>
+<pre><code>Epoch 1/100
+430/430 [==============================] - 10s 20ms/step - loss: 0.5813 - accuracy: 0.7944 - val_loss: 0.4772 - val_accuracy: 0.8612
+Epoch 2/100
+430/430 [==============================] - 9s 20ms/step - loss: 0.3879 - accuracy: 0.8614 - val_loss: 0.4010 - val_accuracy: 0.8702
+Epoch 3/100
+430/430 [==============================] - 9s 20ms/step - loss: 0.3422 - accuracy: 0.8759 - val_loss: 0.4354 - val_accuracy: 0.8574
+Epoch 4/100
+430/430 [==============================] - 8s 19ms/step - loss: 0.3121 - accuracy: 0.8870 - val_loss: 0.3847 - val_accuracy: 0.8690
+Epoch 5/100
+430/430 [==============================] - 8s 19ms/step - loss: 0.2860 - accuracy: 0.8958 - val_loss: 0.3343 - val_accuracy: 0.8824
+Epoch 6/100
+430/430 [==============================] - 8s 19ms/step - loss: 0.2694 - accuracy: 0.9021 - val_loss: 0.3159 - val_accuracy: 0.8862
+Epoch 7/100
+430/430 [==============================] - 8s 19ms/step - loss: 0.2546 - accuracy: 0.9061 - val_loss: 0.3193 - val_accuracy: 0.8884
+Epoch 8/100
+430/430 [==============================] - 8s 20ms/step - loss: 0.2413 - accuracy: 0.9114 - val_loss: 0.3222 - val_accuracy: 0.8860
+Epoch 9/100
+430/430 [==============================] - 8s 19ms/step - loss: 0.2282 - accuracy: 0.9165 - val_loss: 0.3308 - val_accuracy: 0.8856
+Epoch 10/100
+430/430 [==============================] - 8s 19ms/step - loss: 0.2149 - accuracy: 0.9213 - val_loss: 0.3389 - val_accuracy: 0.8920
+Epoch 11/100
+430/430 [==============================] - 9s 20ms/step - loss: 0.2079 - accuracy: 0.9230 - val_loss: 0.3290 - val_accuracy: 0.8928
+</code></pre><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 绘制学习曲线</span></span><br><span class="line">pd.DataFrame(history.history).plot()</span><br><span class="line">plt.grid(<span class="literal">True</span>)</span><br><span class="line">plt.show()</span><br><span class="line"></span><br><span class="line"><span class="comment"># 在测试集上评估模型</span></span><br><span class="line">model_with_rmsprop.evaluate(x_test, y_test)</span><br></pre></td></tr></table></figure>
+<p><img src="/2022/01/19/%E5%90%84%E7%A7%8D%E4%BC%98%E5%8C%96%E5%99%A8%E4%B9%8B%E9%97%B4%E7%9A%84%E5%AF%B9%E6%AF%94/output_29_0.png" alt="png"></p>
+<pre><code>313/313 [==============================] - 1s 4ms/step - loss: 0.3519 - accuracy: 0.8817
+
+[0.3518962860107422, 0.8816999793052673]
+</code></pre><h1 id="Adam"><a href="#Adam" class="headerlink" title="Adam"></a>Adam</h1><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">keras.backend.clear_session()</span><br><span class="line">tf.random.set_seed(<span class="number">42</span>)</span><br><span class="line">np.random.seed(<span class="number">42</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 定义优化器, 生成模型, 训练模型</span></span><br><span class="line">adam = keras.optimizers.Adam(learning_rate=<span class="number">0.001</span>)</span><br><span class="line">model_with_adam = build_model(adam)</span><br><span class="line">history = train_model(model_with_adam)</span><br></pre></td></tr></table></figure>
+<pre><code>Epoch 1/100
+430/430 [==============================] - 7s 14ms/step - loss: 0.4501 - accuracy: 0.8382 - val_loss: 0.3560 - val_accuracy: 0.8696
+Epoch 2/100
+430/430 [==============================] - 6s 14ms/step - loss: 0.3363 - accuracy: 0.8768 - val_loss: 0.3209 - val_accuracy: 0.8856
+Epoch 3/100
+430/430 [==============================] - 6s 15ms/step - loss: 0.2979 - accuracy: 0.8889 - val_loss: 0.3466 - val_accuracy: 0.8708
+Epoch 4/100
+430/430 [==============================] - 6s 15ms/step - loss: 0.2736 - accuracy: 0.8976 - val_loss: 0.3208 - val_accuracy: 0.8808
+Epoch 5/100
+430/430 [==============================] - 6s 14ms/step - loss: 0.2500 - accuracy: 0.9059 - val_loss: 0.2769 - val_accuracy: 0.8962
+Epoch 6/100
+430/430 [==============================] - 6s 14ms/step - loss: 0.2352 - accuracy: 0.9120 - val_loss: 0.2921 - val_accuracy: 0.8916
+Epoch 7/100
+430/430 [==============================] - 6s 14ms/step - loss: 0.2159 - accuracy: 0.9192 - val_loss: 0.3060 - val_accuracy: 0.8930
+Epoch 8/100
+430/430 [==============================] - 6s 14ms/step - loss: 0.2000 - accuracy: 0.9256 - val_loss: 0.3018 - val_accuracy: 0.8926
+Epoch 9/100
+430/430 [==============================] - 6s 14ms/step - loss: 0.1862 - accuracy: 0.9296 - val_loss: 0.2977 - val_accuracy: 0.8950
+Epoch 10/100
+430/430 [==============================] - 6s 14ms/step - loss: 0.1744 - accuracy: 0.9339 - val_loss: 0.3132 - val_accuracy: 0.8966
+</code></pre><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 绘制学习曲线</span></span><br><span class="line">pd.DataFrame(history.history).plot()</span><br><span class="line">plt.grid(<span class="literal">True</span>)</span><br><span class="line">plt.show()</span><br><span class="line"></span><br><span class="line"><span class="comment"># 在测试集上评估模型</span></span><br><span class="line">model_with_adam.evaluate(x_test, y_test)</span><br></pre></td></tr></table></figure>
+<p><img src="/2022/01/19/%E5%90%84%E7%A7%8D%E4%BC%98%E5%8C%96%E5%99%A8%E4%B9%8B%E9%97%B4%E7%9A%84%E5%AF%B9%E6%AF%94/output_32_0.png" alt="png"></p>
+<pre><code>313/313 [==============================] - 1s 5ms/step - loss: 0.3160 - accuracy: 0.8846
+
+[0.31602275371551514, 0.8845999836921692]
+</code></pre><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">keras.backend.clear_session()</span><br><span class="line">tf.random.set_seed(<span class="number">42</span>)</span><br><span class="line">np.random.seed(<span class="number">42</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 定义优化器, 生成模型, 训练模型</span></span><br><span class="line">adam = keras.optimizers.Adam(learning_rate=<span class="number">0.003</span>)</span><br><span class="line">model_with_adam = build_model(adam)</span><br><span class="line">history = train_model(model_with_adam)</span><br></pre></td></tr></table></figure>
+<pre><code>Epoch 1/100
+430/430 [==============================] - 7s 14ms/step - loss: 0.4631 - accuracy: 0.8328 - val_loss: 0.3626 - val_accuracy: 0.8640
+Epoch 2/100
+430/430 [==============================] - 6s 14ms/step - loss: 0.3586 - accuracy: 0.8675 - val_loss: 0.3419 - val_accuracy: 0.8762
+Epoch 3/100
+430/430 [==============================] - 6s 14ms/step - loss: 0.3208 - accuracy: 0.8804 - val_loss: 0.3707 - val_accuracy: 0.8658
+Epoch 4/100
+430/430 [==============================] - 6s 15ms/step - loss: 0.2975 - accuracy: 0.8901 - val_loss: 0.3285 - val_accuracy: 0.8802
+Epoch 5/100
+430/430 [==============================] - 6s 14ms/step - loss: 0.2699 - accuracy: 0.8980 - val_loss: 0.2971 - val_accuracy: 0.8898
+Epoch 6/100
+430/430 [==============================] - 6s 14ms/step - loss: 0.2563 - accuracy: 0.9045 - val_loss: 0.3174 - val_accuracy: 0.8864
+Epoch 7/100
+430/430 [==============================] - 6s 14ms/step - loss: 0.2437 - accuracy: 0.9086 - val_loss: 0.3319 - val_accuracy: 0.8888
+Epoch 8/100
+430/430 [==============================] - 6s 14ms/step - loss: 0.2282 - accuracy: 0.9155 - val_loss: 0.2966 - val_accuracy: 0.8944
+Epoch 9/100
+430/430 [==============================] - 6s 14ms/step - loss: 0.2144 - accuracy: 0.9193 - val_loss: 0.3209 - val_accuracy: 0.8946
+Epoch 10/100
+430/430 [==============================] - 6s 14ms/step - loss: 0.2017 - accuracy: 0.9242 - val_loss: 0.3258 - val_accuracy: 0.8946
+Epoch 11/100
+430/430 [==============================] - 6s 14ms/step - loss: 0.1937 - accuracy: 0.9283 - val_loss: 0.3211 - val_accuracy: 0.8926
+Epoch 12/100
+430/430 [==============================] - 6s 14ms/step - loss: 0.1821 - accuracy: 0.9323 - val_loss: 0.3170 - val_accuracy: 0.8936
+Epoch 13/100
+430/430 [==============================] - 6s 14ms/step - loss: 0.1746 - accuracy: 0.9346 - val_loss: 0.3107 - val_accuracy: 0.9008
+</code></pre><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 绘制学习曲线</span></span><br><span class="line">pd.DataFrame(history.history).plot()</span><br><span class="line">plt.grid(<span class="literal">True</span>)</span><br><span class="line">plt.show()</span><br><span class="line"></span><br><span class="line"><span class="comment"># 在测试集上评估模型</span></span><br><span class="line">model_with_adam.evaluate(x_test, y_test)</span><br></pre></td></tr></table></figure>
+<p><img src="/2022/01/19/%E5%90%84%E7%A7%8D%E4%BC%98%E5%8C%96%E5%99%A8%E4%B9%8B%E9%97%B4%E7%9A%84%E5%AF%B9%E6%AF%94/output_34_0.png" alt="png"></p>
+<pre><code>313/313 [==============================] - 1s 5ms/step - loss: 0.3377 - accuracy: 0.8778
+
+[0.33767154812812805, 0.8777999877929688]
+</code></pre><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">keras.backend.clear_session()</span><br><span class="line">tf.random.set_seed(<span class="number">42</span>)</span><br><span class="line">np.random.seed(<span class="number">42</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 定义优化器, 生成模型, 训练模型</span></span><br><span class="line">adam = keras.optimizers.Adam(learning_rate=<span class="number">0.009</span>)</span><br><span class="line">model_with_adam = build_model(adam)</span><br><span class="line">history = train_model(model_with_adam)</span><br></pre></td></tr></table></figure>
+<pre><code>Epoch 1/100
+430/430 [==============================] - 7s 14ms/step - loss: 0.4959 - accuracy: 0.8225 - val_loss: 0.4709 - val_accuracy: 0.8394
+Epoch 2/100
+430/430 [==============================] - 6s 14ms/step - loss: 0.3831 - accuracy: 0.8603 - val_loss: 0.3787 - val_accuracy: 0.8720
+Epoch 3/100
+430/430 [==============================] - 6s 14ms/step - loss: 0.3473 - accuracy: 0.8739 - val_loss: 0.4398 - val_accuracy: 0.8482
+Epoch 4/100
+430/430 [==============================] - 6s 13ms/step - loss: 0.3249 - accuracy: 0.8811 - val_loss: 0.3315 - val_accuracy: 0.8800
+Epoch 5/100
+430/430 [==============================] - 6s 14ms/step - loss: 0.2948 - accuracy: 0.8922 - val_loss: 0.3096 - val_accuracy: 0.8852
+Epoch 6/100
+430/430 [==============================] - 7s 16ms/step - loss: 0.2874 - accuracy: 0.8955 - val_loss: 0.3054 - val_accuracy: 0.8894
+Epoch 7/100
+430/430 [==============================] - 7s 15ms/step - loss: 0.2701 - accuracy: 0.9006 - val_loss: 0.3290 - val_accuracy: 0.8862
+Epoch 8/100
+430/430 [==============================] - 7s 15ms/step - loss: 0.2578 - accuracy: 0.9050 - val_loss: 0.2897 - val_accuracy: 0.8884
+Epoch 9/100
+430/430 [==============================] - 6s 14ms/step - loss: 0.2432 - accuracy: 0.9101 - val_loss: 0.3229 - val_accuracy: 0.8896
+Epoch 10/100
+430/430 [==============================] - 6s 14ms/step - loss: 0.2356 - accuracy: 0.9138 - val_loss: 0.3196 - val_accuracy: 0.8868
+Epoch 11/100
+430/430 [==============================] - 6s 14ms/step - loss: 0.2280 - accuracy: 0.9151 - val_loss: 0.3303 - val_accuracy: 0.8858
+Epoch 12/100
+430/430 [==============================] - 6s 14ms/step - loss: 0.2181 - accuracy: 0.9202 - val_loss: 0.3581 - val_accuracy: 0.8856
+Epoch 13/100
+430/430 [==============================] - 6s 14ms/step - loss: 0.2088 - accuracy: 0.9235 - val_loss: 0.3011 - val_accuracy: 0.9010
+</code></pre><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 绘制学习曲线</span></span><br><span class="line">pd.DataFrame(history.history).plot()</span><br><span class="line">plt.grid(<span class="literal">True</span>)</span><br><span class="line">plt.show()</span><br><span class="line"></span><br><span class="line"><span class="comment"># 在测试集上评估模型</span></span><br><span class="line">model_with_adam.evaluate(x_test, y_test)</span><br></pre></td></tr></table></figure>
+<p><img src="/2022/01/19/%E5%90%84%E7%A7%8D%E4%BC%98%E5%8C%96%E5%99%A8%E4%B9%8B%E9%97%B4%E7%9A%84%E5%AF%B9%E6%AF%94/output_36_0.png" alt="png"></p>
+<pre><code>313/313 [==============================] - 1s 4ms/step - loss: 0.3372 - accuracy: 0.8798
+
+[0.3372490406036377, 0.879800021648407]
+</code></pre><h1 id="Nadam"><a href="#Nadam" class="headerlink" title="Nadam"></a>Nadam</h1><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">keras.backend.clear_session()</span><br><span class="line">tf.random.set_seed(<span class="number">42</span>)</span><br><span class="line">np.random.seed(<span class="number">42</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 定义优化器, 生成模型, 训练模型</span></span><br><span class="line">nadam = keras.optimizers.Nadam(learning_rate=<span class="number">0.001</span>)</span><br><span class="line">model_with_nadam = build_model(nadam)</span><br><span class="line">history = train_model(model_with_nadam)</span><br></pre></td></tr></table></figure>
+<pre><code>Epoch 1/100
+430/430 [==============================] - 14s 27ms/step - loss: 0.4456 - accuracy: 0.8412 - val_loss: 0.3369 - val_accuracy: 0.8772
+Epoch 2/100
+430/430 [==============================] - 11s 27ms/step - loss: 0.3263 - accuracy: 0.8799 - val_loss: 0.3352 - val_accuracy: 0.8774oss: 0.3271 - accuracy: 0.87 - ETA: 0s - loss: 0
+Epoch 3/100
+430/430 [==============================] - 11s 26ms/step - loss: 0.2903 - accuracy: 0.8909 - val_loss: 0.3364 - val_accuracy: 0.8744
+Epoch 4/100
+430/430 [==============================] - 11s 25ms/step - loss: 0.2631 - accuracy: 0.9024 - val_loss: 0.3149 - val_accuracy: 0.8882
+Epoch 5/100
+430/430 [==============================] - 11s 26ms/step - loss: 0.2388 - accuracy: 0.9103 - val_loss: 0.2889 - val_accuracy: 0.8912
+Epoch 6/100
+430/430 [==============================] - 11s 26ms/step - loss: 0.2219 - accuracy: 0.9165 - val_loss: 0.3054 - val_accuracy: 0.8888
+Epoch 7/100
+430/430 [==============================] - 11s 26ms/step - loss: 0.2070 - accuracy: 0.9219 - val_loss: 0.3177 - val_accuracy: 0.8852
+Epoch 8/100
+430/430 [==============================] - 11s 26ms/step - loss: 0.1913 - accuracy: 0.9279 - val_loss: 0.3169 - val_accuracy: 0.8878
+Epoch 9/100
+430/430 [==============================] - 11s 26ms/step - loss: 0.1759 - accuracy: 0.9336 - val_loss: 0.3141 - val_accuracy: 0.8952
+Epoch 10/100
+430/430 [==============================] - 11s 26ms/step - loss: 0.1635 - accuracy: 0.9376 - val_loss: 0.3068 - val_accuracy: 0.8994
+</code></pre><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 绘制学习曲线</span></span><br><span class="line">pd.DataFrame(history.history).plot()</span><br><span class="line">plt.grid(<span class="literal">True</span>)</span><br><span class="line">plt.show()</span><br><span class="line"></span><br><span class="line"><span class="comment"># 在测试集上评估模型</span></span><br><span class="line">model_with_nadam.evaluate(x_test, y_test)</span><br></pre></td></tr></table></figure>
+<p><img src="/2022/01/19/%E5%90%84%E7%A7%8D%E4%BC%98%E5%8C%96%E5%99%A8%E4%B9%8B%E9%97%B4%E7%9A%84%E5%AF%B9%E6%AF%94/output_39_0.png" alt="png"></p>
+<pre><code>313/313 [==============================] - 1s 5ms/step - loss: 0.3238 - accuracy: 0.8826
+
+[0.3237777650356293, 0.8826000094413757]
+</code></pre><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">keras.backend.clear_session()</span><br><span class="line">tf.random.set_seed(<span class="number">42</span>)</span><br><span class="line">np.random.seed(<span class="number">42</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 定义优化器, 生成模型, 训练模型</span></span><br><span class="line">nadam = keras.optimizers.Nadam(learning_rate=<span class="number">0.003</span>)</span><br><span class="line">model_with_nadam = build_model(nadam)</span><br><span class="line">history = train_model(model_with_nadam)</span><br></pre></td></tr></table></figure>
+<pre><code>Epoch 1/100
+430/430 [==============================] - 14s 27ms/step - loss: 0.4557 - accuracy: 0.8346 - val_loss: 0.3408 - val_accuracy: 0.8752
+Epoch 2/100
+430/430 [==============================] - 11s 26ms/step - loss: 0.3419 - accuracy: 0.8734 - val_loss: 0.3310 - val_accuracy: 0.8770
+Epoch 3/100
+430/430 [==============================] - 11s 26ms/step - loss: 0.3072 - accuracy: 0.8852 - val_loss: 0.3605 - val_accuracy: 0.8708
+Epoch 4/100
+430/430 [==============================] - 11s 26ms/step - loss: 0.2821 - accuracy: 0.8950 - val_loss: 0.3365 - val_accuracy: 0.8752
+Epoch 5/100
+430/430 [==============================] - 11s 26ms/step - loss: 0.2581 - accuracy: 0.9026 - val_loss: 0.2931 - val_accuracy: 0.8932
+Epoch 6/100
+430/430 [==============================] - 11s 26ms/step - loss: 0.2437 - accuracy: 0.9096 - val_loss: 0.3218 - val_accuracy: 0.8860
+Epoch 7/100
+430/430 [==============================] - 11s 25ms/step - loss: 0.2304 - accuracy: 0.9137 - val_loss: 0.3155 - val_accuracy: 0.8890
+Epoch 8/100
+430/430 [==============================] - 11s 26ms/step - loss: 0.2170 - accuracy: 0.9187 - val_loss: 0.3146 - val_accuracy: 0.8848
+Epoch 9/100
+430/430 [==============================] - 11s 26ms/step - loss: 0.2012 - accuracy: 0.9241 - val_loss: 0.3021 - val_accuracy: 0.8976
+Epoch 10/100
+430/430 [==============================] - 11s 26ms/step - loss: 0.1881 - accuracy: 0.9287 - val_loss: 0.3103 - val_accuracy: 0.8944
+</code></pre><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 绘制学习曲线</span></span><br><span class="line">pd.DataFrame(history.history).plot()</span><br><span class="line">plt.grid(<span class="literal">True</span>)</span><br><span class="line">plt.show()</span><br><span class="line"></span><br><span class="line"><span class="comment"># 在测试集上评估模型</span></span><br><span class="line">model_with_nadam.evaluate(x_test, y_test)</span><br></pre></td></tr></table></figure>
+<p><img src="/2022/01/19/%E5%90%84%E7%A7%8D%E4%BC%98%E5%8C%96%E5%99%A8%E4%B9%8B%E9%97%B4%E7%9A%84%E5%AF%B9%E6%AF%94/output_41_0.png" alt="png"></p>
+<pre><code>313/313 [==============================] - 1s 5ms/step - loss: 0.3319 - accuracy: 0.8797
+
+[0.3318653404712677, 0.8797000050544739]
+</code></pre><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">keras.backend.clear_session()</span><br><span class="line">tf.random.set_seed(<span class="number">42</span>)</span><br><span class="line">np.random.seed(<span class="number">42</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 定义优化器, 生成模型, 训练模型</span></span><br><span class="line">nadam = keras.optimizers.Nadam(learning_rate=<span class="number">0.009</span>)</span><br><span class="line">model_with_nadam = build_model(nadam)</span><br><span class="line">history = train_model(model_with_nadam)</span><br></pre></td></tr></table></figure>
+<pre><code>Epoch 1/100
+430/430 [==============================] - 13s 25ms/step - loss: 0.4911 - accuracy: 0.8221 - val_loss: 0.3915 - val_accuracy: 0.8698
+Epoch 2/100
+430/430 [==============================] - 11s 26ms/step - loss: 0.3658 - accuracy: 0.8668 - val_loss: 0.3957 - val_accuracy: 0.8624
+Epoch 3/100
+430/430 [==============================] - 11s 25ms/step - loss: 0.3326 - accuracy: 0.8770 - val_loss: 0.4334 - val_accuracy: 0.8420
+Epoch 4/100
+430/430 [==============================] - 11s 26ms/step - loss: 0.3062 - accuracy: 0.8876 - val_loss: 0.3499 - val_accuracy: 0.8732
+Epoch 5/100
+430/430 [==============================] - 11s 25ms/step - loss: 0.2841 - accuracy: 0.8940 - val_loss: 0.3356 - val_accuracy: 0.87380 - accuracy: 0.89
+Epoch 6/100
+430/430 [==============================] - 11s 26ms/step - loss: 0.2701 - accuracy: 0.8994 - val_loss: 0.3503 - val_accuracy: 0.8818
+Epoch 7/100
+430/430 [==============================] - 11s 26ms/step - loss: 0.2602 - accuracy: 0.9035 - val_loss: 0.3306 - val_accuracy: 0.8786
+Epoch 8/100
+430/430 [==============================] - 11s 26ms/step - loss: 0.2445 - accuracy: 0.9097 - val_loss: 0.3197 - val_accuracy: 0.8818
+Epoch 9/100
+430/430 [==============================] - 11s 25ms/step - loss: 0.2328 - accuracy: 0.9140 - val_loss: 0.3531 - val_accuracy: 0.8774
+Epoch 10/100
+430/430 [==============================] - 11s 25ms/step - loss: 0.2213 - accuracy: 0.9181 - val_loss: 0.3308 - val_accuracy: 0.8920
+Epoch 11/100
+430/430 [==============================] - 11s 25ms/step - loss: 0.2129 - accuracy: 0.9201 - val_loss: 0.3762 - val_accuracy: 0.8728
+Epoch 12/100
+430/430 [==============================] - 11s 25ms/step - loss: 0.2044 - accuracy: 0.9247 - val_loss: 0.3339 - val_accuracy: 0.8828
+Epoch 13/100
+430/430 [==============================] - 11s 25ms/step - loss: 0.1946 - accuracy: 0.9283 - val_loss: 0.3053 - val_accuracy: 0.8970
+Epoch 14/100
+430/430 [==============================] - 11s 25ms/step - loss: 0.1893 - accuracy: 0.9296 - val_loss: 0.3219 - val_accuracy: 0.8908
+Epoch 15/100
+430/430 [==============================] - 11s 25ms/step - loss: 0.1775 - accuracy: 0.9345 - val_loss: 0.3630 - val_accuracy: 0.8820
+Epoch 16/100
+430/430 [==============================] - 11s 24ms/step - loss: 0.1723 - accuracy: 0.9365 - val_loss: 0.3538 - val_accuracy: 0.8884
+Epoch 17/100
+430/430 [==============================] - 11s 25ms/step - loss: 0.1613 - accuracy: 0.9408 - val_loss: 0.3284 - val_accuracy: 0.8988TA: 3s - -
+Epoch 18/100
+430/430 [==============================] - 11s 25ms/step - loss: 0.1573 - accuracy: 0.9410 - val_loss: 0.3598 - val_accuracy: 0.8862
+</code></pre><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 绘制学习曲线</span></span><br><span class="line">pd.DataFrame(history.history).plot()</span><br><span class="line">plt.grid(<span class="literal">True</span>)</span><br><span class="line">plt.show()</span><br><span class="line"></span><br><span class="line"><span class="comment"># 在测试集上评估模型</span></span><br><span class="line">model_with_nadam.evaluate(x_test, y_test)</span><br></pre></td></tr></table></figure>
+<p><img src="/2022/01/19/%E5%90%84%E7%A7%8D%E4%BC%98%E5%8C%96%E5%99%A8%E4%B9%8B%E9%97%B4%E7%9A%84%E5%AF%B9%E6%AF%94/output_43_0.png" alt="png"></p>
+<pre><code>313/313 [==============================] - 1s 4ms/step - loss: 0.3452 - accuracy: 0.8880
+
+[0.34519216418266296, 0.8880000114440918]
+</code></pre><h1 id="结论"><a href="#结论" class="headerlink" title="结论"></a>结论</h1><div class="table-container">
+<table>
+<thead>
+<tr>
+<th>Optimizer</th>
+<th>Learning Rate</th>
+<th>Training speed</th>
+<th>Convergence speed</th>
+<th>Evaluation on x_test</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Momentum</td>
+<td>0.001</td>
+<td>6s/epoch</td>
+<td>13 epochs</td>
+<td>accuracy=0.8763</td>
+</tr>
+<tr>
+<td>Momentum</td>
+<td>0.003</td>
+<td>6s/epoch</td>
+<td>9 epochs</td>
+<td>accuracy=0.8836</td>
+</tr>
+<tr>
+<td>Momentum</td>
+<td>0.009</td>
+<td>6s/epoch</td>
+<td>8 epochs</td>
+<td>accuracy=0.8851</td>
+</tr>
+<tr>
+<td>Nesterov Momentum</td>
+<td>0.001</td>
+<td>7s/epoch</td>
+<td>13 epochs</td>
+<td>accuracy=0.8767</td>
+</tr>
+<tr>
+<td>Nesterov Momentum</td>
+<td>0.003</td>
+<td>7s/epoch</td>
+<td>9 epochs</td>
+<td>accuracy=0.8837</td>
+</tr>
+<tr>
+<td>Nesterov Momentum</td>
+<td>0.009</td>
+<td>7s/epoch</td>
+<td>5 epochs</td>
+<td>accuracy=0.8803</td>
+</tr>
+<tr>
+<td>RMSprop</td>
+<td>0.001</td>
+<td>9s/epoch</td>
+<td>5 epochs</td>
+<td>accuracy=0.8803</td>
+</tr>
+<tr>
+<td>RMSprop</td>
+<td>0.003</td>
+<td>9s/epoch</td>
+<td>5 epochs</td>
+<td>accuracy=0.8794</td>
+</tr>
+<tr>
+<td>RMSprop</td>
+<td>0.009</td>
+<td>9s/epoch</td>
+<td>6 epochs</td>
+<td>accuracy=0.8817</td>
+</tr>
+<tr>
+<td>Adam</td>
+<td>0.001</td>
+<td>6s/epoch</td>
+<td>5 epochs</td>
+<td>accuracy=0.8846</td>
+</tr>
+<tr>
+<td>Adam</td>
+<td>0.003</td>
+<td>6s/epoch</td>
+<td>8 epochs</td>
+<td>accuracy=0.8778</td>
+</tr>
+<tr>
+<td>Adam</td>
+<td>0.009</td>
+<td>6s/epoch</td>
+<td>8 epochs</td>
+<td>accuracy=0.8798</td>
+</tr>
+<tr>
+<td>Nadam</td>
+<td>0.001</td>
+<td>11s/epoch</td>
+<td>5 epochs</td>
+<td>accuracy=0.8826</td>
+</tr>
+<tr>
+<td>Nadam</td>
+<td>0.003</td>
+<td>11s/epoch</td>
+<td>5 epochs</td>
+<td>accuracy=0.8797</td>
+</tr>
+<tr>
+<td>Nadam</td>
+<td>0.009</td>
+<td>11s/epoch</td>
+<td>13 epochs</td>
+<td>accuracy=0.8880</td>
+</tr>
+</tbody>
+</table>
+</div>
+<ol>
+<li>Momentum 和 Nesterov Momentum 在训练速度和模型性能上相差不多, 在选取了<strong>恰当的学习率</strong>时, Nesterov Momentum <strong>收敛很快</strong>.</li>
+<li>RMSprop 在训练速度上稍微慢于 Nesterov Momentum, 但<strong>收敛速度很快</strong>, 模型性能也不错.</li>
+<li>Adam 的训练速度和收敛速度都不错, 模型性能也不赖.</li>
+<li>Nadam 的<strong>训练速度明显慢于其他优化器</strong>, 但在<strong>恰当的学习率下, 收敛速度很快</strong>, 模型性能也不错.   </li>
+</ol>
+<p>🐒 可以改进的点: 或许针对不同优化器, 应该通过搜索超参数空间选取最佳学习率, 再比较各优化器的性能差异.</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Machine-Learning/" rel="tag"># Machine Learning</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2022/01/19/Batch-Normalization-Layer-or-Self-Normalization-Network/" rel="prev" title="Batch Normalization Layer or Self-Normalization Network">
+                  <i class="fa fa-chevron-left"></i> Batch Normalization Layer or Self-Normalization Network
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2022/01/19/%E5%90%84%E7%A7%8D%E5%AD%A6%E4%B9%A0%E7%8E%87%E8%B0%83%E5%BA%A6%E4%B9%8B%E9%97%B4%E7%9A%84%E5%AF%B9%E6%AF%94/" rel="next" title="各种学习率调度之间的对比">
+                  各种学习率调度之间的对比 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 2021 – 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Gozen Sanji</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+<script src="https://cdn.jsdelivr.net/npm/hexo-generator-searchdb@1.4.0/dist/search.js" integrity="sha256-vXZMYLEqsROAXkEw93GGIvaB2ab+QW6w3+1ahD9nXXA=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdn.jsdelivr.net/npm/mathjax@3.2.0/es5/tex-mml-chtml.js","integrity":"sha256-r+3itOMtGGjap0x+10hu6jW/gZCzxHsoKrOd7gyRSGY="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+
+</body>
+</html>

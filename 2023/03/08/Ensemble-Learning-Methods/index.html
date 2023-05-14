@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.0.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.4/css/all.min.css" integrity="sha256-mUZM63G8m73Mcidfrv5E+Y61y7a12O5mW4ezU3bxqW4=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.9.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":true,"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+<meta name="description" content="Ensemble Learning Methods">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Ensemble Learning Methods">
+<meta property="og:url" content="http://example.com/2023/03/08/Ensemble-Learning-Methods/index.html">
+<meta property="og:site_name" content="Jay&#39;s Blog">
+<meta property="og:description" content="Ensemble Learning Methods">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://example.com/2023/03/08/Ensemble-Learning-Methods/Ensemble%20Learning%20and%20Random%20Forests.jpg">
+<meta property="og:image" content="http://example.com/2023/03/08/Ensemble-Learning-Methods/Fig7-2.png">
+<meta property="og:image" content="http://example.com/2023/03/08/Ensemble-Learning-Methods/output_8_0.png">
+<meta property="og:image" content="http://example.com/2023/03/08/Ensemble-Learning-Methods/Fig7-4.png">
+<meta property="og:image" content="http://example.com/2023/03/08/Ensemble-Learning-Methods/Fig7-7.png">
+<meta property="og:image" content="http://example.com/2023/03/08/Ensemble-Learning-Methods/Fig7-8.png">
+<meta property="og:image" content="http://example.com/2023/03/08/Ensemble-Learning-Methods/Fig7-9.png">
+<meta property="og:image" content="http://example.com/2023/03/08/Ensemble-Learning-Methods/Fig7-10.png">
+<meta property="og:image" content="http://example.com/2023/03/08/Ensemble-Learning-Methods/Fig7-12.png">
+<meta property="og:image" content="http://example.com/2023/03/08/Ensemble-Learning-Methods/Fig7-13.png">
+<meta property="og:image" content="http://example.com/2023/03/08/Ensemble-Learning-Methods/Fig7-14.png">
+<meta property="og:image" content="http://example.com/2023/03/08/Ensemble-Learning-Methods/Fig7-15.png">
+<meta property="article:published_time" content="2023-03-08T13:12:49.000Z">
+<meta property="article:modified_time" content="2023-03-08T13:22:21.474Z">
+<meta property="article:author" content="Gozen Sanji">
+<meta property="article:tag" content="Machine Learning">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/2023/03/08/Ensemble-Learning-Methods/Ensemble%20Learning%20and%20Random%20Forests.jpg">
+
+
+<link rel="canonical" href="http://example.com/2023/03/08/Ensemble-Learning-Methods/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"en","comments":true,"permalink":"http://example.com/2023/03/08/Ensemble-Learning-Methods/","path":"2023/03/08/Ensemble-Learning-Methods/","title":"Ensemble Learning Methods"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>Ensemble Learning Methods | Jay's Blog</title>
+  
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Jay's Blog</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">🐬</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="user fa-fw"></i>About</a></li>
+        <li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="tags fa-fw"></i>Tags</a></li>
+        <li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="th fa-fw"></i>Categories</a></li>
+        <li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="archive fa-fw"></i>Archives</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>Search
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="Searching..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Voting-Classifiers"><span class="nav-number">1.</span> <span class="nav-text">Voting Classifiers</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Hard-Voting-Classifier"><span class="nav-number">1.1.</span> <span class="nav-text">Hard Voting Classifier</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Imports"><span class="nav-number">1.1.1.</span> <span class="nav-text">Imports</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Code-Example-1"><span class="nav-number">1.1.2.</span> <span class="nav-text">Code Example 1</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Soft-Voting-Classifier"><span class="nav-number">1.2.</span> <span class="nav-text">Soft Voting Classifier</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Code-Example-2"><span class="nav-number">1.2.1.</span> <span class="nav-text">Code Example 2</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Bagging-and-Pasting"><span class="nav-number">2.</span> <span class="nav-text">Bagging and Pasting</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Code-Example-3"><span class="nav-number">2.0.1.</span> <span class="nav-text">Code Example 3</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Out-of-Bag-Evaluation"><span class="nav-number">2.1.</span> <span class="nav-text">Out-of-Bag Evaluation</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Code-Example-4"><span class="nav-number">2.1.1.</span> <span class="nav-text">Code Example 4</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Random-Patches-and-Random-Subspaces"><span class="nav-number">2.2.</span> <span class="nav-text">Random Patches and Random Subspaces</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Random-Forests"><span class="nav-number">2.3.</span> <span class="nav-text">Random Forests</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Code-Example-5-amp-6"><span class="nav-number">2.3.1.</span> <span class="nav-text">Code Example 5 &amp; 6</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Extra-Trees"><span class="nav-number">2.4.</span> <span class="nav-text">Extra-Trees</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Feature-Importance"><span class="nav-number">2.5.</span> <span class="nav-text">Feature Importance</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Code-Example-7"><span class="nav-number">2.5.1.</span> <span class="nav-text">Code Example 7</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Boosting"><span class="nav-number">3.</span> <span class="nav-text">Boosting</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#AdaBoost"><span class="nav-number">3.1.</span> <span class="nav-text">AdaBoost</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Code-Example-8"><span class="nav-number">3.1.1.</span> <span class="nav-text">Code Example 8</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Gradient-Boosting"><span class="nav-number">3.2.</span> <span class="nav-text">Gradient Boosting</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Code-Example-9"><span class="nav-number">3.2.1.</span> <span class="nav-text">Code Example 9</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Code-Example-10"><span class="nav-number">3.2.2.</span> <span class="nav-text">Code Example 10</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Code-Example-11"><span class="nav-number">3.2.3.</span> <span class="nav-text">Code Example 11</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Code-Example-12"><span class="nav-number">3.2.4.</span> <span class="nav-text">Code Example 12</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Stacking"><span class="nav-number">4.</span> <span class="nav-text">Stacking</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Code-Example-13"><span class="nav-number">4.0.1.</span> <span class="nav-text">Code Example 13</span></a></li></ol></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Gozen Sanji"
+      src="/images/my_avatar.jpg">
+  <p class="site-author-name" itemprop="name">Gozen Sanji</p>
+  <div class="site-description" itemprop="description">目が覚めた抵抗 型落ちの衝動</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">14</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="Back to top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2023/03/08/Ensemble-Learning-Methods/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/my_avatar.jpg">
+      <meta itemprop="name" content="Gozen Sanji">
+      <meta itemprop="description" content="目が覚めた抵抗 型落ちの衝動">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Jay's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Ensemble Learning Methods
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+      
+
+      <time title="Created: 2023-03-08 21:12:49 / Modified: 21:22:21" itemprop="dateCreated datePublished" datetime="2023-03-08T21:12:49+08:00">2023-03-08</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Machine-Learning/" itemprop="url" rel="index"><span itemprop="name">Machine Learning</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p><strong>Ensemble Learning Methods</strong></p>
+<p><img src="/2023/03/08/Ensemble-Learning-Methods/Ensemble Learning and Random Forests.jpg" style="width: 1200px;" align="center"></p>
+<span id="more"></span>
+<h1 id="Voting-Classifiers"><a href="#Voting-Classifiers" class="headerlink" title="Voting Classifiers"></a>Voting Classifiers</h1><h2 id="Hard-Voting-Classifier"><a href="#Hard-Voting-Classifier" class="headerlink" title="Hard Voting Classifier"></a>Hard Voting Classifier</h2><ol>
+<li>以<strong>得票数最高</strong>的类别最为最终预测类别；<br><img src="/2023/03/08/Ensemble-Learning-Methods/Fig7-2.png" style="width: 300px;" align="center"></li>
+</ol>
+<hr>
+<ol>
+<li>Remark：<ol>
+<li>理论上，只要有足够多、足够不同的弱学习器，将它们集成在一起就可能获得一个<strong>强学习器</strong></li>
+<li><strong>弱学习器</strong>是指比瞎猜强一点儿的学习器</li>
+<li>关于 <strong>将弱学习器集成为强学习器</strong> 的理论中有一个<strong>假设</strong>：学习器必须是<strong>独立的</strong>，它们所犯的错误互不相关</li>
+<li>当各学习器在同一数据集上训练时，该假设并不成立</li>
+<li>当学习器尽可能相互独立时，集成方法的效果最好</li>
+<li>使用完全不同的算法训练得到的学习器具有 <strong>多样性</strong>，这能够增加学习器犯不同类型错误的概率</li>
+</ol>
+</li>
+</ol>
+<h3 id="Imports"><a href="#Imports" class="headerlink" title="Imports"></a>Imports</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"><span class="keyword">import</span> pandas <span class="keyword">as</span> pd</span><br><span class="line"><span class="keyword">import</span> seaborn <span class="keyword">as</span> sns</span><br><span class="line"><span class="keyword">import</span> matplotlib.pyplot <span class="keyword">as</span> plt</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">from</span> sklearn.pipeline <span class="keyword">import</span> Pipeline</span><br><span class="line"><span class="keyword">from</span> sklearn.decomposition <span class="keyword">import</span> PCA</span><br><span class="line"><span class="keyword">from</span> sklearn.preprocessing <span class="keyword">import</span> StandardScaler</span><br><span class="line"><span class="keyword">from</span> sklearn.datasets <span class="keyword">import</span> load_iris</span><br><span class="line"><span class="keyword">from</span> sklearn.datasets <span class="keyword">import</span> make_moons</span><br><span class="line"><span class="keyword">from</span> sklearn.datasets <span class="keyword">import</span> fetch_openml</span><br><span class="line"><span class="keyword">from</span> sklearn.metrics <span class="keyword">import</span> accuracy_score</span><br><span class="line"><span class="keyword">from</span> sklearn.metrics <span class="keyword">import</span> mean_squared_error</span><br><span class="line"><span class="keyword">from</span> sklearn.model_selection <span class="keyword">import</span> train_test_split</span><br><span class="line"><span class="keyword">from</span> sklearn.model_selection <span class="keyword">import</span> cross_val_score</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> xgboost</span><br><span class="line"><span class="keyword">from</span> sklearn.svm <span class="keyword">import</span> SVC</span><br><span class="line"><span class="keyword">from</span> sklearn.svm <span class="keyword">import</span> LinearSVC</span><br><span class="line"><span class="keyword">from</span> sklearn.naive_bayes <span class="keyword">import</span> GaussianNB</span><br><span class="line"><span class="keyword">from</span> sklearn.neural_network <span class="keyword">import</span> MLPClassifier</span><br><span class="line"><span class="keyword">from</span> sklearn.linear_model <span class="keyword">import</span> LogisticRegression</span><br><span class="line"><span class="keyword">from</span> sklearn.tree <span class="keyword">import</span> DecisionTreeClassifier</span><br><span class="line"><span class="keyword">from</span> sklearn.ensemble <span class="keyword">import</span> VotingClassifier</span><br><span class="line"><span class="keyword">from</span> sklearn.ensemble <span class="keyword">import</span> BaggingClassifier</span><br><span class="line"><span class="keyword">from</span> sklearn.ensemble <span class="keyword">import</span> AdaBoostClassifier</span><br><span class="line"><span class="keyword">from</span> sklearn.ensemble <span class="keyword">import</span> RandomForestClassifier, ExtraTreesClassifier</span><br><span class="line"><span class="keyword">from</span> sklearn.ensemble <span class="keyword">import</span> GradientBoostingRegressor, GradientBoostingClassifier</span><br></pre></td></tr></table></figure>
+<h3 id="Code-Example-1"><a href="#Code-Example-1" class="headerlink" title="Code Example 1"></a>Code Example 1</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 1. 准备 &amp; 展示数据集</span></span><br><span class="line">X, y = make_moons(n_samples=<span class="number">500</span>, noise=<span class="number">0.3</span>, random_state=<span class="number">42</span>)</span><br><span class="line">X_train, X_test, y_train, y_test = train_test_split(X, y, random_state=<span class="number">42</span>)</span><br><span class="line">data = pd.DataFrame(np.c_[X, y])</span><br><span class="line">data.columns = [<span class="string">&#x27;x&#x27;</span>, <span class="string">&#x27;y&#x27;</span>, <span class="string">&#x27;label&#x27;</span>]</span><br><span class="line"></span><br><span class="line">sns.scatterplot(x=<span class="string">&#x27;x&#x27;</span>, y=<span class="string">&#x27;y&#x27;</span>, data=data, hue=<span class="string">&#x27;label&#x27;</span>)</span><br><span class="line">plt.axis(<span class="string">&#x27;off&#x27;</span>)</span><br><span class="line">plt.show()</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment"># 2. 创建 &amp; 训练（硬）投票分类器</span></span><br><span class="line">log_clf = LogisticRegression(solver=<span class="string">&quot;lbfgs&quot;</span>, random_state=<span class="number">42</span>)</span><br><span class="line">rnd_clf = RandomForestClassifier(n_estimators=<span class="number">100</span>, random_state=<span class="number">42</span>)</span><br><span class="line">svm_clf = SVC(gamma=<span class="string">&quot;scale&quot;</span>, random_state=<span class="number">42</span>)</span><br><span class="line"></span><br><span class="line">voting_clf = VotingClassifier(</span><br><span class="line">    estimators=[(<span class="string">&#x27;lr&#x27;</span>, log_clf), (<span class="string">&#x27;rf&#x27;</span>, rnd_clf), (<span class="string">&#x27;svc&#x27;</span>, svm_clf)],</span><br><span class="line">    voting=<span class="string">&#x27;hard&#x27;</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment"># 3. 训练 &amp; 评估模型</span></span><br><span class="line"><span class="keyword">for</span> clf <span class="keyword">in</span> (log_clf, rnd_clf, svm_clf, voting_clf):</span><br><span class="line">    clf.fit(X_train, y_train)</span><br><span class="line">    y_pred = clf.predict(X_test)</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">f&quot;<span class="subst">&#123;clf.__class__.__name__&#125;</span>: <span class="subst">&#123;<span class="built_in">round</span>(accuracy_score(y_test, y_pred), <span class="number">4</span>)&#125;</span>&quot;</span>)</span><br></pre></td></tr></table></figure>
+<p><img src="/2023/03/08/Ensemble-Learning-Methods/output_8_0.png" alt="png"></p>
+<pre><code>LogisticRegression: 0.864
+RandomForestClassifier: 0.896
+SVC: 0.896
+VotingClassifier: 0.912
+</code></pre><p>Remark：</p>
+<pre><code>  1. 事实上，若将 make_moons() 中的 noise 参数值降低，也有可能出现 SVC 分类准确率最高的情形
+  2. 当 N 个学习器中有 1 个的效果明显优于其它学习器时，通过 Voting 得到的学习器未必总优于所有基础学习器
+  3. 也就是说，在投票过程中，效果最好的学习器可能会受到其它学习器的 **拖累**
+  4. 当学习器效果都差不多时，通常 Voting 得到的学习器效果会更好
+</code></pre><h2 id="Soft-Voting-Classifier"><a href="#Soft-Voting-Classifier" class="headerlink" title="Soft Voting Classifier"></a>Soft Voting Classifier</h2><ol>
+<li><strong>软投票</strong> 是指在所有学习器预测的<strong>概率</strong>上求平均，然后按最高平均概率给出最终预测的集成方法</li>
+</ol>
+<hr>
+<ol>
+<li>Remark：<ol>
+<li>使用 soft voting 需确保所有学习器都能预测类别概率</li>
+<li>soft voting 通常比 hard voting 具有更好的泛化性能</li>
+</ol>
+</li>
+</ol>
+<h3 id="Code-Example-2"><a href="#Code-Example-2" class="headerlink" title="Code Example 2"></a>Code Example 2</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 1. 使用相同的数据集，但是 Soft Voting</span></span><br><span class="line">log_clf = LogisticRegression(solver=<span class="string">&quot;lbfgs&quot;</span>, random_state=<span class="number">42</span>)</span><br><span class="line">rnd_clf = RandomForestClassifier(n_estimators=<span class="number">100</span>, random_state=<span class="number">42</span>)</span><br><span class="line">svm_clf = SVC(gamma=<span class="string">&quot;scale&quot;</span>, probability=<span class="literal">True</span>, random_state=<span class="number">42</span>)    <span class="comment"># probability=True 可使 SVC 输出类概率</span></span><br><span class="line"></span><br><span class="line">voting_clf = VotingClassifier(</span><br><span class="line">    estimators=[(<span class="string">&#x27;lr&#x27;</span>, log_clf), (<span class="string">&#x27;rf&#x27;</span>, rnd_clf), (<span class="string">&#x27;svc&#x27;</span>, svm_clf)],</span><br><span class="line">    voting=<span class="string">&#x27;soft&#x27;</span>    <span class="comment"># 设置为 Soft Voting</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> clf <span class="keyword">in</span> (log_clf, rnd_clf, svm_clf, voting_clf):</span><br><span class="line">    clf.fit(X_train, y_train)</span><br><span class="line">    y_pred = clf.predict(X_test)</span><br><span class="line">    <span class="built_in">print</span>(clf.__class__.__name__, accuracy_score(y_test, y_pred))</span><br></pre></td></tr></table></figure>
+<pre><code>LogisticRegression 0.864
+RandomForestClassifier 0.896
+SVC 0.896
+VotingClassifier 0.92
+</code></pre><p>Remark：</p>
+<pre><code>  1. 从上例发现，Soft Voting 的预测准确率的确高于 Hard Voting
+  2. 即使是 Soft Voting 仍可能出现 **被拖累** 的现象
+</code></pre><h1 id="Bagging-and-Pasting"><a href="#Bagging-and-Pasting" class="headerlink" title="Bagging and Pasting"></a>Bagging and Pasting</h1><ol>
+<li>要使学习器具备<strong>多样性</strong>有两种方法：<ol>
+<li>使用不同模型</li>
+<li>在不同随机子集上训练（同一种模型）</li>
+<li>基于 2 的思路就产生了两种随机子集的<strong>抽样</strong>方法：<ol>
+<li><strong>有放回</strong> —— <strong>Bagging</strong> </li>
+<li><strong>无放回</strong> —— <strong>Pasting</strong><br><img src="/2023/03/08/Ensemble-Learning-Methods/Fig7-4.png" style="width: 360px;" align="center"></li>
+</ol>
+</li>
+</ol>
+</li>
+</ol>
+<ol>
+<li>Bagging 和 Pasting 模型的<strong>推断</strong>：<ol>
+<li>分类问题：投票法</li>
+<li>回归问题：加权平均</li>
+<li><span class="mark">Remark</span>：在 BaggingClassifier 的推断中，有两个方法：<code>predict</code> 和 <code>predict_proba</code>：<ol>
+<li>前者默认使用 Soft Voting 预测类别，但当基础分类器不支持类概率型输出时则使用 Hard Voting</li>
+<li>后者默认使用 Soft Voting 预测类概率，但当基础分类器不支持类概率型输出时则使用 Hard Voting 并最终输出 <strong>预测类别频率</strong> 作为概率的近似</li>
+</ol>
+</li>
+</ol>
+</li>
+</ol>
+<hr>
+<ol>
+<li>Remark：<ol>
+<li>以 bagging or pasting 方法得到的学习器  <strong>VS</strong>  在原始训练集上的单个学习器：<ol>
+<li>两者 Bias 相近 </li>
+<li>前者 Variance 更小  </li>
+<li>前者可<strong>并行地</strong>训练和推断，因此规模易于拓展</li>
+</ol>
+</li>
+<li>Bagging  <strong>VS</strong>  Pasting:<ol>
+<li>从 bias 角度：bagging 略大于 pasting</li>
+<li>从 variance 角度：bagging 略小于 pasting</li>
+<li>通常 bagging 模型泛化性能更好</li>
+<li>算力充足时，可通过交叉验证来确定 bagging 和 pasting 哪个更适合当前问题</li>
+</ol>
+</li>
+</ol>
+</li>
+</ol>
+<h3 id="Code-Example-3"><a href="#Code-Example-3" class="headerlink" title="Code Example 3"></a>Code Example 3</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 1.Bagging 模型的构建、训练和预测</span></span><br><span class="line">bag_clf = BaggingClassifier(</span><br><span class="line">    base_estimator=DecisionTreeClassifier(), </span><br><span class="line">    n_estimators=<span class="number">500</span>,</span><br><span class="line">    max_samples=<span class="number">100</span>, </span><br><span class="line">    bootstrap=<span class="literal">True</span>,    <span class="comment"># bootstrap=True 为 Bagging，否则为 Pasting </span></span><br><span class="line">    random_state=<span class="number">42</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line">bag_clf.fit(X_train, y_train)</span><br><span class="line">y_pred = bag_clf.predict(X_test)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">f&quot;Bagging Classifier: <span class="subst">&#123;accuracy_score(y_test, y_pred)&#125;</span>&quot;</span>)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment"># 2.单个决策树模型的构建、训练和预测</span></span><br><span class="line">tree_clf = DecisionTreeClassifier(random_state=<span class="number">42</span>)</span><br><span class="line">tree_clf.fit(X_train, y_train)</span><br><span class="line">y_pred_tree = tree_clf.predict(X_test)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">f&quot;Tree Classifier: <span class="subst">&#123;accuracy_score(y_test, y_pred_tree)&#125;</span>&quot;</span>)</span><br></pre></td></tr></table></figure>
+<pre><code>Bagging Classifier: 0.904
+Tree Classifier: 0.856
+</code></pre><p>Remark：</p>
+<pre><code>  1. 从上例得到的**启示**——集成模型与单个模型相比：
+     1. 偏差相近（训练集中的 errors 数差不多，&lt;span class=&quot;burk&quot;&gt;但说实话我觉得挺多的--!&lt;/span&gt;）
+     2. 方差更小（决策边界更平滑，泛化性能可能更好）
+        &lt;img src=&quot;./Fig7-5.png&quot;  style=&quot;width: 600px;&quot;  align=&quot;center&quot;/&gt;
+</code></pre><h2 id="Out-of-Bag-Evaluation"><a href="#Out-of-Bag-Evaluation" class="headerlink" title="Out-of-Bag Evaluation"></a>Out-of-Bag Evaluation</h2><ol>
+<li>由于 bagging 的抽样机制，无需额外划分验证集，即可在 <strong>包外实例</strong> 上评估模型</li>
+</ol>
+<h3 id="Code-Example-4"><a href="#Code-Example-4" class="headerlink" title="Code Example 4"></a>Code Example 4</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 1.带包外评估的 Bagging 模型</span></span><br><span class="line">bag_clf = BaggingClassifier(</span><br><span class="line">    base_estimator=DecisionTreeClassifier(), </span><br><span class="line">    n_estimators=<span class="number">500</span>,</span><br><span class="line">    bootstrap=<span class="literal">True</span>, </span><br><span class="line">    oob_score=<span class="literal">True</span>,    <span class="comment"># 开启包外评估（注意：该参数在 bootstrap=False（即 pasting）时不可设为 False）</span></span><br><span class="line">    random_state=<span class="number">40</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line">bag_clf.fit(X_train, y_train)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">f&quot;包外评估准确率: <span class="subst">&#123;<span class="built_in">round</span>(bag_clf.oob_score_, <span class="number">4</span>)&#125;</span>&quot;</span>)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">f&quot;测试集准确率: <span class="subst">&#123;accuracy_score(y_test, bag_clf.predict(X_test))&#125;</span>&quot;</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># bag_clf.oob_decision_function_</span></span><br></pre></td></tr></table></figure>
+<pre><code>包外评估准确率: 0.8987
+测试集准确率: 0.912
+</code></pre><p>Remark：</p>
+<pre><code>  1. `oob_decision_function_`并非一个函数，它只是存储了学习器在包外实例上的预测结果
+  2. 当基学习器可预测类概率时，`oob_decision_function_`的返回结果也将是每个**训练**实例的类概率
+</code></pre><h2 id="Random-Patches-and-Random-Subspaces"><a href="#Random-Patches-and-Random-Subspaces" class="headerlink" title="Random Patches and Random Subspaces"></a>Random Patches and Random Subspaces</h2><ol>
+<li>BaggingClassifier 还支持<strong>对特征的抽样</strong>，此抽样由两个参数控制：max_features &amp; bootstrap_features </li>
+<li>这种抽样对特征数庞大的数据集（例如图像）非常有用，它进一步增加了基模型的多样性，代价则是一点儿 bias</li>
+<li>不同抽样策略形成不同的集成学习方法：<ol>
+<li><strong>随机补丁</strong>：同时对样本和特征抽样</li>
+<li><strong>随机子空间</strong>：仅对特征抽样</li>
+</ol>
+</li>
+</ol>
+<h2 id="Random-Forests"><a href="#Random-Forests" class="headerlink" title="Random Forests"></a>Random Forests</h2><ol>
+<li>不必通过 BaggingClassifier 创建随机森林分类器，直接使用 RandomForestClassifier 更方便</li>
+<li>RandomForestClassifier 对决策树专门优化过</li>
+<li>RandomForest 通常采用 bagging 策略，且它默认使用完整训练集</li>
+<li>随机森林引进了<strong>额外随机性</strong>：在分裂节点时，选取一个随机特征子集，并从中寻找最佳特征以划分节点</li>
+<li>上述做法还是用稍高的 Bias 换取更低的 Variance，通常模型效果也更好</li>
+</ol>
+<h3 id="Code-Example-5-amp-6"><a href="#Code-Example-5-amp-6" class="headerlink" title="Code Example 5 &amp; 6"></a>Code Example 5 &amp; 6</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 1.构建并训练一个随机森林分类器</span></span><br><span class="line">rnd_clf = RandomForestClassifier(</span><br><span class="line">    n_estimators=<span class="number">500</span>, </span><br><span class="line">    max_leaf_nodes=<span class="number">16</span>, </span><br><span class="line">    random_state=<span class="number">42</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line">rnd_clf.fit(X_train, y_train)</span><br><span class="line">y_pred_rf = rnd_clf.predict(X_test)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment"># 2.构建并训练了一个等价的 Bagging 模型</span></span><br><span class="line">bag_clf = BaggingClassifier(</span><br><span class="line">    DecisionTreeClassifier(</span><br><span class="line">        max_features=<span class="string">&quot;sqrt&quot;</span>, </span><br><span class="line">        max_leaf_nodes=<span class="number">16</span></span><br><span class="line">    ),</span><br><span class="line">    n_estimators=<span class="number">500</span>, </span><br><span class="line">    random_state=<span class="number">42</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line">bag_clf.fit(X_train, y_train)</span><br><span class="line">y_pred = bag_clf.predict(X_test)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment"># 3.对比上面两个模型的效果，发现预测结果几乎完全一致</span></span><br><span class="line">np.<span class="built_in">sum</span>(y_pred == y_pred_rf) / <span class="built_in">len</span>(y_pred)</span><br></pre></td></tr></table></figure>
+<pre><code>1.0
+</code></pre><h2 id="Extra-Trees"><a href="#Extra-Trees" class="headerlink" title="Extra-Trees"></a>Extra-Trees</h2><ol>
+<li><strong>Extra-Trees</strong>：不搜索最佳分裂阈值，而采取<strong>随机分裂</strong>的方式，为决策树添加更多随机性</li>
+<li>上述策略仍是以稍高的 bias 换取更低的 variance</li>
+<li>由于节点分裂方式是随机的，因此 Extra-Trees 的<strong>训练速度更快</strong>（与 Random Forest 相比）</li>
+<li>通常无法预见随机森林和极端随机树谁的性能更好，只有实际尝试两种模型并通过交叉验证搜索最佳超参数组合，才能最终确定更适合当前任务的模型</li>
+</ol>
+<h2 id="Feature-Importance"><a href="#Feature-Importance" class="headerlink" title="Feature Importance"></a>Feature Importance</h2><ol>
+<li>随机森林的一个优点：可方便地度量<strong>特征的相对重要性</strong></li>
+<li>所有特征的重要性之和等于 1</li>
+<li>注：<strong>排列重要性</strong> 和 <strong>SHAP</strong> 能更好地对特征重要性做出分析</li>
+</ol>
+<h3 id="Code-Example-7"><a href="#Code-Example-7" class="headerlink" title="Code Example 7"></a>Code Example 7</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 1.基于鸢尾花数据集构建随机森林分类器</span></span><br><span class="line">iris = load_iris()</span><br><span class="line">rnd_clf = RandomForestClassifier(</span><br><span class="line">    n_estimators=<span class="number">500</span>, </span><br><span class="line">    random_state=<span class="number">42</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line">rnd_clf.fit(iris[<span class="string">&quot;data&quot;</span>], iris[<span class="string">&quot;target&quot;</span>])</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment"># 2.特征重要性</span></span><br><span class="line"><span class="keyword">for</span> name, score <span class="keyword">in</span> <span class="built_in">zip</span>(iris[<span class="string">&quot;feature_names&quot;</span>], rnd_clf.feature_importances_):</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">f&quot;<span class="subst">&#123;name&#125;</span> 的特征重要性分数：<span class="subst">&#123;<span class="built_in">round</span>(score, <span class="number">4</span>)&#125;</span>&quot;</span>)</span><br></pre></td></tr></table></figure>
+<pre><code>sepal length (cm) 的特征重要性分数：0.1125
+sepal width (cm) 的特征重要性分数：0.0231
+petal length (cm) 的特征重要性分数：0.441
+petal width (cm) 的特征重要性分数：0.4234
+</code></pre><h1 id="Boosting"><a href="#Boosting" class="headerlink" title="Boosting"></a>Boosting</h1><ol>
+<li>Boosting 的核心想法：<strong>序列式</strong>地训练一系列预测器，每一个都尝试修正前一个预测器所犯错误</li>
+<li>说白了就是不断逼近目标值 or 不断修正误差的方法</li>
+<li>目前最主流的两个 Boosting 方法： <ol>
+<li>AdaBoost</li>
+<li>Gradient Boosting</li>
+</ol>
+</li>
+</ol>
+<h2 id="AdaBoost"><a href="#AdaBoost" class="headerlink" title="AdaBoost"></a>AdaBoost</h2><ol>
+<li><strong>核心思想</strong>（以分类器角度举例）：<ol>
+<li>对分类器  <strong>误分类的实例</strong>  增加权重</li>
+<li>在更新权重后的训练集上训练下一个分类器</li>
+<li>不断迭代（训练、预测、更新权重、训练、预测、更新权重、……），从而新分类器将更关注那些  <strong>较难分类的实例</strong><br><img src="/2023/03/08/Ensemble-Learning-Methods/Fig7-7.png" style="width: 400px;" align="center"></li>
+</ol>
+</li>
+</ol>
+<ol>
+<li>不同<strong>学习率</strong>对 AdaBoost 决策边界的影响：<ol>
+<li>较大的学习率：决策边界变动剧烈</li>
+<li>较小的学习率：决策边界变动缓和<br><img src="/2023/03/08/Ensemble-Learning-Methods/Fig7-8.png" style="width: 500px;" align="center"></li>
+</ol>
+</li>
+</ol>
+<ol>
+<li><strong>推断方式</strong>：<ol>
+<li>分类问题：<strong>类似投票法</strong></li>
+<li>回归问题：加权平均</li>
+<li>AdaBoost 使用所有学习器对新实例进行预测，然后按<strong>每个学习器的权重</strong>对预测结果进行加权，即得最终预测结果</li>
+<li><span class="mark">Remark</span>：分类问题的推断方式不再区分 Hard / Soft Voting，而是在 <code>AdaBoostClassifier</code> 中给出了两种方法：<code>predict</code> 和 <code>predict_proba</code></li>
+</ol>
+</li>
+</ol>
+<ol>
+<li>Remark：<ol>
+<li>由于 AdaBoost 的<strong>序列式训练方式</strong>，它难以被<strong>并行化</strong>处理</li>
+<li>AdaBoost <strong>训练停止条件</strong>：<ol>
+<li>学习器个数达到上限</li>
+<li>得到了完美的学习器</li>
+</ol>
+</li>
+<li>防止过拟合の措施：<ol>
+<li>减少基学习器数量</li>
+<li>使用带强正则化的基学习器</li>
+</ol>
+</li>
+</ol>
+</li>
+</ol>
+<h3 id="Code-Example-8"><a href="#Code-Example-8" class="headerlink" title="Code Example 8"></a>Code Example 8</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 1.构建并训练 AdaBoost 分类器</span></span><br><span class="line">ada_clf = AdaBoostClassifier(</span><br><span class="line">    base_estimator=DecisionTreeClassifier(max_depth=<span class="number">1</span>), </span><br><span class="line">    n_estimators=<span class="number">200</span>,</span><br><span class="line">    algorithm=<span class="string">&quot;SAMME.R&quot;</span>, </span><br><span class="line">    learning_rate=<span class="number">0.5</span>, </span><br><span class="line">    random_state=<span class="number">42</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line">ada_clf.fit(X_train, y_train)</span><br></pre></td></tr></table></figure>
+<p><style>#sk-container-id-1 {color: black;background-color: white;}#sk-container-id-1 pre{padding: 0;}#sk-container-id-1 div.sk-toggleable {background-color: white;}#sk-container-id-1 label.sk-toggleable<strong>label {cursor: pointer;display: block;width: 100%;margin-bottom: 0;padding: 0.3em;box-sizing: border-box;text-align: center;}#sk-container-id-1 label.sk-toggleable</strong>label-arrow:before {content: “▸”;float: left;margin-right: 0.25em;color: #696969;}#sk-container-id-1 label.sk-toggleable<strong>label-arrow:hover:before {color: black;}#sk-container-id-1 div.sk-estimator:hover label.sk-toggleable</strong>label-arrow:before {color: black;}#sk-container-id-1 div.sk-toggleable<strong>content {max-height: 0;max-width: 0;overflow: hidden;text-align: left;background-color: #f0f8ff;}#sk-container-id-1 div.sk-toggleable</strong>content pre {margin: 0.2em;color: black;border-radius: 0.25em;background-color: #f0f8ff;}#sk-container-id-1 input.sk-toggleable<strong>control:checked~div.sk-toggleable</strong>content {max-height: 200px;max-width: 100%;overflow: auto;}#sk-container-id-1 input.sk-toggleable<strong>control:checked~label.sk-toggleable</strong>label-arrow:before {content: “▾”;}#sk-container-id-1 div.sk-estimator input.sk-toggleable<strong>control:checked~label.sk-toggleable</strong>label {background-color: #d4ebff;}#sk-container-id-1 div.sk-label input.sk-toggleable<strong>control:checked~label.sk-toggleable</strong>label {background-color: #d4ebff;}#sk-container-id-1 input.sk-hidden—visually {border: 0;clip: rect(1px 1px 1px 1px);clip: rect(1px, 1px, 1px, 1px);height: 1px;margin: -1px;overflow: hidden;padding: 0;position: absolute;width: 1px;}#sk-container-id-1 div.sk-estimator {font-family: monospace;background-color: #f0f8ff;border: 1px dotted black;border-radius: 0.25em;box-sizing: border-box;margin-bottom: 0.5em;}#sk-container-id-1 div.sk-estimator:hover {background-color: #d4ebff;}#sk-container-id-1 div.sk-parallel-item::after {content: “”;width: 100%;border-bottom: 1px solid gray;flex-grow: 1;}#sk-container-id-1 div.sk-label:hover label.sk-toggleable__label {background-color: #d4ebff;}#sk-container-id-1 div.sk-serial::before {content: “”;position: absolute;border-left: 1px solid gray;box-sizing: border-box;top: 0;bottom: 0;left: 50%;z-index: 0;}#sk-container-id-1 div.sk-serial {display: flex;flex-direction: column;align-items: center;background-color: white;padding-right: 0.2em;padding-left: 0.2em;position: relative;}#sk-container-id-1 div.sk-item {position: relative;z-index: 1;}#sk-container-id-1 div.sk-parallel {display: flex;align-items: stretch;justify-content: center;background-color: white;position: relative;}#sk-container-id-1 div.sk-item::before, #sk-container-id-1 div.sk-parallel-item::before {content: “”;position: absolute;border-left: 1px solid gray;box-sizing: border-box;top: 0;bottom: 0;left: 50%;z-index: -1;}#sk-container-id-1 div.sk-parallel-item {display: flex;flex-direction: column;z-index: 1;position: relative;background-color: white;}#sk-container-id-1 div.sk-parallel-item:first-child::after {align-self: flex-end;width: 50%;}#sk-container-id-1 div.sk-parallel-item:last-child::after {align-self: flex-start;width: 50%;}#sk-container-id-1 div.sk-parallel-item:only-child::after {width: 0;}#sk-container-id-1 div.sk-dashed-wrapped {border: 1px dashed gray;margin: 0 0.4em 0.5em 0.4em;box-sizing: border-box;padding-bottom: 0.4em;background-color: white;}#sk-container-id-1 div.sk-label label {font-family: monospace;font-weight: bold;display: inline-block;line-height: 1.2em;}#sk-container-id-1 div.sk-label-container {text-align: center;}#sk-container-id-1 div.sk-container {/<em> jupyter’s <code>normalize.less</code> sets <code>[hidden] &#123; display: none; &#125;</code> but bootstrap.min.css set <code>[hidden] &#123; display: none !important; &#125;</code> so we also need the <code>!important</code> here to be able to override the default hidden behavior on the sphinx rendered scikit-learn.org. See: <a target="_blank" rel="noopener" href="https://github.com/scikit-learn/scikit-learn/issues/21755">https://github.com/scikit-learn/scikit-learn/issues/21755</a> </em>/display: inline-block !important;position: relative;}#sk-container-id-1 div.sk-text-repr-fallback {display: none;}</style><div id="sk-container-id-1" class="sk-top-container"><div class="sk-text-repr-fallback"><pre>AdaBoostClassifier(base_estimator=DecisionTreeClassifier(max_depth=1),</pre></div></div></p>
+<pre><code>               learning_rate=0.5, n_estimators=200, random_state=42)&lt;/pre&gt;&lt;b&gt;In a Jupyter environment, please rerun this cell to show the HTML representation or trust the notebook. &lt;br /&gt;On GitHub, the HTML representation is unable to render, please try loading this page with nbviewer.org.&lt;/b&gt;&lt;/div&gt;&lt;div class=&quot;sk-container&quot; hidden&gt;&lt;div class=&quot;sk-item sk-dashed-wrapped&quot;&gt;&lt;div class=&quot;sk-label-container&quot;&gt;&lt;div class=&quot;sk-label sk-toggleable&quot;&gt;&lt;input class=&quot;sk-toggleable__control sk-hidden--visually&quot; id=&quot;sk-estimator-id-1&quot; type=&quot;checkbox&quot; &gt;&lt;label for=&quot;sk-estimator-id-1&quot; class=&quot;sk-toggleable__label sk-toggleable__label-arrow&quot;&gt;AdaBoostClassifier&lt;/label&gt;&lt;div class=&quot;sk-toggleable__content&quot;&gt;&lt;pre&gt;AdaBoostClassifier(base_estimator=DecisionTreeClassifier(max_depth=1),
+               learning_rate=0.5, n_estimators=200, random_state=42)&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class=&quot;sk-parallel&quot;&gt;&lt;div class=&quot;sk-parallel-item&quot;&gt;&lt;div class=&quot;sk-item&quot;&gt;&lt;div class=&quot;sk-label-container&quot;&gt;&lt;div class=&quot;sk-label sk-toggleable&quot;&gt;&lt;input class=&quot;sk-toggleable__control sk-hidden--visually&quot; id=&quot;sk-estimator-id-2&quot; type=&quot;checkbox&quot; &gt;&lt;label for=&quot;sk-estimator-id-2&quot; class=&quot;sk-toggleable__label sk-toggleable__label-arrow&quot;&gt;base_estimator: DecisionTreeClassifier&lt;/label&gt;&lt;div class=&quot;sk-toggleable__content&quot;&gt;&lt;pre&gt;DecisionTreeClassifier(max_depth=1)&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class=&quot;sk-serial&quot;&gt;&lt;div class=&quot;sk-item&quot;&gt;&lt;div class=&quot;sk-estimator sk-toggleable&quot;&gt;&lt;input class=&quot;sk-toggleable__control sk-hidden--visually&quot; id=&quot;sk-estimator-id-3&quot; type=&quot;checkbox&quot; &gt;&lt;label for=&quot;sk-estimator-id-3&quot; class=&quot;sk-toggleable__label sk-toggleable__label-arrow&quot;&gt;DecisionTreeClassifier&lt;/label&gt;&lt;div class=&quot;sk-toggleable__content&quot;&gt;&lt;pre&gt;DecisionTreeClassifier(max_depth=1)&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;
+</code></pre><h2 id="Gradient-Boosting"><a href="#Gradient-Boosting" class="headerlink" title="Gradient Boosting"></a>Gradient Boosting</h2><ol>
+<li><strong>核心思想</strong>：<ol>
+<li>Gradient Boosting 也是<strong>序列式</strong>地训练一系列学习器</li>
+<li>与 AdaBoost 的区别：Gradient Boosting 中的每个学习器都是对前一个学习器的 <strong>残差</strong> 进行拟合</li>
+</ol>
+</li>
+</ol>
+<ol>
+<li><strong>推断方法</strong>：在新实例上将每个学习器的预测结果<strong>求和</strong><br><img src="/2023/03/08/Ensemble-Learning-Methods/Fig7-9.png" style="width: 600px;" align="center"></li>
+</ol>
+<ol>
+<li>Gradient Boosting 中的<strong>学习率</strong>：<ol>
+<li>取值很小时，需要更多树来拟合训练集，但泛化性能通常更好</li>
+<li>下图比较了树太多 / 太少的情况</li>
+<li><img src="/2023/03/08/Ensemble-Learning-Methods/Fig7-10.png" style="width: 600px;" align="center"></li>
+</ol>
+</li>
+</ol>
+<ol>
+<li>针对设定好学习率的 Gradient Boosting 模型<strong>选取最佳树数量</strong>的方法：<ol>
+<li>使用过量的树建模并训练</li>
+<li>在验证过程中通过 <strong>提前停止</strong> 找到最佳树数量</li>
+<li>Code Example 10</li>
+</ol>
+</li>
+</ol>
+<ol>
+<li><p>实现提前停止的另一种思路：</p>
+<ol>
+<li><strong>增量式训练</strong></li>
+<li>Code Example 11</li>
+</ol>
+</li>
+<li><p><strong>随机梯度提升</strong>：</p>
+<ol>
+<li>在 Gradient Boosting 中，使每个学习器基于 <strong>完整训练集的一个随机子集</strong> 拟合残差</li>
+<li>通过设置 subsample 超参数实现</li>
+<li>好处：<ol>
+<li>用高一点儿的偏差换取更低的方差，增加模型泛化性能</li>
+<li>加快训练速度</li>
+</ol>
+</li>
+</ol>
+</li>
+</ol>
+<ol>
+<li>Remark：<ol>
+<li>Gradient Boosting 模型中可自定义损失函数</li>
+<li><strong>XGBoost</strong>：Gradient Boosting 的一个优化实现 —— Code Example 12</li>
+</ol>
+</li>
+</ol>
+<h3 id="Code-Example-9"><a href="#Code-Example-9" class="headerlink" title="Code Example 9"></a>Code Example 9</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 0.准备数据集</span></span><br><span class="line">np.random.seed(<span class="number">42</span>)</span><br><span class="line">X = np.random.rand(<span class="number">100</span>, <span class="number">1</span>) - <span class="number">0.5</span></span><br><span class="line">y = <span class="number">3</span>*X[:, <span class="number">0</span>]**<span class="number">2</span> + <span class="number">0.05</span> * np.random.randn(<span class="number">100</span>)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment"># 1.构建并训练一个 GradientBoosting 回归器</span></span><br><span class="line">gbrt = GradientBoostingRegressor(</span><br><span class="line">    max_depth=<span class="number">2</span>, </span><br><span class="line">    n_estimators=<span class="number">3</span>, </span><br><span class="line">    learning_rate=<span class="number">1.0</span>, </span><br><span class="line">    random_state=<span class="number">42</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line">gbrt.fit(X, y)</span><br></pre></td></tr></table></figure>
+<p><style>#sk-container-id-2 {color: black;background-color: white;}#sk-container-id-2 pre{padding: 0;}#sk-container-id-2 div.sk-toggleable {background-color: white;}#sk-container-id-2 label.sk-toggleable<strong>label {cursor: pointer;display: block;width: 100%;margin-bottom: 0;padding: 0.3em;box-sizing: border-box;text-align: center;}#sk-container-id-2 label.sk-toggleable</strong>label-arrow:before {content: “▸”;float: left;margin-right: 0.25em;color: #696969;}#sk-container-id-2 label.sk-toggleable<strong>label-arrow:hover:before {color: black;}#sk-container-id-2 div.sk-estimator:hover label.sk-toggleable</strong>label-arrow:before {color: black;}#sk-container-id-2 div.sk-toggleable<strong>content {max-height: 0;max-width: 0;overflow: hidden;text-align: left;background-color: #f0f8ff;}#sk-container-id-2 div.sk-toggleable</strong>content pre {margin: 0.2em;color: black;border-radius: 0.25em;background-color: #f0f8ff;}#sk-container-id-2 input.sk-toggleable<strong>control:checked~div.sk-toggleable</strong>content {max-height: 200px;max-width: 100%;overflow: auto;}#sk-container-id-2 input.sk-toggleable<strong>control:checked~label.sk-toggleable</strong>label-arrow:before {content: “▾”;}#sk-container-id-2 div.sk-estimator input.sk-toggleable<strong>control:checked~label.sk-toggleable</strong>label {background-color: #d4ebff;}#sk-container-id-2 div.sk-label input.sk-toggleable<strong>control:checked~label.sk-toggleable</strong>label {background-color: #d4ebff;}#sk-container-id-2 input.sk-hidden—visually {border: 0;clip: rect(1px 1px 1px 1px);clip: rect(1px, 1px, 1px, 1px);height: 1px;margin: -1px;overflow: hidden;padding: 0;position: absolute;width: 1px;}#sk-container-id-2 div.sk-estimator {font-family: monospace;background-color: #f0f8ff;border: 1px dotted black;border-radius: 0.25em;box-sizing: border-box;margin-bottom: 0.5em;}#sk-container-id-2 div.sk-estimator:hover {background-color: #d4ebff;}#sk-container-id-2 div.sk-parallel-item::after {content: “”;width: 100%;border-bottom: 1px solid gray;flex-grow: 1;}#sk-container-id-2 div.sk-label:hover label.sk-toggleable__label {background-color: #d4ebff;}#sk-container-id-2 div.sk-serial::before {content: “”;position: absolute;border-left: 1px solid gray;box-sizing: border-box;top: 0;bottom: 0;left: 50%;z-index: 0;}#sk-container-id-2 div.sk-serial {display: flex;flex-direction: column;align-items: center;background-color: white;padding-right: 0.2em;padding-left: 0.2em;position: relative;}#sk-container-id-2 div.sk-item {position: relative;z-index: 1;}#sk-container-id-2 div.sk-parallel {display: flex;align-items: stretch;justify-content: center;background-color: white;position: relative;}#sk-container-id-2 div.sk-item::before, #sk-container-id-2 div.sk-parallel-item::before {content: “”;position: absolute;border-left: 1px solid gray;box-sizing: border-box;top: 0;bottom: 0;left: 50%;z-index: -1;}#sk-container-id-2 div.sk-parallel-item {display: flex;flex-direction: column;z-index: 1;position: relative;background-color: white;}#sk-container-id-2 div.sk-parallel-item:first-child::after {align-self: flex-end;width: 50%;}#sk-container-id-2 div.sk-parallel-item:last-child::after {align-self: flex-start;width: 50%;}#sk-container-id-2 div.sk-parallel-item:only-child::after {width: 0;}#sk-container-id-2 div.sk-dashed-wrapped {border: 1px dashed gray;margin: 0 0.4em 0.5em 0.4em;box-sizing: border-box;padding-bottom: 0.4em;background-color: white;}#sk-container-id-2 div.sk-label label {font-family: monospace;font-weight: bold;display: inline-block;line-height: 1.2em;}#sk-container-id-2 div.sk-label-container {text-align: center;}#sk-container-id-2 div.sk-container {/<em> jupyter’s <code>normalize.less</code> sets <code>[hidden] &#123; display: none; &#125;</code> but bootstrap.min.css set <code>[hidden] &#123; display: none !important; &#125;</code> so we also need the <code>!important</code> here to be able to override the default hidden behavior on the sphinx rendered scikit-learn.org. See: <a target="_blank" rel="noopener" href="https://github.com/scikit-learn/scikit-learn/issues/21755">https://github.com/scikit-learn/scikit-learn/issues/21755</a> </em>/display: inline-block !important;position: relative;}#sk-container-id-2 div.sk-text-repr-fallback {display: none;}</style><div id="sk-container-id-2" class="sk-top-container"><div class="sk-text-repr-fallback"><pre>GradientBoostingRegressor(learning_rate=1.0, max_depth=2, n_estimators=3,</pre></div></div></p>
+<pre><code>                      random_state=42)&lt;/pre&gt;&lt;b&gt;In a Jupyter environment, please rerun this cell to show the HTML representation or trust the notebook. &lt;br /&gt;On GitHub, the HTML representation is unable to render, please try loading this page with nbviewer.org.&lt;/b&gt;&lt;/div&gt;&lt;div class=&quot;sk-container&quot; hidden&gt;&lt;div class=&quot;sk-item&quot;&gt;&lt;div class=&quot;sk-estimator sk-toggleable&quot;&gt;&lt;input class=&quot;sk-toggleable__control sk-hidden--visually&quot; id=&quot;sk-estimator-id-4&quot; type=&quot;checkbox&quot; checked&gt;&lt;label for=&quot;sk-estimator-id-4&quot; class=&quot;sk-toggleable__label sk-toggleable__label-arrow&quot;&gt;GradientBoostingRegressor&lt;/label&gt;&lt;div class=&quot;sk-toggleable__content&quot;&gt;&lt;pre&gt;GradientBoostingRegressor(learning_rate=1.0, max_depth=2, n_estimators=3,
+                      random_state=42)&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;
+</code></pre><h3 id="Code-Example-10"><a href="#Code-Example-10" class="headerlink" title="Code Example 10"></a>Code Example 10</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 1.设置过量的树来训练</span></span><br><span class="line">X_train, X_val, y_train, y_val = train_test_split(X, y, random_state=<span class="number">49</span>)</span><br><span class="line"></span><br><span class="line">gbrt = GradientBoostingRegressor(</span><br><span class="line">    max_depth=<span class="number">2</span>, </span><br><span class="line">    n_estimators=<span class="number">120</span>, </span><br><span class="line">    random_state=<span class="number">42</span></span><br><span class="line">)</span><br><span class="line">gbrt.fit(X_train, y_train)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment"># 2.基于验证集寻找最佳树数量</span></span><br><span class="line">errors = [mean_squared_error(y_val, y_pred) <span class="keyword">for</span> y_pred <span class="keyword">in</span> gbrt.staged_predict(X_val)]    <span class="comment"># staged_predict</span></span><br><span class="line">bst_n_estimators = np.argmin(errors) + <span class="number">1</span></span><br><span class="line"><span class="built_in">print</span>(<span class="string">f&quot;最佳树数量：<span class="subst">&#123;bst_n_estimators&#125;</span>&quot;</span>)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment"># 3.以最佳树数量重新建模、训练</span></span><br><span class="line">gbrt_best = GradientBoostingRegressor(</span><br><span class="line">    max_depth=<span class="number">2</span>, </span><br><span class="line">    n_estimators=bst_n_estimators,    <span class="comment"># 最佳树数量</span></span><br><span class="line">    random_state=<span class="number">42</span></span><br><span class="line">)</span><br><span class="line">gbrt_best.fit(X_train, y_train)</span><br></pre></td></tr></table></figure>
+<pre><code>最佳树数量：56
+</code></pre><p><style>#sk-container-id-3 {color: black;background-color: white;}#sk-container-id-3 pre{padding: 0;}#sk-container-id-3 div.sk-toggleable {background-color: white;}#sk-container-id-3 label.sk-toggleable<strong>label {cursor: pointer;display: block;width: 100%;margin-bottom: 0;padding: 0.3em;box-sizing: border-box;text-align: center;}#sk-container-id-3 label.sk-toggleable</strong>label-arrow:before {content: “▸”;float: left;margin-right: 0.25em;color: #696969;}#sk-container-id-3 label.sk-toggleable<strong>label-arrow:hover:before {color: black;}#sk-container-id-3 div.sk-estimator:hover label.sk-toggleable</strong>label-arrow:before {color: black;}#sk-container-id-3 div.sk-toggleable<strong>content {max-height: 0;max-width: 0;overflow: hidden;text-align: left;background-color: #f0f8ff;}#sk-container-id-3 div.sk-toggleable</strong>content pre {margin: 0.2em;color: black;border-radius: 0.25em;background-color: #f0f8ff;}#sk-container-id-3 input.sk-toggleable<strong>control:checked~div.sk-toggleable</strong>content {max-height: 200px;max-width: 100%;overflow: auto;}#sk-container-id-3 input.sk-toggleable<strong>control:checked~label.sk-toggleable</strong>label-arrow:before {content: “▾”;}#sk-container-id-3 div.sk-estimator input.sk-toggleable<strong>control:checked~label.sk-toggleable</strong>label {background-color: #d4ebff;}#sk-container-id-3 div.sk-label input.sk-toggleable<strong>control:checked~label.sk-toggleable</strong>label {background-color: #d4ebff;}#sk-container-id-3 input.sk-hidden—visually {border: 0;clip: rect(1px 1px 1px 1px);clip: rect(1px, 1px, 1px, 1px);height: 1px;margin: -1px;overflow: hidden;padding: 0;position: absolute;width: 1px;}#sk-container-id-3 div.sk-estimator {font-family: monospace;background-color: #f0f8ff;border: 1px dotted black;border-radius: 0.25em;box-sizing: border-box;margin-bottom: 0.5em;}#sk-container-id-3 div.sk-estimator:hover {background-color: #d4ebff;}#sk-container-id-3 div.sk-parallel-item::after {content: “”;width: 100%;border-bottom: 1px solid gray;flex-grow: 1;}#sk-container-id-3 div.sk-label:hover label.sk-toggleable__label {background-color: #d4ebff;}#sk-container-id-3 div.sk-serial::before {content: “”;position: absolute;border-left: 1px solid gray;box-sizing: border-box;top: 0;bottom: 0;left: 50%;z-index: 0;}#sk-container-id-3 div.sk-serial {display: flex;flex-direction: column;align-items: center;background-color: white;padding-right: 0.2em;padding-left: 0.2em;position: relative;}#sk-container-id-3 div.sk-item {position: relative;z-index: 1;}#sk-container-id-3 div.sk-parallel {display: flex;align-items: stretch;justify-content: center;background-color: white;position: relative;}#sk-container-id-3 div.sk-item::before, #sk-container-id-3 div.sk-parallel-item::before {content: “”;position: absolute;border-left: 1px solid gray;box-sizing: border-box;top: 0;bottom: 0;left: 50%;z-index: -1;}#sk-container-id-3 div.sk-parallel-item {display: flex;flex-direction: column;z-index: 1;position: relative;background-color: white;}#sk-container-id-3 div.sk-parallel-item:first-child::after {align-self: flex-end;width: 50%;}#sk-container-id-3 div.sk-parallel-item:last-child::after {align-self: flex-start;width: 50%;}#sk-container-id-3 div.sk-parallel-item:only-child::after {width: 0;}#sk-container-id-3 div.sk-dashed-wrapped {border: 1px dashed gray;margin: 0 0.4em 0.5em 0.4em;box-sizing: border-box;padding-bottom: 0.4em;background-color: white;}#sk-container-id-3 div.sk-label label {font-family: monospace;font-weight: bold;display: inline-block;line-height: 1.2em;}#sk-container-id-3 div.sk-label-container {text-align: center;}#sk-container-id-3 div.sk-container {/<em> jupyter’s <code>normalize.less</code> sets <code>[hidden] &#123; display: none; &#125;</code> but bootstrap.min.css set <code>[hidden] &#123; display: none !important; &#125;</code> so we also need the <code>!important</code> here to be able to override the default hidden behavior on the sphinx rendered scikit-learn.org. See: <a target="_blank" rel="noopener" href="https://github.com/scikit-learn/scikit-learn/issues/21755">https://github.com/scikit-learn/scikit-learn/issues/21755</a> </em>/display: inline-block !important;position: relative;}#sk-container-id-3 div.sk-text-repr-fallback {display: none;}</style><div id="sk-container-id-3" class="sk-top-container"><div class="sk-text-repr-fallback"><pre>GradientBoostingRegressor(max_depth=2, n_estimators=56, random_state=42)</pre><b>In a Jupyter environment, please rerun this cell to show the HTML representation or trust the notebook. <br>On GitHub, the HTML representation is unable to render, please try loading this page with nbviewer.org.</b></div><div class="sk-container" hidden><div class="sk-item"><div class="sk-estimator sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="sk-estimator-id-5" type="checkbox" checked><label for="sk-estimator-id-5" class="sk-toggleable__label sk-toggleable__label-arrow">GradientBoostingRegressor</label><div class="sk-toggleable__content"><pre>GradientBoostingRegressor(max_depth=2, n_estimators=56, random_state=42)</pre></div>&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;</div></div></div></div></p>
+<p>Remark：</p>
+<pre><code>  1. 验证误差 vs 树数量
+  2. 最佳树数量下的 GradientBoosting 模型
+     &lt;img src=&quot;./Fig7-11.png&quot;  style=&quot;width: 600px;&quot;  align=&quot;center&quot;/&gt;
+</code></pre><h3 id="Code-Example-11"><a href="#Code-Example-11" class="headerlink" title="Code Example 11"></a>Code Example 11</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 1.构建 GradientBoosting 模型</span></span><br><span class="line">gbrt = GradientBoostingRegressor(</span><br><span class="line">    max_depth=<span class="number">2</span>, </span><br><span class="line">    warm_start=<span class="literal">True</span>,    <span class="comment"># warm_start=True  </span></span><br><span class="line">    random_state=<span class="number">42</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment"># 2.初始化验证误差 &amp; 每次迭代都训练模型并计算验证误差</span></span><br><span class="line">min_val_error = <span class="built_in">float</span>(<span class="string">&quot;inf&quot;</span>)</span><br><span class="line">error_going_up = <span class="number">0</span></span><br><span class="line"><span class="keyword">for</span> n_estimators <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">1</span>, <span class="number">120</span>):</span><br><span class="line">    gbrt.n_estimators = n_estimators    <span class="comment"># 每次迭代更新树数量</span></span><br><span class="line">    gbrt.fit(X_train, y_train)</span><br><span class="line">    y_pred = gbrt.predict(X_val)</span><br><span class="line">    val_error = mean_squared_error(y_val, y_pred)</span><br><span class="line">    </span><br><span class="line">    </span><br><span class="line">    <span class="comment"># 3.检验验证误差是否下降 </span></span><br><span class="line">    <span class="keyword">if</span> val_error &lt; min_val_error:</span><br><span class="line">        min_val_error = val_error</span><br><span class="line">        error_going_up = <span class="number">0</span></span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        error_going_up += <span class="number">1</span></span><br><span class="line">        <span class="keyword">if</span> error_going_up == <span class="number">5</span>:    <span class="comment"># early stopping with patience = 5</span></span><br><span class="line">            <span class="keyword">break</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">print</span>(<span class="string">f&quot;最佳树数量：<span class="subst">&#123;gbrt.n_estimators&#125;</span>&quot;</span>)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">f&quot;最低验证误差：<span class="subst">&#123;<span class="built_in">round</span>(min_val_error, <span class="number">4</span>)&#125;</span>&quot;</span>)</span><br></pre></td></tr></table></figure>
+<pre><code>最佳树数量：61
+最低验证误差：0.0027
+</code></pre><h3 id="Code-Example-12"><a href="#Code-Example-12" class="headerlink" title="Code Example 12"></a>Code Example 12</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 1.在整个训练集上拟合 XGBoost</span></span><br><span class="line">xgb_reg = xgboost.XGBRegressor(random_state=<span class="number">42</span>)</span><br><span class="line">xgb_reg.fit(X_train, y_train)</span><br><span class="line">y_pred = xgb_reg.predict(X_val)</span><br><span class="line">val_error = mean_squared_error(y_val, y_pred)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">f&quot;在整个训练集上拟合 XGBoost 时的验证误差：<span class="subst">&#123;<span class="built_in">round</span>(val_error, <span class="number">4</span>)&#125;</span>&quot;</span>)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment"># 2.基于提前停止训练 XGBoost</span></span><br><span class="line">xgb_reg = xgboost.XGBRegressor(</span><br><span class="line">    early_stopping_rounds=<span class="number">2</span>,    <span class="comment"># patience = 2 </span></span><br><span class="line">    random_state=<span class="number">42</span></span><br><span class="line">)</span><br><span class="line">xgb_reg.fit(</span><br><span class="line">    X_train, y_train,</span><br><span class="line">    eval_set=[(X_val, y_val)],    <span class="comment"># 验证集</span></span><br><span class="line">)</span><br><span class="line">y_pred = xgb_reg.predict(X_val)</span><br><span class="line">val_error = mean_squared_error(y_val, y_pred)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">f&quot;基于提前停止拟合 XGBoost 时的验证误差：<span class="subst">&#123;<span class="built_in">round</span>(val_error, <span class="number">4</span>)&#125;</span>&quot;</span>)</span><br></pre></td></tr></table></figure>
+<pre><code>在整个训练集上拟合 XGBoost 时的验证误差：0.004
+[0]    validation_0-rmse:0.22834
+[1]    validation_0-rmse:0.16224
+[2]    validation_0-rmse:0.11843
+[3]    validation_0-rmse:0.08760
+[4]    validation_0-rmse:0.06848
+[5]    validation_0-rmse:0.05709
+[6]    validation_0-rmse:0.05297
+[7]    validation_0-rmse:0.05129
+[8]    validation_0-rmse:0.05155
+基于提前停止拟合 XGBoost 时的验证误差：0.0026
+</code></pre><h1 id="Stacking"><a href="#Stacking" class="headerlink" title="Stacking"></a>Stacking</h1><ol>
+<li><strong>核心思想</strong>：<ol>
+<li>不再使用简单函数进行聚合（例如 hard voting）</li>
+<li>而是训练一个模型来聚合基学习器的预测结果</li>
+<li>这是一种<strong>复合函数</strong>，只不过外层函数是由模型拟合得到的</li>
+</ol>
+</li>
+</ol>
+<ol>
+<li><strong>推断方法</strong>：<ol>
+<li>先由基学习器对新实例进行预测</li>
+<li><strong>元学习器</strong>再基于这些预测值预测出最终结果</li>
+<li>元学习器：即 Stacking 的外层聚合函数<br><img src="/2023/03/08/Ensemble-Learning-Methods/Fig7-12.png" style="width: 500px;" align="center"></li>
+</ol>
+</li>
+</ol>
+<ol>
+<li><strong>训练方法</strong>：<ol>
+<li>将初始训练集划分为两部分 A 和 B</li>
+<li>在子集 A 上训练基学习器</li>
+<li>以训练好的基学习器在子集 B 上预测，得到子集 C</li>
+<li>在子集 C 上训练元学习器<br><img src="/2023/03/08/Ensemble-Learning-Methods/Fig7-13.png" style="width: 500px;" align="center"><br><img src="/2023/03/08/Ensemble-Learning-Methods/Fig7-14.png" style="width: 500px;" align="center"></li>
+</ol>
+</li>
+</ol>
+<ol>
+<li>更进一步，元学习器可以形成一个中间层：<br><img src="/2023/03/08/Ensemble-Learning-Methods/Fig7-15.png" style="width: 500px;" align="center"></li>
+</ol>
+<h3 id="Code-Example-13"><a href="#Code-Example-13" class="headerlink" title="Code Example 13"></a>Code Example 13</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 0.读取数据集</span></span><br><span class="line">mnist = fetch_openml(<span class="string">&#x27;mnist_784&#x27;</span>, version=<span class="number">1</span>, as_frame=<span class="literal">False</span>)</span><br><span class="line">mnist.target = mnist.target.astype(np.uint8)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment"># 1.划分训练、验证、测试集</span></span><br><span class="line">X_train_val, X_test, y_train_val, y_test = train_test_split(mnist.data, mnist.target, test_size=<span class="number">10000</span>, random_state=<span class="number">42</span>)</span><br><span class="line">X_train, X_val, y_train, y_val = train_test_split(X_train_val, y_train_val, test_size=<span class="number">10000</span>, random_state=<span class="number">42</span>)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment"># 1.5简化数据集</span></span><br><span class="line">pca = PCA(n_components=<span class="number">0.90</span>)</span><br><span class="line">pca.fit_transform(X_train)</span><br><span class="line">pca.transform(X_val)</span><br><span class="line">pca.transform(X_test)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">f&quot;降维后，数据集维数：<span class="subst">&#123;pca.n_components_&#125;</span>&quot;</span>)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&#x27;-&#x27;</span> * <span class="number">63</span>)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment"># 2.构建不同分类器</span></span><br><span class="line">clf_1 = Pipeline([(<span class="string">&#x27;rdf&#x27;</span>, RandomForestClassifier(n_estimators=<span class="number">100</span>, random_state=<span class="number">42</span>))])</span><br><span class="line">clf_2 = Pipeline([(<span class="string">&#x27;extra_trees&#x27;</span>, ExtraTreesClassifier(n_estimators=<span class="number">100</span>, random_state=<span class="number">42</span>))])</span><br><span class="line">clf_3 = Pipeline([(<span class="string">&#x27;scaler&#x27;</span>, StandardScaler()), (<span class="string">&#x27;mlp&#x27;</span>, MLPClassifier(random_state=<span class="number">42</span>))])</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment"># 3.训练不同分类器</span></span><br><span class="line">estimators = [clf_1, clf_2, clf_3]</span><br><span class="line"><span class="keyword">for</span> estimator <span class="keyword">in</span> estimators:</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&quot;Training the&quot;</span>, estimator[-<span class="number">1</span>])</span><br><span class="line">    estimator.fit(X_train, y_train)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&#x27;-&#x27;</span> * <span class="number">63</span>)</span><br><span class="line"></span><br><span class="line">    </span><br><span class="line"><span class="comment"># 4.验证集上评估各分类器</span></span><br><span class="line"><span class="built_in">print</span>(<span class="string">f&quot;每个分类器在验证集上的准确率：<span class="subst">&#123;[estimator.score(X_val, y_val) <span class="keyword">for</span> estimator <span class="keyword">in</span> estimators]&#125;</span>&quot;</span>)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&#x27;-&#x27;</span> * <span class="number">63</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 5.构建 Voting 分类器</span></span><br><span class="line">voting_clf = VotingClassifier([</span><br><span class="line">    (<span class="string">&quot;random_forest&quot;</span>, clf_1),</span><br><span class="line">    (<span class="string">&quot;extra_trees&quot;</span>, clf_2),</span><br><span class="line">    (<span class="string">&quot;mlp&quot;</span>, clf_3)], </span><br><span class="line">    voting=<span class="string">&#x27;hard&#x27;</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line">voting_clf.fit(X_train, y_train)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">f&quot;Voting 分类器在验证集上的准确率：<span class="subst">&#123;voting_clf.score(X_val, y_val)&#125;</span>&quot;</span>)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">f&quot;Voting 分类器中每个子分类器在验证集上的准确率：<span class="subst">&#123;[estimator.score(X_val, y_val) <span class="keyword">for</span> estimator <span class="keyword">in</span> voting_clf.estimators_]&#125;</span>&quot;</span>)</span><br></pre></td></tr></table></figure>
+<pre><code>降维后，数据集维数：87
+---------------------------------------------------------------
+Training the RandomForestClassifier(random_state=42)
+Training the ExtraTreesClassifier(random_state=42)
+Training the MLPClassifier(random_state=42)
+---------------------------------------------------------------
+每个分类器在验证集上的准确率：[0.9692, 0.9715, 0.9747]
+---------------------------------------------------------------
+Voting 分类器在验证集上的准确率：0.9751
+Voting 分类器中每个子分类器在验证集上的准确率：[0.9692, 0.9715, 0.9747]
+</code></pre><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 6.尝试软投票的准确率</span></span><br><span class="line">voting_clf.voting = <span class="string">&quot;soft&quot;</span></span><br><span class="line"><span class="built_in">print</span>(<span class="string">f&quot;软投票分类器的验证准确率：<span class="subst">&#123;voting_clf.score(X_val, y_val)&#125;</span>&quot;</span>)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&#x27;-&#x27;</span> * <span class="number">63</span>)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment"># 7.在测试集上各分类器的准确率</span></span><br><span class="line"><span class="built_in">print</span>(<span class="string">f&quot;软投票分类器在测试集上的准确率：<span class="subst">&#123;voting_clf.score(X_test, y_test)&#125;</span>&quot;</span>)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">f&quot;各子分类器在测试集上的准确率：<span class="subst">&#123;[estimator.score(X_test, y_test) <span class="keyword">for</span> estimator <span class="keyword">in</span> voting_clf.estimators_]&#125;</span>&quot;</span>)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&#x27;-&#x27;</span> * <span class="number">63</span>)</span><br></pre></td></tr></table></figure>
+<pre><code>软投票分类器的验证准确率：0.9783
+---------------------------------------------------------------
+软投票分类器在测试集上的准确率：0.9757
+各子分类器在测试集上的准确率：[0.9645, 0.9691, 0.9719]
+---------------------------------------------------------------
+</code></pre><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 8.使用上述子分类器在验证集上进行预测，由此得到一个新训练集</span></span><br><span class="line">X_val_predictions = np.empty(shape=(<span class="built_in">len</span>(X_val), <span class="built_in">len</span>(estimators)), dtype=np.float32)</span><br><span class="line"><span class="keyword">for</span> index, estimator <span class="keyword">in</span> <span class="built_in">enumerate</span>(estimators):</span><br><span class="line">    X_val_predictions[:, index] = estimator.predict(X_val)</span><br><span class="line">    </span><br><span class="line"></span><br><span class="line"><span class="comment"># 9.在上述新训练集上，训练元学习器</span></span><br><span class="line">blender_1 = Pipeline([</span><br><span class="line">    (<span class="string">&#x27;sclaer&#x27;</span>, StandardScaler()), </span><br><span class="line">    (<span class="string">&#x27;LR&#x27;</span>, LogisticRegression(max_iter=<span class="number">10000</span>))</span><br><span class="line">])</span><br><span class="line"></span><br><span class="line">blender_2 = Pipeline([</span><br><span class="line">    (<span class="string">&#x27;sclaer&#x27;</span>, StandardScaler()), </span><br><span class="line">    (<span class="string">&#x27;SVC&#x27;</span>, SVC())</span><br><span class="line">])</span><br><span class="line"></span><br><span class="line">blender_3 = Pipeline([</span><br><span class="line">    (<span class="string">&#x27;RF&#x27;</span>, RandomForestClassifier(max_depth=<span class="number">5</span>, n_estimators=<span class="number">500</span>, random_state=<span class="number">42</span>))</span><br><span class="line">])</span><br><span class="line"></span><br><span class="line">blender_4 = Pipeline([</span><br><span class="line">    (<span class="string">&#x27;GradientBoosting&#x27;</span>, GradientBoostingClassifier(max_depth=<span class="number">5</span>, n_estimators=<span class="number">500</span>, random_state=<span class="number">42</span>))</span><br><span class="line">])</span><br><span class="line"></span><br><span class="line">blender_5 = Pipeline([</span><br><span class="line">    (<span class="string">&#x27;sclaer&#x27;</span>, StandardScaler()), </span><br><span class="line">    (<span class="string">&#x27;MLP&#x27;</span>, MLPClassifier(hidden_layer_sizes=(<span class="number">30</span>, ), max_iter=<span class="number">10000</span>, random_state=<span class="number">42</span>))</span><br><span class="line">])</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment"># 10.通过交叉验证，选择最好的元学习器</span></span><br><span class="line"><span class="keyword">for</span> blender <span class="keyword">in</span> [blender_1, blender_2, blender_3, blender_4, blender_5]:</span><br><span class="line">    cv_scores = cross_val_score(blender, X_val_predictions, y_val, cv=<span class="number">4</span>)</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">f&quot;🐬<span class="subst">&#123;blender[-<span class="number">1</span>]&#125;</span> 的交叉验证准确率为：<span class="subst">&#123;<span class="built_in">round</span>(cv_scores.mean(), <span class="number">3</span>)&#125;</span>&quot;</span>)</span><br></pre></td></tr></table></figure>
+<pre><code>🐬LogisticRegression(max_iter=10000) 的交叉验证准确率为：0.959
+🐬SVC() 的交叉验证准确率为：0.966
+🐬RandomForestClassifier(max_depth=5, n_estimators=500, random_state=42) 的交叉验证准确率为：0.976
+🐬GradientBoostingClassifier(max_depth=5, n_estimators=500, random_state=42) 的交叉验证准确率为：0.975
+🐬MLPClassifier(hidden_layer_sizes=(30,), max_iter=10000, random_state=42) 的交叉验证准确率为：0.972
+</code></pre><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 11.拟合最佳 Blender</span></span><br><span class="line">blender_3.fit(X_val_predictions, y_val)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment"># 12.基于最佳 Blender 给出 Stacking 模型的预测</span></span><br><span class="line">X_test_predictions = np.empty((<span class="built_in">len</span>(X_test), <span class="built_in">len</span>(estimators)), dtype=np.float32)</span><br><span class="line"><span class="keyword">for</span> index, estimator <span class="keyword">in</span> <span class="built_in">enumerate</span>(estimators):</span><br><span class="line">    X_test_predictions[:, index] = estimator.predict(X_test)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment"># 12.评估 Stacking 模型的预测准确率</span></span><br><span class="line">y_pred = blender_3.predict(X_test_predictions)    <span class="comment"># 表现最好的 blender</span></span><br><span class="line"><span class="built_in">print</span>(<span class="string">f&quot;Stacking 模型在测试集上的准确率：<span class="subst">&#123;accuracy_score(y_test, y_pred)&#125;</span>&quot;</span>)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">f&quot;Stacking 中的各基分类器在测试集上的准确率：<span class="subst">&#123;[estimator.score(X_test, y_test) <span class="keyword">for</span> estimator <span class="keyword">in</span> estimators]&#125;</span>&quot;</span>)</span><br></pre></td></tr></table></figure>
+<pre><code>Stacking 模型在测试集上的准确率：0.9717
+Stacking 中的各基分类器在测试集上的准确率：[0.9645, 0.9691, 0.9719]
+</code></pre><p>Remark：</p>
+<pre><code>  1. 本例中，Voting 模型在泛化性能上略优于 Stacking 模型
+  2. Stacking 模型的泛化性能甚至低于最佳基分类器 (MLPClassifier) 的泛化性能
+  3. 数据集划分按照 label 进行分层抽样更合理
+  4. 基分类器和元学习器都没有经过超参优化，这导致最终的 Voting &amp; Stacking 模型都未必是最优的
+</code></pre>
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Machine-Learning/" rel="tag"># Machine Learning</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2022/05/03/Better-Plots-With-pairplot-and-PairGrid/" rel="prev" title="Better Plots With pairplot and PairGrid">
+                  <i class="fa fa-chevron-left"></i> Better Plots With pairplot and PairGrid
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2023/05/14/%E3%80%90%E7%AC%94%E8%AE%B0%E3%80%91%E6%95%B0%E5%AD%A6%E5%88%86%E6%9E%90%E6%96%B0%E8%AE%B2-%E7%AC%AC1%E7%AF%87/" rel="next" title="【笔记】数学分析新讲-第1篇">
+                  【笔记】数学分析新讲-第1篇 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 2021 – 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Gozen Sanji</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+<script src="https://cdn.jsdelivr.net/npm/hexo-generator-searchdb@1.4.0/dist/search.js" integrity="sha256-vXZMYLEqsROAXkEw93GGIvaB2ab+QW6w3+1ahD9nXXA=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdn.jsdelivr.net/npm/mathjax@3.2.0/es5/tex-mml-chtml.js","integrity":"sha256-r+3itOMtGGjap0x+10hu6jW/gZCzxHsoKrOd7gyRSGY="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+
+</body>
+</html>
